@@ -17,7 +17,12 @@ public class entry {
 
         ArrayList<game_data> test_data = new ArrayList<>();
         test_data.add(data.get(0));
-        database.write_db(test_data);
+
+        game_data test_game = test_data.get(0);
+
+        System.out.println(test_game);
+       
+        //database.write_db(test_data);
 
     }
 }
