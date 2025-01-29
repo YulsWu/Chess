@@ -6,8 +6,11 @@ import java.sql.PreparedStatement;
 import java.io.ObjectOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.util.Set;
+import java.util.HashSet;
 
-public class database {
+public class Database {
     // Currently unsuitable for hash collision handling
     public static ArrayList<Integer> generate_hashcode(ArrayList<game_data> games){
         ArrayList<Integer> return_hashes = new ArrayList<>();
@@ -67,15 +70,10 @@ public class database {
     }
 
 
-    public static ArrayList<game_data> write_db(ArrayList<game_data> games){
+    public static ArrayList<game_data> write_db(ArrayList<game_data> games, String database, String username, String password, int batch_size){
         ArrayList<game_data> unwritten = new ArrayList<>();
-        int batch_size = 100;
-        
-        String database = "jdbc:mysql://localhost:3306/pgn_database";
-        String username = "root";
-        String password = "fUZ8&ejS4]";
-
         PreparedStatement stmt;
+
         int i = 0;
         try(Connection conn = DriverManager.getConnection(database, username, password);
             ByteArrayOutputStream byte_stream = new ByteArrayOutputStream();
@@ -86,6 +84,17 @@ public class database {
                     System.out.println("Connection successful");
                 }
                 conn.setAutoCommit(false); // Batch processing of data
+
+                // Remove duplicate entries
+                if ((remove_duplicates(games, conn) == 0)){
+                    System.out.println("Error detecting duplicates, aborting write.");
+                    return games;
+                }
+
+                if (games.size() == 0){
+                    System.out.println("All provided games already exist in the database.");
+                    return games;
+                }
 
                 // Build SQL query with the information stored in game_data
                 String query = "INSERT INTO games " + 
@@ -102,13 +111,13 @@ public class database {
 
                     stmt.addBatch();
 
-                    i++;
-
-                    if ((i % batch_size == 0) || (i == games.size() - 1)){
+                    if (((i + 1) % batch_size == 0) || (i == games.size() - 1)){
                         stmt.executeBatch();
                         conn.commit();
-                        System.out.print("Added " + i + " games...");
+                        System.out.print("Added " + (i + 1) + " games...");
                     }
+
+                    i++;
                 }
                 System.out.println();
             }
@@ -118,14 +127,14 @@ public class database {
                 System.out.println("VendorError: " + ex.getErrorCode());
                 
                 conn.rollback();
-                unwritten = new ArrayList<game_data>(games.subList((int)(i / 50) * 50, games.size()));
+                unwritten = new ArrayList<game_data>(games.subList((int)(i / batch_size) * batch_size, games.size()));
                 return unwritten;
             }
             catch (IOException e){
                 System.out.println("Stream error: " + e);
 
                 conn.rollback();
-                unwritten = new ArrayList<game_data>(games.subList((int)(i / 50) * 50, games.size()));
+                unwritten = new ArrayList<game_data>(games.subList((int)(i / batch_size) * batch_size, games.size()));
                 return unwritten;
             }
         }
@@ -133,14 +142,12 @@ public class database {
             System.out.println("Error rolling back database: " + e);
         }
 
-        
         System.out.println("Successfully added games to database");
-    
 
         return unwritten; // Should be empty if it reaches this point
     }
 
-    public static void set_values(game_data game, PreparedStatement stmt, ByteArrayOutputStream ba_OS, ObjectOutputStream o_OS) throws Exception{
+    private static void set_values(game_data game, PreparedStatement stmt, ByteArrayOutputStream ba_OS, ObjectOutputStream o_OS) throws Exception{
         // Serialize moveset
         byte[] byte_moves;
         o_OS.writeObject(game.moves);
@@ -161,5 +168,33 @@ public class database {
         stmt.setBytes(12, byte_moves);
     }
 
+    private static int remove_duplicates(ArrayList<game_data> games, Connection conn){
+        int init_size = games.size();
+        String q = "SELECT id FROM pgn_database.games";
+        ResultSet results;
+        Set<String> result_set = new HashSet<String>();
+
+        try{
+            PreparedStatement stmt = conn.prepareStatement(q);
+            results = stmt.executeQuery();
+
+            while (results.next()){
+                result_set.add(results.getString(1));
+            }
+        }
+        catch (SQLException e){
+            System.out.println("Error occurred during duplicate checking: " + e);
+            return 0;
+        }
+
+        games.removeIf(obj -> result_set.contains(obj.stringID));
+        if (init_size == games.size()){
+            System.out.println("No duplicates detected");
+        }
+        else {
+            System.out.println("Removed " + (init_size - games.size()) + " duplicate games");
+        }
+        return 1;
+    }
 }
 

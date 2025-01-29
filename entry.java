@@ -5,6 +5,11 @@ import java.io.FileReader;
 
 public class entry {
     public static void main(String[] args){
+        int batch_size = 100;
+        
+        String database = "jdbc:mysql://localhost:3306/pgn_database";
+        String username = "root";
+        String password = "fUZ8&ejS4]";
         String filepath = "test.pgn";
 
         ArrayList<game_data> data = pgn_parser.parse(filepath);
@@ -19,8 +24,8 @@ public class entry {
         //test_data.add(data.get(0));
 
         //game_data test_game = test_data.get(0);
-       
-        database.write_db(data);
+
+        Database.write_db(data, database, username, password, batch_size);
 
     }
 }

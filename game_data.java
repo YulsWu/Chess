@@ -2,6 +2,7 @@
 import java.util.ArrayList;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.util.Objects;
 
 public class game_data {
     public ArrayList<String> meta;
@@ -125,4 +126,35 @@ public class game_data {
         String returnString = meta_string + "\n" + moves_string;
         return returnString;
     }
+
+    // Simply comparing both the stringID and moveset should be sufficient to differentiate games
+    @Override
+    public boolean equals(Object obj){
+        if (obj == null){
+            return false;
+        }
+        else if (this == obj){
+            return true;
+        }
+
+        if (obj instanceof game_data){
+            game_data gd = (game_data) obj;
+
+            if ((gd.stringID.equals(this.stringID)) && (gd.moves.equals(this.moves))){
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+
+        return false;
+
+    }
+
+    @Override
+    public int hashCode(){
+        return Objects.hash(this.stringID, this.moves);
+    }
+
 }
