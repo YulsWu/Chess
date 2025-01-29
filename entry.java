@@ -15,14 +15,12 @@ public class entry {
 
         // ArrayList<Integer> hashes = new ArrayList<>();
 
-        ArrayList<game_data> test_data = new ArrayList<>();
-        test_data.add(data.get(0));
+        //ArrayList<game_data> test_data = new ArrayList<>();
+        //test_data.add(data.get(0));
 
-        game_data test_game = test_data.get(0);
-
-        System.out.println(test_game);
+        //game_data test_game = test_data.get(0);
        
-        //database.write_db(test_data);
+        database.write_db(data);
 
     }
 }

@@ -1,16 +1,16 @@
 // Using this as a data structure to associate each individual game's data together
 import java.util.ArrayList;
-import java.sql.Timestamp;
+import java.sql.Date;
 import java.text.SimpleDateFormat;
 
 public class game_data {
     public ArrayList<String> meta;
     public ArrayList<String[]> moves;
-    public String stringID;
+    public String stringID; 
 
     public String event;
     public String site;
-    public Timestamp date;
+    public Date date;
     public float round;
     public String white_player;
     public String black_player;
@@ -64,7 +64,7 @@ public class game_data {
         
         try{
             milli_date = sdf.parse(meta.get(2)).getTime();
-            date = new Timestamp(milli_date);
+            date = new Date(milli_date);
         }
         catch (Exception e){
             System.out.println("Error converting date string into Timestamp: " + e);

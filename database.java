@@ -2,11 +2,10 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.sql.PreparedStatement;
 import java.io.ObjectOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 public class database {
     // Currently unsuitable for hash collision handling
@@ -18,7 +17,7 @@ public class database {
         }
         
         return return_hashes;
-
+        /*
         // Old implementation using the metadata string and SHA-256 hashes
         // ArrayList<String> return_hashes = new ArrayList<>();
 
@@ -56,6 +55,7 @@ public class database {
         //     }
         // }
         // return return_hashes;
+        */
     }
 
     // Overloaded method signature for a single game
@@ -68,118 +68,98 @@ public class database {
 
 
     public static ArrayList<game_data> write_db(ArrayList<game_data> games){
-        ArrayList<Integer> ids = new ArrayList<>();
         ArrayList<game_data> unwritten = new ArrayList<>();
+        int batch_size = 100;
         
         String database = "jdbc:mysql://localhost:3306/pgn_database";
         String username = "root";
         String password = "fUZ8&ejS4]";
 
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-
+        PreparedStatement stmt;
+        int i = 0;
         try(Connection conn = DriverManager.getConnection(database, username, password);
             ByteArrayOutputStream byte_stream = new ByteArrayOutputStream();
             ObjectOutputStream obj_stream = new ObjectOutputStream(byte_stream)){
-
-            if (!(conn == null)){
-                System.out.println("Connection successful");
-            }
-
-            // Build SQL query with the information stored in game_data
-            StringBuilder sb = new StringBuilder();
-            byte[] byte_moves;
-            String qTemplate = "INSERT INTO games " + 
-                            "(id, chess_event, site, game_date, round, white_player, black_player," + 
-                            " result, white_elo, black_elo, eco, moves) VALUES (";
-
-            // Loop to create a query for each game that is to be written to the database
-            // Begins by building the query string iteratively
-            for (int i = 0; i < games.size(); i++){
-                sb.setLength(0);
-                sb.append(qTemplate);
-                sb.append("'");
-                sb.append(games.get(i).stringID);
-                sb.append("'");
-                
-                // Insert metadata into query
-                for (String s : games.get(i).meta){
-                    sb.append(", ");
-                    sb.append("'");
-                    sb.append(s);
-                    sb.append("'");  
-                }
-
-                // End query
-                sb.append(", ?);");
-
-                // Serialize the ArrayList<String[]> array holding the moves to be stored in sql
-                obj_stream.writeObject(games.get(i).moves); // Serialize object and send to bytestream
-                byte_moves = byte_stream.toByteArray(); // Convert bytestream to byte array
-
-                // Creates the statement object from the query string
-                stmt = conn.prepareStatement(sb.toString());
-                // Set the first wildcard parameter to the byte representation of the moves array
-                stmt.setBytes(1, byte_moves);
-                
-                int updated = stmt.executeUpdate();
-                if (updated > 0){
-                    System.out.print("Wrote " + (i + 1) + " files");
-                }
-                else {
-                    System.out.println();
-                    System.out.println("Write failed");
-                }
-            }
-        }
-        catch (SQLException ex){
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
-        }
-        catch (Exception e){
-            System.out.println("Stream error: " + e);
-        }
-
-        return unwritten;
-
-
-        /*
-        try {
-            // Load mysql connector
-            URL jarURL = new URL("file:///" + connection_jar_path);
-            URLClassLoader class_loader = (URLClassLoader) ClassLoader.getSystemClassLoader();
-            URLClassLoader url_class_loader = new URLClassLoader(new URL[]{jarURL}, class_loader);
-
-            Thread.currentThread().setContextClassLoader(url_class_loader);
-            // Done loading mysql connector
-            // Connect to database
-
             
-
-            Properties properties = new Properties();
-            properties.put("user", username);
-            properties.put("password", password);
-
-            try (Connection pgn_connection = DriverManager.getConnection(url, properties)){
-                if (!(pgn_connection == null)){
-                    System.out.println("Successfully connected to " + url);
+            try{
+                if (!(conn == null)){
+                    System.out.println("Connection successful");
                 }
+                conn.setAutoCommit(false); // Batch processing of data
 
-                // Create statment object to execute SQL queries
-                Statement stmt = pgn_connection.createStatement();
-                String q = "SELECT * FROM pgn_database.games";
+                // Build SQL query with the information stored in game_data
+                String query = "INSERT INTO games " + 
+                                "(id, chess_event, site, game_date, round, white_player, black_player," + 
+                                " result, white_elo, black_elo, eco, moves) VALUES " + 
+                                " (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-                // ResultSet rs = stmt.executeQuery(q);
+                // Loop to create a query for each game that is to be written to the database
+                // Begins by building the query string iteratively
+                stmt = conn.prepareStatement(query);
+                i = 0;
+                for (game_data gd : games){
+                    set_values(gd, stmt, byte_stream, obj_stream);
+
+                    stmt.addBatch();
+
+                    i++;
+
+                    if ((i % batch_size == 0) || (i == games.size() - 1)){
+                        stmt.executeBatch();
+                        conn.commit();
+                        System.out.print("Added " + i + " games...");
+                    }
+                }
+                System.out.println();
             }
-            catch (Exception e){
-                System.out.println("Error connecting to database: " + e);
+            catch (SQLException ex){
+                System.out.println("SQLException: " + ex.getMessage());
+                System.out.println("SQLState: " + ex.getSQLState());
+                System.out.println("VendorError: " + ex.getErrorCode());
+                
+                conn.rollback();
+                unwritten = new ArrayList<game_data>(games.subList((int)(i / 50) * 50, games.size()));
+                return unwritten;
             }
+            catch (IOException e){
+                System.out.println("Stream error: " + e);
 
-        } catch (MalformedURLException e) {
-            System.out.println("Error connecting to MySQL database: " + e);
+                conn.rollback();
+                unwritten = new ArrayList<game_data>(games.subList((int)(i / 50) * 50, games.size()));
+                return unwritten;
+            }
         }
-        */
+        catch (Exception e) {
+            System.out.println("Error rolling back database: " + e);
+        }
 
+        
+        System.out.println("Successfully added games to database");
+    
+
+        return unwritten; // Should be empty if it reaches this point
     }
+
+    public static void set_values(game_data game, PreparedStatement stmt, ByteArrayOutputStream ba_OS, ObjectOutputStream o_OS) throws Exception{
+        // Serialize moveset
+        byte[] byte_moves;
+        o_OS.writeObject(game.moves);
+        byte_moves = ba_OS.toByteArray();
+
+        // Set values of PreparedStatment
+        stmt.setString(1, game.stringID);
+        stmt.setString(2, game.event);
+        stmt.setString(3, game.site);
+        stmt.setDate(4, game.date);
+        stmt.setFloat(5, game.round);
+        stmt.setString(6, game.white_player);
+        stmt.setString(7, game.black_player);
+        stmt.setString(8, game.result);
+        stmt.setInt(9, game.white_elo);
+        stmt.setInt(10, game.black_elo);
+        stmt.setString(11, game.eco);
+        stmt.setBytes(12, byte_moves);
+    }
+
 }
+
