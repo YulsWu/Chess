@@ -38,7 +38,7 @@ public class game_data {
         // Set all metadata attributes 
         event = meta.get(0);
         site = meta.get(1);  
-        round = Integer.valueOf(meta.get(3));
+        round = meta.get(3).equals("?") ? null : Float.valueOf(meta.get(3));
         white_player = meta.get(4);
         black_player = meta.get(5);
         result = meta.get(6);
@@ -62,13 +62,20 @@ public class game_data {
         // Convert date into a Timestamp object
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
         Long milli_date;
-        
-        try{
-            milli_date = sdf.parse(meta.get(2)).getTime();
-            date = new Date(milli_date);
+        String str_date = meta.get(2);
+
+        // Some dates have unspecified days and months, substitute with null
+        if (str_date.contains("?")){
+            date = null;
         }
-        catch (Exception e){
-            System.out.println("Error converting date string into Timestamp: " + e);
+        else{
+            try{
+                milli_date = sdf.parse(str_date).getTime();
+                date = new Date(milli_date);
+            }
+            catch (Exception e){
+                System.out.println("Error converting date string into Date: " + e);
+            }
         }
     }
 

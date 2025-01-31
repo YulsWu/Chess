@@ -3,6 +3,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+import java.util.Map;
+import java.util.HashMap;
 
 public class pgn_parser {
     
@@ -70,6 +72,8 @@ public class pgn_parser {
         int numTokens = st.countTokens();
         // Initialize empty array to hold moves, Rows = numMoves, col = 2
         ArrayList<String[]> returnArray = new ArrayList<>();
+
+        // Create an array of size 2 x numTokens to hold empty strings for now
         for (int i = 0; i < ((int)(numTokens/2)); i++){
             returnArray.add(new String[]{"", ""});
         }
@@ -87,31 +91,82 @@ public class pgn_parser {
         }
 
         // If white wins and black has no move on the last turn
-        if (returnArray.get(returnArray.size() - 1)[1] == null){
-            returnArray.get(returnArray.size() - 1)[1] = "";
-        }
+        // if (returnArray.get(returnArray.size() - 1)[1] == null){
+        //     returnArray.get(returnArray.size() - 1)[1] = "";
+        // }
 
         return returnArray;
     }
 
-    public static ArrayList<String> meta_parser(String line){
-        ArrayList<String> retArray = new ArrayList<>();
-        // Split apart individual meta data fields
-        StringTokenizer st1 = new StringTokenizer(line, "_");
-        while (st1.hasMoreTokens()){
-            StringTokenizer st2 = new StringTokenizer(st1.nextToken(), "[] \"");
-            st2.nextToken(); // Skip the metadata field name
-            
-            // Tokenize each meta data field individually
-            StringBuilder temp = new StringBuilder("");
-            while (st2.hasMoreTokens()){
-                temp.append(st2.nextToken());
-                temp.append((st2.hasMoreTokens()) ? " " : ""); // If there are more tokens include a space afterwards
+    public static Map<String, String> meta_parser(String line){
+        Map<String, String> retMap = new HashMap<String, String>(){{
+            put("Event", "");
+            put("Site", "");
+            put("Date", "");
+            put("Round", "");
+            put("White", "");
+            put("Black", "");
+            put("Result", "");
+            put("WhiteElo", "");
+            put("BlackElo", "");
+            put("WhiteTitle", "");
+            put("BlackTitle", "");
+            put("WhiteFIDEId", "");
+            put("BlackFIDEId", "");
+            put("ECO", "");
+            put("Opening", "");
+            put("Variation", "");
+            put("TimeControl", "");
+            put("Termination", "");
+            put("Mode", "");
+            put("PlyCount", "");
+            put("EventType", "");
+            put("EventRounds", "");
+            put("Stage", "");
+            put("Annotator", "");
+            put("Source", "");
+            put("SourceDate", "");
+            put("FEN", "");
+            put("SetUp", "");
+            put("Variant", "");
+        }};
+
+        StringTokenizer tok = new StringTokenizer(line, "_");
+
+        String currentMeta;
+        // While loop iterates tokens by 2, for each key-value pair of metadata
+        // Currently will throw an exception if a metadata field has a blank string ie [Event ""], however this should not happen
+        // and there should at least be a ? character in place of the field ie [Event "?"]
+        while (tok.hasMoreTokens()){
+            currentMeta = tok.nextToken();
+            StringTokenizer tok2 = new StringTokenizer(currentMeta, "\"[] ");
+
+            // Skip if the metadata field only has 1 token, meaning there was an empty string supplied. The default values are null anyway.
+            if (tok2.countTokens() < 2){
+                continue;
             }
 
-            retArray.add(temp.toString());
+            if (retMap.containsKey(currentMeta)){
+                retMap.put(currentMeta, tok.nextToken());
+            }
         }
-        return retArray;
+
+        // Split apart individual meta data fields
+        // StringTokenizer st1 = new StringTokenizer(line, "_");
+        // while (st1.hasMoreTokens()){
+        //     StringTokenizer st2 = new StringTokenizer(st1.nextToken(), "[] \"");
+        //     st2.nextToken(); // Skip the metadata field name
+            
+        //     // Tokenize each meta data field individually
+        //     StringBuilder temp = new StringBuilder("");
+        //     while (st2.hasMoreTokens()){
+        //         temp.append(st2.nextToken());
+        //         temp.append((st2.hasMoreTokens()) ? " " : ""); // If there are more tokens include a space afterwards
+        //     }
+
+        //     retArray.add(temp.toString());
+        // }
+        return retMap;
 
     }
 }
