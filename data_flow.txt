@@ -1,0 +1,30 @@
+PGN File 
+[meta]
+[moves]
+[meta]
+[moves]
+etc
+
+PgnParser - Separates meta from moves for each game
+ReadStreamOpen
+ArrayList<String[2]> gamesList = [[meta, moves]
+                                  [meta, moves]
+                                  [meta, moves]]
+ReadStreamClosed
+
+For meta, moves in gamesList:
+[meta] --> metaParser
+[moves] --> movesParser
+
+
+metaParser
+[meta] --> HashMap<String,String> metaMap = {(Meta label, Meta value), (Meta label), (Meta value)...}
+
+movesParser
+[moves] --> ArrayList<String[2]> movesList = [[move, move]
+                                              [move, move]
+                                              [move, move]
+                                              [move, move]
+                                              [move, ""]]
+
+PgnParser
