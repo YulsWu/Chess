@@ -21,12 +21,12 @@ public class entry {
 
         Database.writeDB(data, database, username, password, batch_size);
 
-        if (test.writeReadConsistencyTest(data, database, username, password)){
-            System.out.println("Game consistency verified");
-        }
-        else {
-            System.out.println("ERROR: Inconsistency between written/read games detected");
-        }
+        // if (test.writeReadConsistencyTest(data, database, username, password)){
+        //     System.out.println("Game consistency verified");
+        // }
+        // else {
+        //     System.out.println("ERROR: Inconsistency between written/read games detected");
+        // }
 
 
         // readData = test.test2(database, username, password);

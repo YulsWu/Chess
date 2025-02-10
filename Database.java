@@ -190,7 +190,7 @@ public class Database {
                     if (((i + 1) % batch_size == 0) || (i == games.size() - 1)){
                         stmt.executeBatch();
                         conn.commit();
-                        System.out.print("Added " + (i + 1) + " games...");
+                        System.out.print("\rAdded " + (i + 1) + " games...");
                     }
 
                     i++;
