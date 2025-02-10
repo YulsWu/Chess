@@ -9,7 +9,8 @@ import java.text.DecimalFormat;
 
 public class GameData {
     public ArrayList<String[]> moves;
-    public String stringID; 
+    public String stringID;
+    public Integer calculatedPlyCount; 
 
     public String event;
     public String site;
@@ -44,6 +45,7 @@ public class GameData {
     public GameData(Map<String,String> metaMap, ArrayList<String[]> moves){
         this.moves = moves;
 
+        
         
         // Set all metadata attributes 
         event = metaMap.get("Event");
@@ -84,6 +86,26 @@ public class GameData {
             setUp = false;
         }
         variant = metaMap.get("Variant");
+        
+        // Calculate ply count from the moves arraylist. Different from plycount supplied from optional
+        // metadata fields. Its possible the supplied plycount may be different, and I don't want to overwrite
+        // the supplied count to ensure consistent string IDs across games read from PGN and read from Database
+        int numTurns = moves.size();
+        String lastMove;
+        String middleMove;
+    
+        if (moves.get(numTurns - 1)[1].equals("")){
+            calculatedPlyCount = (numTurns * 2) - 1;
+            lastMove = moves.get(numTurns - 1)[0];
+        }
+        else {
+            calculatedPlyCount = numTurns * 2;
+            lastMove = moves.get(numTurns - 1)[1];
+        }
+        // Ceiling divison for the index middle turn, safe for numTurns == 1;
+        int middleIndex = ((numTurns + 2 - 1) / 2) - 1;
+        middleMove = moves.get(middleIndex)[0];
+
 
         // site, date, round, white, black, whiteelo, blackelo, eco
         Object[] targetKeys = new Object[]{this.site, this.date, this.round, this.whitePlayer, this.blackPlayer, this.whiteElo, this.blackElo, this.eco};
@@ -92,6 +114,13 @@ public class GameData {
             sb.append(String.valueOf(s));
             sb.append('-');
         }
+        // Append additional metadata to increase uniqueness for each game with the same metadata labels
+        sb.append(String.valueOf(middleMove));
+        sb.append('-');
+        sb.append(String.valueOf(lastMove));
+        sb.append('-');
+        sb.append(String.valueOf(calculatedPlyCount));
+        sb.append('-');
         stringID = sb.toString();
     }
     

@@ -14,6 +14,7 @@ public class entry {
         String filepath = "carlsen.pgn";
 
         ArrayList<GameData> data = PgnParser.parse(filepath);
+
         //ArrayList<GameData> readData = Database.readDB(database, username, password);
 
         // System.out.println(data.get(0).stringID.equals(readData.get(0).stringID));
