@@ -85,6 +85,41 @@ public class Database {
         Map.entry("variant", "Variant")
     );
 
+    public static final String SQL_GAMES_TABLE_DDL = 
+        "CREATE TABLE pgn_database.games (" + 
+        "id VARCHAR(200) PRIMARY KEY," +	
+        "chess_event VARCHAR(50)," +
+        "site VARCHAR(50)," +
+        "game_date DATE," +
+        "round FLOAT," +
+        "white_player VARCHAR(35)," +
+        "black_player VARCHAR(35)," +
+        "result VARCHAR(7)," +
+        "white_elo SMALLINT," +
+        "black_elo SMALLINT," +
+        "eco VARCHAR(3)," +
+        "moves MEDIUMBLOB," +
+        "white_title VARCHAR(3)," +
+        "black_title VARCHAR(3)," +
+        "white_fide_id INT," +
+        "black_fide_id INT," +
+        "opening VARCHAR(100)," +
+        "variation VARCHAR(100)," +
+        "time_control VARCHAR(15)," +
+        "termination VARCHAR(30)," +
+        "game_mode VARCHAR(10)," +
+        "ply_count SMALLINT," +
+        "event_type VARCHAR(15)," +
+        "event_rounds FLOAT," +
+        "stage VARCHAR(15)," +
+        "annotator VARCHAR(20)," +
+        "pgn_source VARCHAR(20)," +
+        "source_date DATE," +
+        "fen VARCHAR(90)," +
+        "set_up BOOLEAN," +
+        "variant VARCHAR(50)" +
+        ")";
+    
     // Currently unsuitable for hash collision handling
     public static ArrayList<Integer> generate_hashcode(ArrayList<GameData> games){
         ArrayList<Integer> return_hashes = new ArrayList<>();
@@ -473,6 +508,74 @@ public class Database {
         return true;
     }
     
+    public static boolean doesDatabaseExist(String url, String DBName, String username, String password){
+        try(Connection conn = DriverManager.getConnection(url, username, password)){
+            String query = "SHOW DATABASES";
+            PreparedStatement statement = conn.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
+
+            while(rs.next()){
+                String db = rs.getString("Database");
+                if (db.equals(DBName)){
+                    return true;
+                }
+            }
+            return false;
+
+        }
+        catch (SQLException e){
+            // Do something else??
+            return false;
+        }
+    }
+
+    public static boolean doesTableExist(String database, String tableName, String username, String password){
+        try (Connection conn = DriverManager.getConnection(database, username, password)){
+            String query = "SHOW TABLES from pgn_database";
+            PreparedStatement statement = conn.prepareStatement(query);
+            ResultSet results = statement.executeQuery();
+
+            while (results.next()){
+                String table = results.getString("Tables_in_pgn_database");
+                if (table.equals(tableName)){
+                    return true;
+                }
+            }
+            return false;
+        }
+        catch (Exception e){
+            System.out.println("Error checking table existence in database" + e);
+            return false;
+        }
+    }
+
+    public static boolean createDatabase(String url, String DBName, String username, String password){
+        try (Connection conn = DriverManager.getConnection(url, username, password)){
+            PreparedStatement statement = conn.prepareStatement("CREATE DATABASE " + DBName);
+
+            // Return value is always 0 and is therefore useless
+            statement.executeUpdate();
+
+            return true;
+        }
+        catch (Exception e){
+            System.out.println("Error encountered while creating new database \"" + DBName + "\": " + e);
+            return false;
+        }
+    }
+
+    public static boolean createTable(String database, String tableName, String username, String password){
+        try (Connection conn = DriverManager.getConnection(database, username, password)){
+            PreparedStatement statement = conn.prepareStatement(SQL_GAMES_TABLE_DDL);
+            // Return value always 0 for DDL statements
+            statement.executeUpdate();
+            return true;
+        }
+        catch (SQLException e){
+            System.out.println("Error encountered while creating new table \"" + tableName + "\": " + e);
+            return false;
+        }
+    }
 
 }
 

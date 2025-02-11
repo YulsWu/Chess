@@ -164,29 +164,96 @@ public class test {
         return true;
     }
 
-    public static boolean createDeleteDatabaseTest(String database, String username, String password){
-        
-        try (Connection conn = DriverManager.getConnection(database, username, password)){}
-        catch (SQLException e) {
-            System.out.println("Error connecting to database: " + e);
+    public static void databaseInterfaceTest(String url, String database, String DBName, String tableName, String serviceName, String username, String password){
+        // Does service exist
+        try{
+            if (Database.doesServiceExist(serviceName)){
+                System.out.println("Found installed service " + serviceName);
+            }
+            else {
+                System.out.println("Service \"" + serviceName + "\" does not exist");
+                return;
+            }
+        }
+        catch (Exception ex){
+            System.out.println("Unexpected error occured: " + ex);
+            return;
         }
 
-        return true;
-    }
+        // Is service running, else start service
+        try {
+            boolean running = false;
 
-    // Maybe 3 state boolean with true/false/null, null representing not installed?
-    
+            while (!running){
+                if (Database.isServiceRunning("mysql84")){
+                    System.out.println("Service \"" + serviceName + "\" is running");
+                    running = true;
+                } else {
+                    System.out.println("Attempting to start \"" + serviceName + "\"");
+                    if (Database.startService(serviceName)){
+                        System.out.println("Service \"" + serviceName + "\" successfully started");
+                    }
+                }
+            }
+        }
+        catch (Exception e){
+            System.out.println("ERROR occurred during service query");
+            return;
+        }
+        // Does database exist?
+        // If so, check if table exists
+        if (Database.doesDatabaseExist(url, DBName, username, password)){
+            System.out.println("Found database \"" + DBName + "\"");
+            if (Database.doesTableExist(database, tableName, username, password)){
+                System.out.println("Found table \"" + tableName + "\"");
+            }
+            else {
+                System.out.println("Table \"" + tableName + "\" not found");
+
+                if (Database.createTable(database, tableName, username, password)){
+                    System.out.println("Successfully created table \"" + tableName + "\"");
+                }
+                else {
+                    System.out.println("Unexpected error creating table \"" + tableName + "\"");
+                    return;
+                }
+
+            }
+        }
+        // If database doesn't exist create both database and table
+        else {
+            System.out.println("Database \"" + DBName + "\" not found");
+            if (Database.createDatabase(url, DBName, username, password)){
+                System.out.println("Database \"" + DBName + "\" successfully created");
+
+                if (Database.createTable(database, tableName, username, password)){
+                    System.out.println("Table \"" + tableName + "\" successfully created");
+                }
+                else {
+                    System.out.println("Unexpected error creating table \"" + tableName + "\"");
+                    return;
+                }
+            }
+            else{
+                System.out.println("Unexpected error creating database \"" + DBName + "\"");
+                return;
+            }
+        }
+
+        // Check table existence
+
+    }   
 
     public static void serviceQueryExceptionTest(String serviceName){
         boolean exists = false;
 
         System.out.println("\nTEST ::: CHECK IF SERVICE EXISTS, THEN CHECK IF RUNNING");
         try{
-            if (test.doesServiceExist(serviceName)){
+            if (Database.doesServiceExist(serviceName)){
                 System.out.println("Service " + "\"" + serviceName + "\"" + " EXISTS in this system.");
                 exists = true;
                 try {
-                    if (test.isServiceRunning(serviceName)){
+                    if (Database.isServiceRunning(serviceName)){
                         System.out.println("Service " + "\"" + serviceName + "\"" + " is currently RUNNING.");
 
                     }
@@ -209,7 +276,7 @@ public class test {
         if (!exists){
             try {
             System.out.println("\n\nTEST:::CHECKING IF NON-EXISTENT SERVICE IS RUNNING");
-            test.isServiceRunning(serviceName);
+            Database.isServiceRunning(serviceName);
     
             }
             catch (ChessServiceException e){
@@ -221,7 +288,7 @@ public class test {
     public static void serviceStartTest(String serviceName){
         System.out.println("TEST ::: STARTING SERVICE:");
         try{
-            startService(serviceName);
+            Database.startService(serviceName);
             System.out.println("SUCCESSFULLY STARTED " + serviceName + " SERVICE");
         }
         catch (ChessServiceDoesNotExistException e){
@@ -230,6 +297,24 @@ public class test {
         catch (ChessServiceException ex){
             System.out.println("ERROR: UNEXPECTED ERROR ENCOUNTERED STARTING SERVICE.");
             ex.printStackTrace();
+        }
+    }
+
+    public static void databaseExistsTest(String url, String DBName, String username, String password){
+        if (Database.doesDatabaseExist(url, DBName, username, password)){
+            System.out.println("Database " + "\"" + DBName + "\" EXISTS.");
+        }
+        else{
+            System.out.println("Database " + "\"" + DBName + "\" does NOT EXIST.");
+        }
+    }
+
+    public static void tableExistsTest(String database, String tableName, String username, String password){
+        if (Database.doesTableExist(database, tableName, username, password)){
+            System.out.println("Table \"" + tableName + "\" EXISTS in database");
+        }
+        else {
+            System.out.println("Table \"" + tableName + "\" does NOT EXIST in database");
         }
     }
 }

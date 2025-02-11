@@ -7,6 +7,8 @@ import java.io.FileReader;
 public class entry {
     public static void main(String[] args){
         int batch_size = 100;
+
+        String mysqlServer = "jdbc:mysql://localhost:3306";
         
         String database = "jdbc:mysql://localhost:3306/pgn_database";
         String username = "root";
@@ -18,7 +20,10 @@ public class entry {
         //test.createDeleteDatabaseTest(database, username, password);
         String serviceName = "mysql84";
 
-        test.serviceStartTest(serviceName);
+        //test.databaseExistsTest(mysqlServer, "pgn_database", username, password);
+        test.databaseInterfaceTest(mysqlServer, database, "pgn_database", "games", "mysql84", username, password);
+
+        //test.serviceStartTest(serviceName);
         //test.serviceQueryExceptionTest(serviceName);
         //ArrayList<GameData> readData = Database.readDB(database, username, password);
 
