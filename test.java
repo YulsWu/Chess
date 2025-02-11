@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Map;
 import java.sql.Date;
 import java.sql.Blob;
@@ -13,6 +14,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class test {
     public static void test1 (){
@@ -162,4 +164,72 @@ public class test {
         return true;
     }
 
+    public static boolean createDeleteDatabaseTest(String database, String username, String password){
+        
+        try (Connection conn = DriverManager.getConnection(database, username, password)){}
+        catch (SQLException e) {
+            System.out.println("Error connecting to database: " + e);
+        }
+
+        return true;
+    }
+
+    // Maybe 3 state boolean with true/false/null, null representing not installed?
+    
+
+    public static void serviceQueryExceptionTest(String serviceName){
+        boolean exists = false;
+
+        System.out.println("\nTEST ::: CHECK IF SERVICE EXISTS, THEN CHECK IF RUNNING");
+        try{
+            if (test.doesServiceExist(serviceName)){
+                System.out.println("Service " + "\"" + serviceName + "\"" + " EXISTS in this system.");
+                exists = true;
+                try {
+                    if (test.isServiceRunning(serviceName)){
+                        System.out.println("Service " + "\"" + serviceName + "\"" + " is currently RUNNING.");
+
+                    }
+                    else {
+                        System.out.println("Service " + "\"" + serviceName + "\"" + " is currently STOPPED.");
+                    }
+                }
+                catch(ChessServiceDoesNotExistException e){
+                    System.out.println("ERROR: Attempted to query a non-existent service");
+                }
+            }
+            else {
+                System.out.println("Service " + "\"" + serviceName + "\"" + " DOES NOT EXIST in this system.");
+            }
+        }
+        catch (ChessServiceException ex){
+            System.out.println("ERROR: Unexpected return code from querying service " + serviceName + ".");
+        }
+
+        if (!exists){
+            try {
+            System.out.println("\n\nTEST:::CHECKING IF NON-EXISTENT SERVICE IS RUNNING");
+            test.isServiceRunning(serviceName);
+    
+            }
+            catch (ChessServiceException e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void serviceStartTest(String serviceName){
+        System.out.println("TEST ::: STARTING SERVICE:");
+        try{
+            startService(serviceName);
+            System.out.println("SUCCESSFULLY STARTED " + serviceName + " SERVICE");
+        }
+        catch (ChessServiceDoesNotExistException e){
+            System.out.println("ERROR: SERVICE DOES NOT EXIST");
+        }
+        catch (ChessServiceException ex){
+            System.out.println("ERROR: UNEXPECTED ERROR ENCOUNTERED STARTING SERVICE.");
+            ex.printStackTrace();
+        }
+    }
 }

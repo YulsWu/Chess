@@ -13,14 +13,19 @@ public class entry {
         String password = "fUZ8&ejS4]";
         String filepath = "carlsen.pgn";
 
-        ArrayList<GameData> data = PgnParser.parse(filepath);
+        //ArrayList<GameData> data = PgnParser.parse(filepath);
 
+        //test.createDeleteDatabaseTest(database, username, password);
+        String serviceName = "mysql84";
+
+        test.serviceStartTest(serviceName);
+        //test.serviceQueryExceptionTest(serviceName);
         //ArrayList<GameData> readData = Database.readDB(database, username, password);
 
         // System.out.println(data.get(0).stringID.equals(readData.get(0).stringID));
         // System.out.println(readData.get(0).moves.equals(readData.get(0).moves));
 
-        Database.writeDB(data, database, username, password, batch_size);
+        // Database.writeDB(data, database, username, password, batch_size);
 
         // if (test.writeReadConsistencyTest(data, database, username, password)){
         //     System.out.println("Game consistency verified");

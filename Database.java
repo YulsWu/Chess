@@ -4,9 +4,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.sql.PreparedStatement;
 import java.io.ObjectOutputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.sql.ResultSet;
 import java.util.Set;
@@ -385,5 +387,92 @@ public class Database {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd"); // Maybe store format as a constant?
         return sdf.format(d);
     }
+
+    public static boolean isServiceRunning(String serviceName) throws ChessServiceException{
+            try{
+                Process myProcess = new ProcessBuilder("sc", "query", serviceName).start();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(myProcess.getInputStream()));
+                StringBuilder sb  = new StringBuilder();
+                String line;
+
+                while ((line = reader.readLine()) != null){
+                    sb.append(line + '\n');
+                }
+
+                int exitCode = myProcess.waitFor();
+
+                if (exitCode == 0){
+                    if (sb.toString().contains("RUNNING")){
+                        return true;
+                    }
+                }
+                else if (exitCode == 1060){
+                    throw new ChessServiceDoesNotExistException("Service does not exist.");
+                }
+                else{
+                    throw new ChessServiceException("Unexpected exit code from querying service.");
+                }
+            }
+            catch(IOException e){
+                throw new ChessServiceException("Error reading data from service query", e);
+            }
+            catch (InterruptedException ex) {
+                throw new ChessServiceException("Error: Service interrupted while waiting to finish execution", ex);
+            }
+        return false;
+    }
+
+    public static boolean doesServiceExist(String serviceName) throws ChessServiceException{
+        try {
+            Process myProcess = new ProcessBuilder("sc", "query", serviceName).start();
+            int exitCode = myProcess.waitFor();
+
+            if (exitCode == 0){
+                return true;
+            }
+            else if (exitCode == 1060){
+                return false;
+            }
+            else {
+                throw new ChessServiceException("Unexpected exit code from querying service.");
+            }
+        
+        }
+        catch (IOException e){
+            throw new ChessServiceException("Error creating process to query services:", e);
+        }
+        catch (InterruptedException ex){
+            throw new ChessServiceException("Error: Service interrupted while waiting to finish execution", ex);
+        }
+
+    }
+
+    public static boolean startService(String serviceName) throws ChessServiceException{
+        if (!doesServiceExist(serviceName)){
+            throw new ChessServiceDoesNotExistException("ERROR: Attempting to start a non-existent service.");
+        }
+        
+        try {
+            Process process = new ProcessBuilder("sc", "start", serviceName).start();
+            
+            while (!isServiceRunning(serviceName)){};
+            
+            int exitCode = process.waitFor();
+
+            if (exitCode == 0){
+                return true;
+            }
+            // Service already running
+            else if (exitCode == 1056){
+                return true;
+            }
+        }
+        catch (Exception e){ 
+            throw new ChessServiceException("ERROR: Attempt to start " + serviceName + " has failed.", e);
+        }
+        return true;
+    }
+    
+
 }
 
