@@ -472,7 +472,7 @@ public class Database {
                 return false;
             }
             else {
-                System.out.println("Unexpected error code returned from services query")
+                System.out.println("Unexpected error code returned from services query");
                 return false;
             }
         
@@ -483,6 +483,7 @@ public class Database {
         }
         catch (InterruptedException ex){
             System.out.println("Error: Service interrupted while waiting to finish execution");
+            return false;
         }
 
     }
