@@ -535,8 +535,8 @@ public class Database {
         }
     }
 
-    public static boolean doesTableExist(String database, String tableName, String username, String password){
-        try (Connection conn = DriverManager.getConnection(database, username, password)){
+    public static boolean doesTableExist(String url, String DBName, String tableName, String username, String password){
+        try (Connection conn = DriverManager.getConnection(url + "/" + DBName, username, password)){
             String query = "SHOW TABLES from pgn_database";
             PreparedStatement statement = conn.prepareStatement(query);
             ResultSet results = statement.executeQuery();
@@ -570,8 +570,8 @@ public class Database {
         }
     }
 
-    public static boolean createTable(String database, String tableName, String username, String password){
-        try (Connection conn = DriverManager.getConnection(database, username, password)){
+    public static boolean createTable(String url, String DBName, String tableName, String username, String password){
+        try (Connection conn = DriverManager.getConnection(url + "/" + DBName, username, password)){
             PreparedStatement statement = conn.prepareStatement(SQL_GAMES_TABLE_DDL);
             // Return value always 0 for DDL statements
             statement.executeUpdate();
