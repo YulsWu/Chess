@@ -423,7 +423,7 @@ public class Database {
         return sdf.format(d);
     }
 
-    public static boolean isServiceRunning(String serviceName) throws ChessServiceException{
+    public static boolean isServiceRunning(String serviceName) throws ChessServiceDoesNotExistException{
             try{
                 Process myProcess = new ProcessBuilder("sc", "query", serviceName).start();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(myProcess.getInputStream()));
@@ -445,19 +445,22 @@ public class Database {
                     throw new ChessServiceDoesNotExistException("Service does not exist.");
                 }
                 else{
-                    throw new ChessServiceException("Unexpected exit code from querying service.");
+                    System.out.println("Unexpected exit code from querying services");
+                    return false;
                 }
             }
             catch(IOException e){
-                throw new ChessServiceException("Error reading data from service query", e);
+                System.out.println("Error reading data from service query");
+                return false;
             }
             catch (InterruptedException ex) {
-                throw new ChessServiceException("Error: Service interrupted while waiting to finish execution", ex);
+                System.out.println("Error: Service interrupted while waiting to finish execution");
+                return false;
             }
         return false;
     }
 
-    public static boolean doesServiceExist(String serviceName) throws ChessServiceException{
+    public static boolean doesServiceExist(String serviceName){
         try {
             Process myProcess = new ProcessBuilder("sc", "query", serviceName).start();
             int exitCode = myProcess.waitFor();
@@ -469,15 +472,17 @@ public class Database {
                 return false;
             }
             else {
-                throw new ChessServiceException("Unexpected exit code from querying service.");
+                System.out.println("Unexpected error code returned from services query")
+                return false;
             }
         
         }
         catch (IOException e){
-            throw new ChessServiceException("Error creating process to query services:", e);
+            System.out.println("Error creating process to query services:");
+            return false;
         }
         catch (InterruptedException ex){
-            throw new ChessServiceException("Error: Service interrupted while waiting to finish execution", ex);
+            System.out.println("Error: Service interrupted while waiting to finish execution");
         }
 
     }
