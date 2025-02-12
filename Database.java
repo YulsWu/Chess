@@ -488,9 +488,10 @@ public class Database {
 
     }
 
-    public static boolean startService(String serviceName) throws ChessServiceException{
+    public static boolean startService(String serviceName) {
         if (!doesServiceExist(serviceName)){
-            throw new ChessServiceDoesNotExistException("ERROR: Attempting to start a non-existent service.");
+            System.out.println("ERROR: Attempting to start a non-existent service.");
+            return false;
         }
         
         try {
@@ -509,7 +510,8 @@ public class Database {
             }
         }
         catch (Exception e){ 
-            throw new ChessServiceException("ERROR: Attempt to start " + serviceName + " has failed.", e);
+            System.out.println("ERROR: Attempt to start " + serviceName + " has failed.");
+            return false;
         }
         return true;
     }
