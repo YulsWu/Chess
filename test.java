@@ -15,6 +15,8 @@ import java.io.ObjectInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.regex.*;
+import java.nio.file.*;
 
 public class test {
     public static void test1 (){
@@ -164,21 +166,17 @@ public class test {
         return true;
     }
 
-    public static void databaseInterfaceTest(String url, String database, String DBName, String tableName, String serviceName, String username, String password){
+    public static void databaseInterfaceTest(String url, String database, String DBName, String tableName, String serviceName, String username, String password, String filepath){
+        System.out.println("____ESTABLISHING CONNECTION____");
         // Does service exist
-        try{
-            if (Database.doesServiceExist(serviceName)){
-                System.out.println("Found installed service " + serviceName);
-            }
-            else {
-                System.out.println("Service \"" + serviceName + "\" does not exist");
-                return;
-            }
+        if (Database.doesServiceExist(serviceName)){
+            System.out.println("Found installed service " + serviceName);
         }
-        catch (Exception ex){
-            System.out.println("Unexpected error occured: " + ex);
+        else {
+            System.out.println("Service \"" + serviceName + "\" does not exist");
             return;
         }
+        
 
         // Is service running, else start service
         try {
@@ -204,13 +202,13 @@ public class test {
         // If so, check if table exists
         if (Database.doesDatabaseExist(url, DBName, username, password)){
             System.out.println("Found database \"" + DBName + "\"");
-            if (Database.doesTableExist(database, tableName, username, password)){
+            if (Database.doesTableExist(url, DBName, tableName, username, password)){
                 System.out.println("Found table \"" + tableName + "\"");
             }
             else {
                 System.out.println("Table \"" + tableName + "\" not found");
 
-                if (Database.createTable(database, tableName, username, password)){
+                if (Database.createTable(url, DBName, tableName, username, password)){
                     System.out.println("Successfully created table \"" + tableName + "\"");
                 }
                 else {
@@ -226,7 +224,7 @@ public class test {
             if (Database.createDatabase(url, DBName, username, password)){
                 System.out.println("Database \"" + DBName + "\" successfully created");
 
-                if (Database.createTable(database, tableName, username, password)){
+                if (Database.createTable(url, DBName, tableName, username, password)){
                     System.out.println("Table \"" + tableName + "\" successfully created");
                 }
                 else {
@@ -234,71 +232,44 @@ public class test {
                     return;
                 }
             }
-            else{
+            else {
                 System.out.println("Unexpected error creating database \"" + DBName + "\"");
                 return;
             }
         }
+        System.out.println("____SERVICE AND DATABASE VERIFIED____");
+        System.out.println("____BEGINNING READ/WRITE TEST____");
 
-        // Check table existence
+        // Write to DB
+        ArrayList<GameData> gd = PgnParser.parse(filepath);
+        int unwritten = Database.writeDB(gd, database, username, password, 100).size();
+
+        if (unwritten != 0){
+            System.out.println("SQL Detected " + unwritten + " duplicates which were unwritten");
+        }
+        else {
+            System.out.println("All games written to database");
+        }
+        // Read DB and check consistency between records
+
+        // Delete database and stop service
+        System.out.println("____STOPPING SERVICE AND DELETING DATABASE____");
+        if (test.dropDatabase(url, DBName, username, password)){
+            System.out.println("Database deleted");
+        }
+        else {
+            System.out.println("Error deleting database");
+        }
+
+        if (test.stopService(serviceName)){
+            System.out.println("Service \'" + serviceName + "\' successfully stopped");
+        }
+        else {
+            System.out.println("Error stopping service \'" + serviceName + "\'.");
+        }
 
     }   
 
-    public static void serviceQueryExceptionTest(String serviceName){
-        boolean exists = false;
-
-        System.out.println("\nTEST ::: CHECK IF SERVICE EXISTS, THEN CHECK IF RUNNING");
-        try{
-            if (Database.doesServiceExist(serviceName)){
-                System.out.println("Service " + "\"" + serviceName + "\"" + " EXISTS in this system.");
-                exists = true;
-                try {
-                    if (Database.isServiceRunning(serviceName)){
-                        System.out.println("Service " + "\"" + serviceName + "\"" + " is currently RUNNING.");
-
-                    }
-                    else {
-                        System.out.println("Service " + "\"" + serviceName + "\"" + " is currently STOPPED.");
-                    }
-                }
-                catch(ChessServiceDoesNotExistException e){
-                    System.out.println("ERROR: Attempted to query a non-existent service");
-                }
-            }
-            else {
-                System.out.println("Service " + "\"" + serviceName + "\"" + " DOES NOT EXIST in this system.");
-            }
-        }
-        catch (ChessServiceException ex){
-            System.out.println("ERROR: Unexpected return code from querying service " + serviceName + ".");
-        }
-
-        if (!exists){
-            try {
-            System.out.println("\n\nTEST:::CHECKING IF NON-EXISTENT SERVICE IS RUNNING");
-            Database.isServiceRunning(serviceName);
-    
-            }
-            catch (ChessServiceException e){
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public static void serviceStartTest(String serviceName){
-        System.out.println("TEST ::: STARTING SERVICE:");
-        try{
-            Database.startService(serviceName);
-            System.out.println("SUCCESSFULLY STARTED " + serviceName + " SERVICE");
-        }
-        catch (ChessServiceDoesNotExistException e){
-            System.out.println("ERROR: SERVICE DOES NOT EXIST");
-        }
-        catch (ChessServiceException ex){
-            System.out.println("ERROR: UNEXPECTED ERROR ENCOUNTERED STARTING SERVICE.");
-            ex.printStackTrace();
-        }
-    }
 
     public static void databaseExistsTest(String url, String DBName, String username, String password){
         if (Database.doesDatabaseExist(url, DBName, username, password)){
@@ -309,12 +280,125 @@ public class test {
         }
     }
 
-    public static void tableExistsTest(String database, String tableName, String username, String password){
-        if (Database.doesTableExist(database, tableName, username, password)){
-            System.out.println("Table \"" + tableName + "\" EXISTS in database");
+
+    public static boolean stopService(String serviceName){
+        try{
+            Process process = new ProcessBuilder("sc", "stop", serviceName).start();
+            int exitCode = process.waitFor();
+
+            if (exitCode == 0){
+                return true;
+            }
+            else {
+                System.out.println("Unexpected exit code attempting to stop service");
+                return false;
+            }
+
+        }
+        catch (Exception e){
+            System.out.println("Error stopping service: " + e);
+            return false;
+        }
+    }
+
+    public static boolean dropDatabase(String url, String DBName, String username, String password){
+        try(Connection conn = DriverManager.getConnection(url + "/" + DBName, username, password)){
+            String query = "DROP DATABASE pgn_database";
+            PreparedStatement statement = conn.prepareStatement(query);
+            
+            statement.executeUpdate();
+            
+            return true;
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+    public static void databaseProfiler(String DBName, String serviceName, String tableName, String url, String username, String password){
+        if (!Database.doesServiceExist(serviceName)){
+            System.out.println("Service + \'" + serviceName + "\' not found on this system.");
+            return;
+        }
+
+        try{
+            if (!Database.isServiceRunning(serviceName)){
+                System.out.println("Service \'" + serviceName + "\' is not currently running");
+                if (Database.startService(serviceName)){
+                    System.out.println("Successfully started service");
+                }
+                else {
+                    System.out.println("Error starting service");
+                    return;
+                }
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return;
+        }
+    }
+
+    public static boolean pgnRegexTest(String filePath){
+        // (?m)^\[.*\](?:\n\[.*\])*\n\n((?:\d+\.[^\[]+\n?)+)
+        // String reg = "(?m)^\\[.*\\](?:\\r?\\n\\[.*\\])*[\\r?\\n]{2}((?:\\d+\\.[^\\[]+\\r?\\n?)+)";
+        String reg = "(((\\[.+?\\]\r\n)+?\r\n(([^\\[]+?\r\n)+?))(\r\n)?)+?";
+
+        Pattern pattern = Pattern.compile(reg);
+        Path pathObj = Path.of(filePath);
+        String pgnText = null;
+
+        try {
+            pgnText = Files.readString(pathObj);
+        }
+        catch (IOException e){
+            System.out.println("Exception occurred:" + e.getClass().getSimpleName());
+            return false;
+        }
+        
+        if (!(pgnText == null)){
+            
+            if (pattern.matcher(pgnText).matches()){
+                return true;
+            }
+            else {
+                return false;
+            }
+            
         }
         else {
-            System.out.println("Table \"" + tableName + "\" does NOT EXIST in database");
+            System.out.println("Null text provided, aborting with false");
+            return false;
+        }
+
+    }
+
+    public static ArrayList<Path> getFilePaths(String dirPath){
+        ArrayList<Path> returnPaths = new ArrayList<>();
+        try{
+            DirectoryStream<Path> stream = Files.newDirectoryStream(Path.of(dirPath));
+            for (Path pth : stream){
+                if (Files.isRegularFile(pth)){
+                    System.out.println(pth);
+                    returnPaths.add(pth);
+                }
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        return returnPaths;
+    }
+
+    public static String fileStringTest(String filepath){
+        try{
+            return Files.readString(Path.of(filepath));
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return "";
         }
     }
 }

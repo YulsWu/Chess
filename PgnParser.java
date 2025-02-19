@@ -24,6 +24,7 @@ public class PgnParser {
 
                 // Read and store meta data as one string block, separated by _ delimiter
                 line = f.readLine();
+                //System.out.println(line);
                 while (!(line.equals(""))){
                     meta_string.append(line);
                     meta_string.append("_");
