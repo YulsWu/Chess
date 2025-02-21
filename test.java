@@ -401,4 +401,66 @@ public class test {
             return "";
         }
     }
+
+    public static ArrayList<Long> generateWhitePawnMoveMask(){
+        
+        ArrayList<Long> wPawnMoveMask = new ArrayList<>();
+        int rank;
+        int file;
+
+        for (int i = 0; i < 64; i++){
+            // Calculating for white pawns
+            // Pawns cannot start on the first rank, have no valid moves on the last rank (Would have promoted)
+            if (i < 8 || i > 56){
+                wPawnMoveMask.add(0L);
+                continue;
+            }
+            else {
+                Long board = 0L;
+
+                // Pawn move 1 forward
+                int bitshift;
+                bitshift = 63 - (i + 8); // Calculate how many to shift down for the correct square
+                board |= (1L << bitshift);
+
+                // Add first pawn move 2 forward
+                if (8 <= i && i <= 15){
+                    bitshift = 63 - (i + 16);
+                    board |= (1L << (bitshift));
+                }
+
+                wPawnMoveMask.add(board);
+            } // end if
+        } // end for
+
+        return wPawnMoveMask;
+    }
+
+    public static void bitboardVisualize(Long bitboard){
+        StringBuilder sbRank = new StringBuilder();
+        StringBuilder sbFile = new StringBuilder();
+        String bitString = String.format("%64s", Long.toBinaryString(bitboard)).replace(' ', '0');
+
+        for (int i = 0; i < 64; i++){
+
+            if (i % 8 == 0){
+                sbRank.reverse().append("\n");
+                sbFile.append(sbRank.toString());
+                sbRank.setLength(0);
+            }
+
+            sbRank.append(bitString.charAt(i) + " ");
+        }
+        sbFile.append(sbRank.reverse().append('\n').toString());
+        
+        sbFile.reverse();
+        sbFile.append("\n");
+
+        System.out.print(sbFile.toString());
+
+    }
+
+    public static String longToString(Long num){
+        return String.format("%64s", Long.toBinaryString(num)).replace(' ', '0');
+    }
 }

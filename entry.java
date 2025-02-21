@@ -20,12 +20,17 @@ public class entry {
         String dirPath = "pgn/";
 
         //test.databaseInterfaceTest(url, database, DBName, tableName, serviceName, username, password, filepath);
-        try{
-            System.out.println(test.pgnRegexTest(filepath));
+        ArrayList<Long> bb = Board.generateRookMoveMask();
+
+        for (Long l : bb){
+            test.bitboardVisualize(l);
         }
-        catch (Throwable T){
-            System.out.println("Unchecked exception ocurred:" + T);
-        }
-    
+
+
+
+        
+
+
+
     }
 }
