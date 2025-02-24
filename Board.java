@@ -1,6 +1,57 @@
 import java.util.ArrayList;
+import java.util.ArrayDeque;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Board {
+    // 0 - empty
+    // 1 - Pawn
+    // 2 - Knight
+    // 3 - Bishop
+    // 4 - Rook
+    // 5 - Queen
+    // 6 - King
+
+    private Long bitState;
+    private int[][] boardState;
+    private Long[][] zobristHash;
+    private ArrayDeque<Move> playedMoves;
+
+    private ArrayList<Long> whitePawnMoveMask;
+    private ArrayList<Long> blackPawnMoveMask;
+    private ArrayList<Long> whitePawnAttackMask;
+    private ArrayList<Long> blackPawnAttackMask;
+    private ArrayList<Long> kingMoveMask;
+    private ArrayList<Long> queenMoveMask;
+    private ArrayList<Long> knightMoveMask;
+    private ArrayList<Long> bishopMoveMask;
+    private ArrayList<Long> rookMoveMask;
+
+    public Board(){
+        // Generate fresh moves queue
+        playedMoves = new ArrayDeque<>();
+
+        // Generate new zobrist hash
+        zobristHash = generateRandomZobrist();
+
+        // Fresh bitboard
+        bitState = 0xFFFF00000000FFFFL;
+
+        // Populate freshboard
+        boardState = generateFreshBoard();
+
+        whitePawnMoveMask = generateWhitePawnMoveMask();
+        blackPawnMoveMask = generateBlackPawnMoveMask();
+        whitePawnAttackMask = generateWhitePawnAttackMask();
+        blackPawnAttackMask = generateBlackPawnAttackMask();
+
+        kingMoveMask = generateKingMoveMask();
+        queenMoveMask = generateQueenMoveMask();
+        knightMoveMask = generateKnightMoveMask();
+        bishopMoveMask = generateBishopMoveMask();
+        rookMoveMask = generateRookMoveMask();
+    }
+
+
     public static ArrayList<Long> generateWhitePawnMoveMask(){
         
         ArrayList<Long> retMask = new ArrayList<>();
@@ -492,4 +543,81 @@ public class Board {
 
         return retMasks;
     }
+
+    public static Long boardToBitboard(int[][] board){
+        if (board.length != 8 || board[0].length != 8){
+            System.out.println("ERROR: Incompatible board format provided.");
+            return 0L;
+        }
+
+        Long retBoard = 0L;
+        int bitCount = 0;
+        // Bitcount increments for each inner loop (8x8 = 64) allowing it to index the 64bit bitboard properly
+        for (int i = 0; i < 8; i ++){
+            for (int j = 0; j < 8; j++){
+                // If there is any piece, shift a 1 down to that position in the bitboard
+                if (board[i][j] != 0){
+                    retBoard |= (1L << (63 - bitCount));
+                }
+                bitCount++;
+            }
+        }
+
+        return retBoard;
+    };
+
+    public void updateBitboard(){};
+
+    public static Long[][] generateRandomZobrist(){
+        Long[][] retArray = new Long[8][8];
+
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                retArray[i][j] = ThreadLocalRandom.current().nextLong();
+            }
+        }
+
+        return retArray;
+    };
+
+    public static int[][] generateFreshBoard(){
+        int[][] retArray = new int[8][8];
+
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                retArray[i][j] = 0;
+            }
+        }
+
+        // Fill pawns
+        for (int i = 0; i < 8; i++){
+            retArray[1][i] = 1;
+        }
+        for (int i = 0; i < 8; i++){
+            retArray[6][i] = -1;
+        }
+
+        // Set white major pieces
+        retArray[0][0] = 4;
+        retArray[0][1] = 2;
+        retArray[0][2] = 3;
+        retArray[0][3] = 5;
+        retArray[0][4] = 6;
+        retArray[0][5] = 3;
+        retArray[0][6] = 2;
+        retArray[0][7] = 4;
+
+        // Set black major pieces
+        retArray[7][0] = -4;
+        retArray[7][1] = -2;
+        retArray[7][2] = -3;
+        retArray[7][3] = -5;
+        retArray[7][4] = -6;
+        retArray[7][5] = -3;
+        retArray[7][6] = -2;
+        retArray[7][7] = -4;
+
+        return retArray;
+    };
+
 }

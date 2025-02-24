@@ -463,4 +463,36 @@ public class test {
     public static String longToString(Long num){
         return String.format("%64s", Long.toBinaryString(num)).replace(' ', '0');
     }
+
+
+    public static Long hyperbolicQuintessence(Long occupancy, Long moveMask, Long pieceMask){
+        Long retBits;
+
+        //retBits = ((occupancy & moveMask) - (2 * pieceMask)) ^ (Long.reverse(Long.reverse(occupancy & moveMask) - 2 * Long.reverse(pieceMask))) & moveMask;
+        retBits = ((occupancy & moveMask) - (2 * pieceMask)) ^ (Long.reverse(Long.reverse(occupancy & moveMask) - Long.reverse(2 *pieceMask))) & moveMask;
+        return retBits;
+    }
+
+    public static Long toFileMajor(Long rankMajorBitboard){
+        StringBuilder sb = new StringBuilder();
+
+        char[] longChars = test.longToString(rankMajorBitboard).toCharArray();
+
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                sb.append();
+            }
+        }
+    }
+
+    public static Long toRankMajor(Long fileMajorBitboard){
+        Long retBoard = 0L;
+
+        for (int i = 0; i < 8; i++){
+            long col = (fileMajorBitboard >> (i + 8)) & 0x0101010101010101L;
+            retBoard |= col << i;
+        }
+
+        return retBoard;
+    }
 }

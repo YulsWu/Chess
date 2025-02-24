@@ -19,16 +19,32 @@ public class entry {
         String filepath = "pgn/polgarj.pgn";
         String dirPath = "pgn/";
 
-        //test.databaseInterfaceTest(url, database, DBName, tableName, serviceName, username, password, filepath);
-        ArrayList<Long> bb = Board.generateRookMoveMask();
-
-        for (Long l : bb){
-            test.bitboardVisualize(l);
-        }
-
-
-
+        Long diagonalMask = 0x8040201008040201L;
+        Long transposed = test.toFileMajor(diagonalMask);
         
+        System.out.println(test.longToString(diagonalMask));
+        System.out.println(test.longToString(transposed));
+
+        //test.databaseInterfaceTest(url, database, DBName, tableName, serviceName, username, password, filepath);
+        //ArrayList<Long> bb = Board.generateRookMoveMask();
+
+        // int[][] occupancy = new int[8][8];
+        // for (int i = 0; i < 8; i++){
+        //     for (int j = 0; j < 8; j++){
+        //         occupancy[i][j] = 0;
+        //     }
+        // }
+        // occupancy[2][2] = 1;
+        // occupancy[6][6] = 1;
+        
+        
+        // Long pieceMask = (1L << (63 - 36));
+        // test.bitboardVisualize(diagonalMask);
+        // test.bitboardVisualize(pieceMask);
+        // Long occupancyMask = Board.boardToBitboard(occupancy);
+        // test.bitboardVisualize(occupancyMask);
+
+        // test.bitboardVisualize(test.hyperbolicQuintessence(occupancyMask, diagonalMask, pieceMask));
 
 
 
