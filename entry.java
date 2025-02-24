@@ -1,7 +1,5 @@
 
 import java.util.ArrayList;
-import java.io.BufferedReader;
-import java.io.FileReader;
 
 public class entry {
     public static void main(String[] args){
@@ -22,9 +20,24 @@ public class entry {
         //test.databaseInterfaceTest(url, database, DBName, tableName, serviceName, username, password, filepath);
         ArrayList<Long> bb = Board.generateRookMoveMask();
 
-        for (Long l : bb){
-            test.bitboardVisualize(l);
+        Long diagonalBit = 0x8040201008040201L;
+
+        test.bitboardVisualize(diagonalBit);
+
+        char[] diagonalArray = Long.toBinaryString(diagonalBit).toCharArray();
+
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                sb.append(diagonalArray[(j * 8) + i]);
+            }
         }
+
+        Long diagonalNew = Long.parseLong(sb.toString(), 2);
+
+        test.longToString(diagonalBit);
+        test.longToString(diagonalNew);
 
 
 
