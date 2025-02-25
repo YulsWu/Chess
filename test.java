@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.regex.*;
 import java.nio.file.*;
+import java.util.Random;
+
 
 public class test {
     public static void test1 (){
@@ -464,35 +466,118 @@ public class test {
         return String.format("%64s", Long.toBinaryString(num)).replace(' ', '0');
     }
 
-
     public static Long hyperbolicQuintessence(Long occupancy, Long moveMask, Long pieceMask){
         Long retBits;
 
-        //retBits = ((occupancy & moveMask) - (2 * pieceMask)) ^ (Long.reverse(Long.reverse(occupancy & moveMask) - 2 * Long.reverse(pieceMask))) & moveMask;
-        retBits = ((occupancy & moveMask) - (2 * pieceMask)) ^ (Long.reverse(Long.reverse(occupancy & moveMask) - Long.reverse(2 *pieceMask))) & moveMask;
+        retBits = ((occupancy & moveMask) - (2 * pieceMask)) ^ (Long.reverse(Long.reverse(occupancy & moveMask) - 2 * Long.reverse(pieceMask))) & moveMask;
+        //retBits = ((occupancy & moveMask) - (2 * pieceMask)) ^ (Long.reverse(Long.reverse(occupancy & moveMask) - Long.reverse(2 *pieceMask))) & moveMask;
         return retBits;
     }
 
-    public static Long toFileMajor(Long rankMajorBitboard){
+    // NEED TO OPTIMIZE if using every time we calculate moves, invokes stringbuilder, which may defeat the benefit from using bitboards
+    public static Long transposeBitboard(Long board){
         StringBuilder sb = new StringBuilder();
-
-        char[] longChars = test.longToString(rankMajorBitboard).toCharArray();
+        String longString = String.format("%64s", Long.toBinaryString(board)).replace(" ", "0");
+        char[] boardArray = longString.toCharArray();
 
         for (int i = 0; i < 8; i++){
             for (int j = 0; j < 8; j++){
-                sb.append();
+                sb.append(boardArray[j * 8 + i]);
             }
         }
+
+        return Long.parseUnsignedLong(sb.toString(), 2);
+    }
+    // Optimised version of transposeBitboard using bitwise operations and bitmasks
+    public static Long transpose(Long board){
+        Long retBoard = 0L;
+        int iteration = 0;
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                // Shift down to current index
+                int index = (j * 8) + i;
+                Long indexBit = (1L << index);
+
+                // Read board at index, 1 for something 0 for nothing
+                indexBit &= board;
+
+                // If we read a 1 at the index, shift down by that index and OR it, to add to retBoard
+                // If not, then we skip the index as it is already 0
+                if (indexBit != 0){
+                    retBoard |= (1L << iteration);
+                }
+                iteration ++;
+            }
+        }
+        return retBoard;
     }
 
-    public static Long toRankMajor(Long fileMajorBitboard){
-        Long retBoard = 0L;
+    public static Long queenMoveTest(Long occMask){
+        occMask = transposeBitboard(occMask);
+        Long retMask = 0L;
+        Long vertMask = 0b0001000000010000000100000001000000010000000100000001000000010000L;
+        Long horzMask = 0b0000000000000000000000001111111100000000000000000000000000000000L;
+        Long diagMask = 0x8040201008040201L;
+        Long antiDiagMask = 0b0000000100000010000001000000100000010000001000000100000010000000L;
+        Long pieceMask = (1L << 63 - 27);
 
-        for (int i = 0; i < 8; i++){
-            long col = (fileMajorBitboard >> (i + 8)) & 0x0101010101010101L;
-            retBoard |= col << i;
+        Long[] allMasks = new Long[]{vertMask, horzMask, diagMask, antiDiagMask, pieceMask};
+        for (int i = 0; i < allMasks.length; i++){
+            allMasks[i] = transposeBitboard(allMasks[i]);
         }
 
-        return retBoard;
+        for (int i = 0; i < (allMasks.length - 1); i++){
+            Long rayOcc = allMasks[i] & occMask;
+            Long rayMoves = hyperbolicQuintessence(rayOcc, allMasks[i], pieceMask);
+            retMask |= rayMoves;
+            System.out.println("ITERATION " + i + ":");
+            System.out.println("ray:");
+            bitboardVisualize(allMasks[i]);
+            System.out.println("rayOcc:");
+            bitboardVisualize(rayOcc);
+            System.out.println("Full rayMask");
+            bitboardVisualize(retMask);
+        }
+
+        retMask = transposeBitboard(retMask);
+
+        return retMask;
+    }
+   
+    public static void transpositionTest(int batchSize){
+        ArrayList<Long> longList = new ArrayList<>();
+        Random rand = new Random();
+
+        Long oldTime = 0L;
+        Long newTime = 0L;
+        
+        for (int i = 0; i < batchSize; i++){
+            longList.add(rand.nextLong());
+        }
+        Long startTime = System.nanoTime();
+        
+        for (Long bit : longList){
+            test.transpose(bit);
+            newTime += System.nanoTime() - startTime;
+        }
+        
+        startTime = System.nanoTime();
+        
+        for (Long bit : longList){
+            test.transposeBitboard(bit);
+            oldTime += System.nanoTime() - startTime;
+        }
+        
+       
+
+        System.out.println("transposeBitboard: Finished with avg " + oldTime/batchSize + "ms per call");
+        System.out.println("transpose: Finished with avg " + newTime/batchSize + "ms per call");
+
+        if (oldTime > newTime){
+            System.out.println("transpose is approx " + oldTime / newTime + " times faster than transposeBitboard");
+        }
+        else {
+            System.out.println("transposeBitboard is approx " + newTime/oldTime + " times faster than transpose");
+        }
     }
 }

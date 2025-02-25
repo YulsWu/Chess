@@ -620,4 +620,26 @@ public class Board {
         return retArray;
     };
 
+    public static Long transpose(Long board){
+        Long retBoard = 0L;
+        int iteration = 0;
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                // Shift down to current index
+                int index = (j * 8) + i;
+                Long indexBit = (1L << index);
+
+                // Read board at index, 1 for something 0 for nothing
+                indexBit &= board;
+
+                // If we read a 1 at the index, shift down by that index and OR it, to add to retBoard
+                // If not, then we skip the index as it is already 0
+                if (indexBit != 0){
+                    retBoard |= (1L << iteration);
+                }
+                iteration ++;
+            }
+        }
+        return retBoard;
+    }
 }

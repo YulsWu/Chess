@@ -16,59 +16,50 @@ public class entry {
         String password = "fUZ8&ejS4]";
         String filepath = "pgn/polgarj.pgn";
         String dirPath = "pgn/";
-
-        Long diagonalMask = 0x8040201008040201L;
-        Long transposed = test.toFileMajor(diagonalMask);
-        //test.databaseInterfaceTest(url, database, DBName, tableName, serviceName, username, password, filepath);
-        ArrayList<Long> bb = Board.generateRookMoveMask();
-
-        Long diagonalBit = 0x8040201008040201L;
-
-        test.bitboardVisualize(diagonalBit);
-
-        char[] diagonalArray = Long.toBinaryString(diagonalBit).toCharArray();
-
-        StringBuilder sb = new StringBuilder();
-
-        for (int i = 0; i < 8; i++){
-            for (int j = 0; j < 8; j++){
-                sb.append(diagonalArray[(j * 8) + i]);
-            }
-        }
-
-        Long diagonalNew = Long.parseLong(sb.toString(), 2);
-
-        test.longToString(diagonalBit);
-        test.longToString(diagonalNew);
-
-
-
         
-        System.out.println(test.longToString(diagonalMask));
-        System.out.println(test.longToString(transposed));
+        // Long diagonalMask = 0x8040201008040201L;
+        // Long eFileMask = 0x1010101010101010L;
 
-        //test.databaseInterfaceTest(url, database, DBName, tableName, serviceName, username, password, filepath);
-        //ArrayList<Long> bb = Board.generateRookMoveMask();
+        // Long moveMask = eFileMask;
 
-        // int[][] occupancy = new int[8][8];
-        // for (int i = 0; i < 8; i++){
-        //     for (int j = 0; j < 8; j++){
-        //         occupancy[i][j] = 0;
-        //     }
-        // }
-        // occupancy[2][2] = 1;
-        // occupancy[6][6] = 1;
-        
-        
-        // Long pieceMask = (1L << (63 - 36));
-        // test.bitboardVisualize(diagonalMask);
-        // test.bitboardVisualize(pieceMask);
-        // Long occupancyMask = Board.boardToBitboard(occupancy);
-        // test.bitboardVisualize(occupancyMask);
+        // Long vertMask = 0b0001000000010000000100000001000000010000000100000001000000010000L;
+        // Long horzMask = 0b0000000000000000000000001111111100000000000000000000000000000000L;
+        Long occMask = Board.boardToBitboard(Board.generateFreshBoard());
+        // // Long pieceMask = (1L << 63 - 27);
 
-        // test.bitboardVisualize(test.hyperbolicQuintessence(occupancyMask, diagonalMask, pieceMask));
+        // // Get occupancy along the vertical
+        // Long rayOcc = occMask & vertMask;
 
+        // // Transpose and calculate vertical rays
+        // Long validVerticalPaths = test.hyperbolicQuintessence(test.transposeBitboard(rayOcc), test.transposeBitboard(vertMask), test.transposeBitboard(pieceMask));
+        // validVerticalPaths = test.transposeBitboard(validVerticalPaths);
+        // System.out.println("Valid vertical moves:");
+        // test.bitboardVisualize(validVerticalPaths);
 
+        // // Get occupancy along the horizontal ray
+        // rayOcc = occMask & horzMask;
+
+        // // Transpose and calculate horizontal rays
+        // Long validHorizontalPaths = test.hyperbolicQuintessence(test.transposeBitboard(rayOcc), test.transposeBitboard(horzMask), test.transposeBitboard(pieceMask));
+        // validHorizontalPaths = test.transposeBitboard(validHorizontalPaths);
+        // System.out.println("Valid horizontal moves:");
+        // test.bitboardVisualize(validHorizontalPaths);
+
+        // Occmask in custom order (reverse LERF)
+        System.out.println(test.longToString(occMask));
+
+        // Occmask in LittleEndianRankFile
+        System.out.println(test.longToString(Long.reverse(occMask)));
+
+        System.out.println(test.longToString(test.transposeBitboard(Long.reverse(occMask))));
+        System.out.println(test.longToString(test.transposeBitboard(test.transposeBitboard(Long.reverse(occMask)))));
+
+        System.out.println(test.longToString(test.transpose(Long.reverse(occMask))));
+        System.out.println(test.longToString(test.transpose(test.transpose(Long.reverse(occMask)))));
+
+        test.transpositionTest(1000000);
+
+    
 
     }
 }
