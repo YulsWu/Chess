@@ -1,16 +1,16 @@
 public class Move {
-    private int[] origin;
-    private int[] destination;
-    private Piece target;
+    private int originRank;
+    private int originFile;
+    private int destRank;
+    private int destFile;
+    private int piece;
 
-    public Move(Piece target, int[] origin, int[] destination){
-        this.target = target;
-        this.origin = origin;
-        this.destination = destination;
-    }
-    public Move(Piece target, int xOrigin, int yOrigin, int xDest, int yDest){
-        this.target = target;
-        this.origin = new int[]{xOrigin, yOrigin};
-        this.destination = new int[]{xDest, yDest};
-    }
+    public Move(int pieceValue, int originBitIndex, int destinationBitIndex){
+        originRank = originBitIndex / 8;
+        originFile = originBitIndex % 8;
+        destRank = destinationBitIndex / 8;
+        destFile = destinationBitIndex % 8;
+
+        piece = pieceValue; 
+    };
 }
