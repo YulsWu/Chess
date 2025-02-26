@@ -620,6 +620,7 @@ public class Board {
         return retArray;
     };
 
+    // Optimized in terms of operation types, still high number of operations
     public static Long transpose(Long board){
         Long retBoard = 0L;
         int iteration = 0;
@@ -641,5 +642,38 @@ public class Board {
             }
         }
         return retBoard;
+    }
+
+    // occMask DOES NOT INCLUDE the piece in question
+    // rayMask is the specific ray we're calculating at the moment
+    // pieceMask is the location of the piece
+    // Provide RLERF encoded parameters, returns RLERF encoded mask
+    public static Long hypQuint(Long occMask, Long rayMask, Long pieceMask){
+        Long retBits;
+        // Reverse all provide bitmasks from RLERF --> LERF
+        occMask = Long.reverse(occMask);
+        rayMask = Long.reverse(rayMask);
+        pieceMask = Long.reverse(pieceMask);
+
+        // occMask becomes only the pieces in the path of the ray
+        occMask = occMask & rayMask;
+
+        //retBits = ((rayOcc & rayMask) - (2 * pieceMask)) ^ (Long.reverse(Long.reverse(rayOcc & rayMask) - 2 * Long.reverse(pieceMask))) & rayMask;
+        //retBits = ((rayOcc & rayMask) - (2 * pieceMask)) ^ (Long.reverse(Long.reverse(rayOcc & rayMask) - Long.reverse(2 *pieceMask))) & rayMask;
+        //retBits = ((rayMask & occMask) - (2 * pieceMask)) ^ Long.reverse(Long.reverse(rayMask & occMask) - Long.reverse(pieceMask * 2)) & rayMask;
+        Long forward = rayMask & occMask;
+        Long reverse = Long.reverse(forward);
+        forward = forward - (2 * pieceMask);
+        reverse = reverse - (2 * Long.reverse(pieceMask));
+
+        // System.out.println("rayMask: " + test.longToString(rayMask));
+        // System.out.println("occMask: " + test.longToString(occMask));
+        // System.out.println("pieceMask: " + test.longToString(pieceMask));
+
+        retBits = (forward ^ Long.reverse(reverse)) & rayMask;
+       
+        // Reverse final bitmask from LERF --> RLERF
+        return Long.reverse(retBits);
+        
     }
 }

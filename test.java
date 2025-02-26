@@ -466,12 +466,37 @@ public class test {
         return String.format("%64s", Long.toBinaryString(num)).replace(' ', '0');
     }
 
-    public static Long hyperbolicQuintessence(Long occupancy, Long moveMask, Long pieceMask){
+    // occMask DOES NOT INCLUDE the piece in question
+    // rayMask is the specific ray we're calculating at the moment
+    // pieceMask is the location of the piece
+    // Provide RLERF encoded parameters, returns RLERF encoded mask
+    public static Long hypQuint(Long occMask, Long rayMask, Long pieceMask){
         Long retBits;
+        // Reverse all provide bitmasks from RLERF --> LERF
+        occMask = Long.reverse(occMask);
+        rayMask = Long.reverse(rayMask);
+        pieceMask = Long.reverse(pieceMask);
 
-        retBits = ((occupancy & moveMask) - (2 * pieceMask)) ^ (Long.reverse(Long.reverse(occupancy & moveMask) - 2 * Long.reverse(pieceMask))) & moveMask;
-        //retBits = ((occupancy & moveMask) - (2 * pieceMask)) ^ (Long.reverse(Long.reverse(occupancy & moveMask) - Long.reverse(2 *pieceMask))) & moveMask;
-        return retBits;
+        // occMask becomes only the pieces in the path of the ray
+        occMask = occMask & rayMask;
+
+        //retBits = ((rayOcc & rayMask) - (2 * pieceMask)) ^ (Long.reverse(Long.reverse(rayOcc & rayMask) - 2 * Long.reverse(pieceMask))) & rayMask;
+        //retBits = ((rayOcc & rayMask) - (2 * pieceMask)) ^ (Long.reverse(Long.reverse(rayOcc & rayMask) - Long.reverse(2 *pieceMask))) & rayMask;
+        //retBits = ((rayMask & occMask) - (2 * pieceMask)) ^ Long.reverse(Long.reverse(rayMask & occMask) - Long.reverse(pieceMask * 2)) & rayMask;
+        Long forward = rayMask & occMask;
+        Long reverse = Long.reverse(forward);
+        forward = forward - (2 * pieceMask);
+        reverse = reverse - (2 * Long.reverse(pieceMask));
+
+        // System.out.println("rayMask: " + test.longToString(rayMask));
+        // System.out.println("occMask: " + test.longToString(occMask));
+        // System.out.println("pieceMask: " + test.longToString(pieceMask));
+
+        retBits = (forward ^ Long.reverse(reverse)) & rayMask;
+       
+        // Reverse final bitmask from LERF --> RLERF
+        return Long.reverse(retBits);
+        
     }
 
     // NEED TO OPTIMIZE if using every time we calculate moves, invokes stringbuilder, which may defeat the benefit from using bitboards
@@ -512,36 +537,22 @@ public class test {
         return retBoard;
     }
 
-    public static Long queenMoveTest(Long occMask){
-        occMask = transposeBitboard(occMask);
+    public static Long queenMoveTest(){
         Long retMask = 0L;
         Long vertMask = 0b0001000000010000000100000001000000010000000100000001000000010000L;
         Long horzMask = 0b0000000000000000000000001111111100000000000000000000000000000000L;
         Long diagMask = 0x8040201008040201L;
-        Long antiDiagMask = 0b0000000100000010000001000000100000010000001000000100000010000000L;
+        Long antiDMask = 0b0000001000000100000010000001000000100000010000001000000000000000L;
         Long pieceMask = (1L << 63 - 27);
+        Long occMask = 0b1111111111111111000000000000000000000000000000001111111111111111L;
+        Long[] allMasks = new Long[]{vertMask, horzMask, diagMask, antiDMask};
 
-        Long[] allMasks = new Long[]{vertMask, horzMask, diagMask, antiDiagMask, pieceMask};
-        for (int i = 0; i < allMasks.length; i++){
-            allMasks[i] = transposeBitboard(allMasks[i]);
+        for (Long ray : allMasks){
+            Long temp = test.hypQuint(occMask, ray, pieceMask);
+            retMask |= temp;
         }
-
-        for (int i = 0; i < (allMasks.length - 1); i++){
-            Long rayOcc = allMasks[i] & occMask;
-            Long rayMoves = hyperbolicQuintessence(rayOcc, allMasks[i], pieceMask);
-            retMask |= rayMoves;
-            System.out.println("ITERATION " + i + ":");
-            System.out.println("ray:");
-            bitboardVisualize(allMasks[i]);
-            System.out.println("rayOcc:");
-            bitboardVisualize(rayOcc);
-            System.out.println("Full rayMask");
-            bitboardVisualize(retMask);
-        }
-
-        retMask = transposeBitboard(retMask);
-
         return retMask;
+        
     }
    
     public static void transpositionTest(int batchSize){
