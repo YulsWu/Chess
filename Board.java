@@ -51,6 +51,7 @@ public class Board {
         rookMoveMask = generateRookMoveMask();
     }
 
+    // Generate non-sliding piece masks
 
     public static ArrayList<Long> generateWhitePawnMoveMask(){
         
@@ -260,58 +261,6 @@ public class Board {
         return retMasks;
     }
 
-    public static ArrayList<Long> generateQueenMoveMask(){
-        ArrayList<Long> retMasks = new ArrayList<>();
-        // For the rank and file, set 1s to the whole row and column
-
-        for (int i = 0; i < 64; i++){
-            int rank = i / 8;
-            int file = i % 8;
-            Long board = 0L;
-
-            int numRightMoves = 7 - file;
-            int numLeftMoves = file;
-            int numForwardMoves = 7 - rank;
-            int numBackMoves = rank;
-            // Number of possible diagnoal moves is the miniumum of the two directions,
-            // ie forward right moves is the lesser of forward or right moves
-            int numForwardRightMoves = numForwardMoves < numRightMoves ? numForwardMoves : numRightMoves;
-            int numForwardLeftMoves = numForwardMoves < numLeftMoves ? numForwardMoves : numLeftMoves;
-            int numBackRightMoves = numBackMoves < numRightMoves ? numBackMoves : numRightMoves;
-            int numBackLeftMoves = numBackMoves < numLeftMoves ? numBackMoves : numLeftMoves;
-
-            // Iterate through each of the remaining moves and flip the corresponding bit on the bitboard
-            for (int j = 0; j < numRightMoves; j++){
-                board |= (1L << 63 - (i + (j + 1)));
-            }
-            for (int j = 0; j < numLeftMoves; j++){
-                board |= (1L << 63 - (i - (j + 1)));
-            }
-            for (int j = 0; j < numForwardMoves; j++){
-                board |= (1L << 63 - (i + (8 * (j + 1))));
-            }
-            for (int j = 0; j < numBackMoves; j++){
-                board |= (1L << 63 - (i - (8 * (j + 1))));
-            }
-
-            for (int j = 0; j < numForwardRightMoves; j++){
-                board |= (1L << 63 - (i + ((8 + 1) * (j + 1))));
-            }
-            for (int j = 0; j < numForwardLeftMoves; j++){
-                board |= (1L << 63 - (i + ((8 - 1) * (j + 1))));
-            }
-            for (int j = 0; j < numBackRightMoves; j++){
-                board |= (1L << 63 - (i + ((-8 + 1) * (j + 1))));
-            }
-            for (int j = 0; j < numBackLeftMoves; j++){
-                board |= (1L << 63 - (i + ((-8 - 1) * (j + 1))));
-            }
-
-            retMasks.add(board);
-        }
-        return retMasks;
-    }
-
     public static ArrayList<Long> generateKnightMoveMask(){
         // Knight move cases
         // Corner - Only 2 moves of opposing direction
@@ -472,6 +421,152 @@ public class Board {
         return retMasks;
     }
 
+    // Generate sliding masks
+    // These are simply rays that flag the entire path
+
+    // Straight rays return 8 masks instead of 64
+    // Easy to modify later, simply add 8 copies of each rank/file instead of 1
+    public static ArrayList<Long> generateVerticalRayMask(){
+        ArrayList<Long> retMasks = new ArrayList<>();
+
+        for (int i = 0; i < 8; i++){
+            Long board = 0L;
+            for (int j = 0; j < 8; j++){
+                board |= (1L << 63 - ((j * 8) + i));
+            }
+            retMasks.add(board);
+        }
+
+        return retMasks;
+    }
+
+    public static ArrayList<Long> generateHorizontalRayMask(){
+        ArrayList<Long> retMasks = new ArrayList<>();
+
+        for (int i = 0; i < 8; i++){
+            Long board = (255L << (7 - i) * 8);
+            retMasks.add(board);
+        }
+
+        return retMasks;
+    }
+
+    // Diagonals return 64 masks again as diagonals change with both rank and file
+    public static ArrayList<Long> generateDiagonalRayMask(){
+        ArrayList<Long> retMasks = new ArrayList<>();
+
+        for (int i = 0; i < 64; i++){
+            // Fill in piece position
+            Long board = (1L << 63 - i);
+            int rank = i / 8;
+            int file = i % 8;
+
+            // Northeast
+            int NESquares;
+            int SWSquares;
+            if (rank < file){
+                NESquares = 7 - file;
+                SWSquares = rank;
+            }
+            else {
+                NESquares = 7 - rank;
+                SWSquares = file;
+            }
+
+            for (int j = 0; j < NESquares; j++){
+                board |= (1L << 63 - (i + ((8 + 1) * (j + 1))));
+            }
+            for (int j = 0; j < SWSquares; j++){
+                board |= (1L << 63 - (i + ((-8 - 1) * (j + 1))));
+            }
+
+            retMasks.add(board);
+        }
+
+        return retMasks;
+    }
+    
+    public static ArrayList<Long> generateAntiRayMask(){
+        ArrayList<Long> retMasks = new ArrayList<>();
+
+        for (int i = 0; i < 64; i++){
+            // Fill in piece position
+            Long board = (1L << 63 - i);
+            int rank = i / 8;
+            int file = i % 8;
+
+            // Northeast
+            int NWSquares = ((7 - rank) < file) ? (7 - rank) : file;
+            int SESquares = ((7 - file) < rank) ? (7 - file) : rank;
+            
+
+            for (int j = 0; j < NWSquares; j++){
+                board |= (1L << 63 - (i + ((8 - 1) * (j + 1))));
+            }
+            for (int j = 0; j < SESquares; j++){
+                board |= (1L << 63 - (i + ((-8 + 1) * (j + 1))));
+            }
+
+            retMasks.add(board);
+        }
+
+        return retMasks;
+    }
+    
+    // Unused, generate valid moves ray-by-ray with hypQuint()
+
+    public static ArrayList<Long> generateQueenMoveMask(){
+        ArrayList<Long> retMasks = new ArrayList<>();
+        // For the rank and file, set 1s to the whole row and column
+
+        for (int i = 0; i < 64; i++){
+            int rank = i / 8;
+            int file = i % 8;
+            Long board = 0L;
+
+            int numRightMoves = 7 - file;
+            int numLeftMoves = file;
+            int numForwardMoves = 7 - rank;
+            int numBackMoves = rank;
+            // Number of possible diagnoal moves is the miniumum of the two directions,
+            // ie forward right moves is the lesser of forward or right moves
+            int numForwardRightMoves = numForwardMoves < numRightMoves ? numForwardMoves : numRightMoves;
+            int numForwardLeftMoves = numForwardMoves < numLeftMoves ? numForwardMoves : numLeftMoves;
+            int numBackRightMoves = numBackMoves < numRightMoves ? numBackMoves : numRightMoves;
+            int numBackLeftMoves = numBackMoves < numLeftMoves ? numBackMoves : numLeftMoves;
+
+            // Iterate through each of the remaining moves and flip the corresponding bit on the bitboard
+            for (int j = 0; j < numRightMoves; j++){
+                board |= (1L << 63 - (i + (j + 1)));
+            }
+            for (int j = 0; j < numLeftMoves; j++){
+                board |= (1L << 63 - (i - (j + 1)));
+            }
+            for (int j = 0; j < numForwardMoves; j++){
+                board |= (1L << 63 - (i + (8 * (j + 1))));
+            }
+            for (int j = 0; j < numBackMoves; j++){
+                board |= (1L << 63 - (i - (8 * (j + 1))));
+            }
+
+            for (int j = 0; j < numForwardRightMoves; j++){
+                board |= (1L << 63 - (i + ((8 + 1) * (j + 1))));
+            }
+            for (int j = 0; j < numForwardLeftMoves; j++){
+                board |= (1L << 63 - (i + ((8 - 1) * (j + 1))));
+            }
+            for (int j = 0; j < numBackRightMoves; j++){
+                board |= (1L << 63 - (i + ((-8 + 1) * (j + 1))));
+            }
+            for (int j = 0; j < numBackLeftMoves; j++){
+                board |= (1L << 63 - (i + ((-8 - 1) * (j + 1))));
+            }
+
+            retMasks.add(board);
+        }
+        return retMasks;
+    }
+
     public static ArrayList<Long> generateBishopMoveMask(){
         ArrayList<Long> retMasks = new ArrayList<>();
 
@@ -544,6 +639,8 @@ public class Board {
         return retMasks;
     }
 
+    //
+
     public static Long boardToBitboard(int[][] board){
         if (board.length != 8 || board[0].length != 8){
             System.out.println("ERROR: Incompatible board format provided.");
@@ -565,8 +662,6 @@ public class Board {
 
         return retBoard;
     };
-
-    public void updateBitboard(){};
 
     public static Long[][] generateRandomZobrist(){
         Long[][] retArray = new Long[8][8];

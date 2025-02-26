@@ -591,4 +591,23 @@ public class test {
             System.out.println("transposeBitboard is approx " + newTime/oldTime + " times faster than transpose");
         }
     }
+
+    // Expensive generation of masks at runtime
+    public static void rayCombinationTest(int position){
+        ArrayList<Long> vertMasks = Board.generateVerticalRayMask();
+        ArrayList<Long> horzMasks = Board.generateHorizontalRayMask();
+        ArrayList<Long> diagMasks = Board.generateDiagonalRayMask();
+        ArrayList<Long> antiMasks = Board.generateAntiRayMask();
+
+        Long combinedRays = 0L;
+        combinedRays |= vertMasks.get(position%8);
+        combinedRays |= horzMasks.get(position/8);
+        combinedRays |= diagMasks.get(position);
+        combinedRays |= antiMasks.get(position);
+
+        test.bitboardVisualize(combinedRays);
+    }
+
+
+
 }

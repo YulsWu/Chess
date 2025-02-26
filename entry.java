@@ -28,12 +28,8 @@ public class entry {
         Long occMask = Board.boardToBitboard(Board.generateFreshBoard());
         Long pieceMask = (1L << 63 - 27);
 
-        Long board = 0L;
-
-        board |= test.hypQuint(occMask, diagMask, pieceMask);
-        board |= test.hypQuint(occMask, antiDMask, pieceMask);
-
-        test.bitboardVisualize(test.queenMoveTest());
+        System.out.println();
+        test.rayCombinationTest(20);
 
 
         // // Get occupancy along the vertical
