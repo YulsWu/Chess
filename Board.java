@@ -3,6 +3,11 @@ import java.util.ArrayDeque;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Board {
+    // Any state with W_ or B_ signifies they LOST due to the reason
+    // ie W_MATE means that White was Mated
+    public enum BOARD_STATE {
+        IN_PLAY, W_CHECK, B_CHECK, W_MATE, B_MATE, REPEAT_DRAW, MUTUAL_DRAW, STALEMATE, MATERIAL_DRAW, FIFTY_DRAW, W_RESIGN, B_RESIGN, W_TIME, B_TIME
+    }
     // 0 - empty
     // 1 - Pawn
     // 2 - Knight
@@ -11,20 +16,61 @@ public class Board {
     // 5 - Queen
     // 6 - King
 
-    private Long bitState;
-    private int[][] boardState;
-    private Long[][] zobristHash;
+    /*
+     * Game loop:
+     * - Initialize
+     * - Check board state (Check, checkmate, turn, Insuff. Mat., 50 move rule, 
+     * - Play move
+     * - Check board state
+     * - Play move, etc
+     * 
+     * Insufficient Material:
+     * - King vs King
+     * - King, Knight vs King
+     * - King, Bishop vs King
+     * - King, knight vs King, knight
+     */
+    
+
+    private Long bitState; // Current occupancy map for the whole board
+    private int[][] boardState; // True board representation
+    private Long[][] zobristHash; // Zobrist hash
     private ArrayDeque<Move> playedMoves;
 
-    private ArrayList<Long> whitePawnMoveMask;
-    private ArrayList<Long> blackPawnMoveMask;
-    private ArrayList<Long> whitePawnAttackMask;
-    private ArrayList<Long> blackPawnAttackMask;
-    private ArrayList<Long> kingMoveMask;
-    private ArrayList<Long> queenMoveMask;
-    private ArrayList<Long> knightMoveMask;
-    private ArrayList<Long> bishopMoveMask;
-    private ArrayList<Long> rookMoveMask;
+    private boolean whitesTurn = true;
+    private BOARD_STATE state = BOARD_STATE.IN_PLAY;
+
+    public static final ArrayList<Long> W_PAWN_MOVE;
+    public static final ArrayList<Long> B_PAWN_MOVE;
+    public static final ArrayList<Long> W_PAWN_ATTACK;
+    public static final ArrayList<Long> B_PAWN_ATTACK;
+    public static final ArrayList<Long> KING_MOVE;
+    public static final ArrayList<Long> KNIGHT_MOVE;
+    
+    public static final ArrayList<Long> HORIZONTAL_RAY;
+    public static final ArrayList<Long> VERTICAL_RAY;
+    public static final ArrayList<Long> DIAGONAL_MOVE;
+    public static final ArrayList<Long> ANTI_MOVE;
+
+    // Static initialization of move and ray masks
+    static {
+        W_PAWN_MOVE = generateWhitePawnMoveMask();
+        B_PAWN_MOVE = generateBlackPawnMoveMask();
+        W_PAWN_ATTACK = generateWhitePawnAttackMask();
+        B_PAWN_ATTACK = generateBlackPawnAttackMask();
+        KING_MOVE = generateKingMoveMask();
+        KNIGHT_MOVE = generateKnightMoveMask();
+
+        HORIZONTAL_RAY = generateHorizontalRayMask();
+        VERTICAL_RAY = generateVerticalRayMask();
+        DIAGONAL_MOVE = generateDiagonalRayMask();
+        ANTI_MOVE = generateAntiRayMask();
+    }
+
+    public final Long W_CASTLE_SHORT = 0b0000011000000000000000000000000000000000000000000000000000000000L;
+    public final Long B_CASTLE_SHORT = 0b0000000000000000000000000000000000000000000000000000000000000110L;
+    public final Long W_CASTLE_LONG = 0b0011000000000000000000000000000000000000000000000000000000000000L;
+    public final Long B_CASTLE_LONG = 0b0000000000000000000000000000000000000000000000000000000000110000L;
 
     public Board(){
         // Generate fresh moves queue
@@ -38,17 +84,6 @@ public class Board {
 
         // Populate freshboard
         boardState = generateFreshBoard();
-
-        whitePawnMoveMask = generateWhitePawnMoveMask();
-        blackPawnMoveMask = generateBlackPawnMoveMask();
-        whitePawnAttackMask = generateWhitePawnAttackMask();
-        blackPawnAttackMask = generateBlackPawnAttackMask();
-
-        kingMoveMask = generateKingMoveMask();
-        queenMoveMask = generateQueenMoveMask();
-        knightMoveMask = generateKnightMoveMask();
-        bishopMoveMask = generateBishopMoveMask();
-        rookMoveMask = generateRookMoveMask();
     }
 
     // Generate non-sliding piece masks
@@ -513,6 +548,8 @@ public class Board {
         return retMasks;
     }
     
+
+    // White/black en pessant, White/black king castling
     // Unused, generate valid moves ray-by-ray with hypQuint()
 
     public static ArrayList<Long> generateQueenMoveMask(){
@@ -675,6 +712,8 @@ public class Board {
         return retArray;
     };
 
+    public void updateZobrist(int pieceValue, int bitIndex){}
+
     public static int[][] generateFreshBoard(){
         int[][] retArray = new int[8][8];
 
@@ -745,7 +784,7 @@ public class Board {
     // Provide RLERF encoded parameters, returns RLERF encoded mask
     public static Long hypQuint(Long occMask, Long rayMask, Long pieceMask){
         Long retBits;
-        // Reverse all provide bitmasks from RLERF --> LERF
+        // Reverse all provided bitmasks from RLERF --> LERF
         occMask = Long.reverse(occMask);
         rayMask = Long.reverse(rayMask);
         pieceMask = Long.reverse(pieceMask);
@@ -770,5 +809,428 @@ public class Board {
         // Reverse final bitmask from LERF --> RLERF
         return Long.reverse(retBits);
         
+    }
+
+    // Move generation for FORCING check states
+    // Must also account for Self-checking as this is a move generator
+    // Returns list of valid piece moves as int[]{piece, destination}
+    // If no moves exist, then checkmate
+    public ArrayList<int[]> generateCheckEvasionMoves(int playerSign){
+        ArrayList<int[]> retArray = new ArrayList<>();
+        int kingPos = findKingBitPosition(playerSign);
+        ArrayList<int[]> checks = getOpponentChecks(playerSign);
+        int playerKing = (playerSign > 0) ? 6 : -6;
+
+
+        // Iterate through all possible king moves to find ones that evade check
+        // (KingMove XOR FriendlyPieceMask) XOR OpponentVision
+        // King moves already account for opponent vision and friendly occupancy
+        long kingMoves = generatePieceAttackMask(playerKing, kingPos);
+        ArrayList<Integer> validSquares = getSetBitPositions(kingMoves);
+        for (int i : validSquares){
+            retArray.add(new int[]{6, i});
+        }
+
+        // Return king moves if double+ check, otherwise add other piece moves to king moves for check escape
+        if (checks.size() > 1){
+            return retArray;
+        }
+
+        // SINGLE check:
+        // Find Enemy pieces and paths checking king
+        // checks should only contain ONE check at this point
+        int checkingPiece = checks.get(0)[0];
+        int checkingPos = checks.get(0)[1];
+
+        // Differentiate between Sliding vs non pieces.
+            // Non-sliding pieces MUST be captured, their piecemask is the only valid evasion square
+            // Sliding pieces can be blocked along their attack path or captured
+            // Sliding pieces are > 2
+        long evasionMask = (Math.abs(checkingPiece) > 2) ? generateEvasionPath(checkingPos, kingPos) : (1L << (63 - checkingPos));
+        // Remove king from attack mask, friendly pieces can't capture king to block check
+
+        // Iterate through players pieces to find ones that can block or capture
+        int evasionPiece;
+        int square;
+        long combinedMask;
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                evasionPiece = this.boardState[i][j];
+                square = (i * 8) + j;
+
+                // Ensuring we find the same players pieces
+                if ((evasionPiece * playerSign) > 0){
+                    // Find where along the attack path a piece could block
+                    combinedMask = generatePieceAttackMask(evasionPiece, square) & evasionMask;
+                    if (combinedMask > 0){
+                        for (int pos : getSetBitPositions(combinedMask)){
+                            // Ensure moves don't result in self-check through discovered check
+                            int[][] candidateBoard = deepCloneBoard(this.boardState);
+                            candidateBoard[i][j] = 0;
+                            candidateBoard[pos / 8][pos % 8] = evasionPiece;
+                            if (getOpponentChecks(playerSign, candidateBoard).size() == 0){
+                                retArray.add(new int[] {evasionPiece, pos});
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return retArray;
+    }
+
+    public long generatePlayerPieceMask(int piece){
+        long retMask = 0L;
+        //Rank
+        for (int i = 0; i < 8; i++){
+            //File
+            for (int j = 0; j < 8; j++){
+                if (piece < 0){
+                    if (this.boardState[i][j] < 0){
+                        int bitPos = (i * 8) + j;
+                        retMask |= (1L << (63 - bitPos));
+                    }
+                }
+                else {
+                    if (this.boardState[i][j] > 0){
+                        int bitPos = (i * 8) + j;
+                        retMask |= (1L << (63 - bitPos));
+                    }
+                }
+            }
+        }
+
+        return retMask;
+    }
+
+    public ArrayList<int[]> getOpponentChecks(int playerSign){
+        ArrayList<int[]> retChecks = new ArrayList<>();
+        long kingMask = (1L << (63 - findKingBitPosition(playerSign)));
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                int square = (i * 8) + j;
+                // If player and piece are opponents
+                // Piece sign never changes throughout, so only one of these ORs will ever be true
+                if (((this.boardState[i][j] < 0) && (playerSign > 0)) || ((this.boardState[i][j] > 0) && (playerSign < 0))){
+                    if ((kingMask & generatePieceAttackMask(this.boardState[i][j], square)) != 0){
+                        retChecks.add(new int[]{playerSign, square});
+                    }
+                }
+            }
+        }
+        return retChecks;
+    }
+
+    // Overloaded parameters to check for checks in candidate board states, not the current board state
+    public ArrayList<int[]> getOpponentChecks(int playerSign, int[][] boardState){
+        ArrayList<int[]> retChecks = new ArrayList<>();
+        long kingMask = (1L << (63 - findKingBitPosition(playerSign)));
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                int square = (i * 8) + j;
+                // If player and piece are opponents
+                // Piece sign never changes throughout, so only one of these ORs will ever be true
+                if (((boardState[i][j] < 0) && (playerSign > 0)) || ((boardState[i][j] > 0) && (playerSign < 0))){
+                    if ((kingMask & generatePieceAttackMask(boardState[i][j], square)) != 0){
+                        retChecks.add(new int[]{playerSign, square});
+                    }
+                }
+            }
+        }
+        return retChecks;
+    }
+
+    public int findKingBitPosition(int playerSign){
+        int kingInt = (playerSign > 0) ? 6 : -6;
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                if (this.boardState[i][j] == kingInt){
+                    return (i * 8) + j;
+                }
+            }
+        }
+        // returns negative if not found
+        return -1;
+    }
+
+    // generate ATTACK masks accounting for blockers
+    public long generateValidStraightRayMask(int position){
+        long retBoard = 0L;
+        long pieceMask = (1L << (63 - position));
+
+        retBoard |= hypQuint(this.bitState, HORIZONTAL_RAY.get(position / 8), pieceMask);
+        retBoard |= hypQuint(this.bitState, VERTICAL_RAY.get(position % 8), pieceMask);
+
+        return retBoard;
+    }
+
+    public long generateValidDiagonalRayMask(int position){
+        long retBoard = 0L;
+        long pieceMask = (1L << (63 - position));
+
+        retBoard |= hypQuint(this.bitState, DIAGONAL_MOVE.get(position), pieceMask);
+        retBoard |= hypQuint(this.bitState, ANTI_MOVE.get(position), pieceMask);
+
+        return retBoard;
+    }
+
+    public long generateValidAllRayMask(int position){
+        long retBoard = generateValidStraightRayMask(position);
+        retBoard |= generateValidDiagonalRayMask(position);
+
+        return retBoard;
+    }
+
+
+    // Checks for:
+    //  - Piece attack pattern given origin square
+    //  - Sliding piece blocking (hypQuint)
+    //  - Opponent occupancy in attacked square (Mask comparison for non-sliders, hypQuint for sliding pieces)
+    //  - Friendly occupancy invalidating self-captures
+    // Does not check for:
+    //  - Forcing moves (Different method is invoked to find valid check escape moves)
+    //  - Self-check (Should check right before Move object creation)
+    public long generatePieceAttackMask(int piece, int origin){
+        long retMask = 0L;
+        long friendlyOcc = (piece < 0) ? generatePlayerPieceMask(-1) : generatePlayerPieceMask(1);
+        long opponentOcc = (piece < 0) ? generatePlayerPieceMask(1) : generatePlayerPieceMask(-1);
+        long opponentVision = (piece < 0) ? generatePieceVision(1) : generatePieceVision(-1);
+        long temp;
+        switch (Math.abs(piece)){
+            case 1:
+                // Pawn vision vs Attack is also different like Kings
+                // Attacks: Requires occupancy check at destination square
+                // Vision: No occupancy check, Possible attack moves on a square next turn if king moves into that square
+                if (piece > 0){
+                    // Valid attacks are ones with opponents on the destination square
+                    retMask |= (W_PAWN_ATTACK.get(origin) & opponentOcc);
+                }
+                else {
+                    retMask |= (B_PAWN_ATTACK.get(origin) & opponentOcc);
+                }
+                break;
+            case 2:
+                // Invaldiate self captures
+                retMask |= (KNIGHT_MOVE.get(origin) ^ (friendlyOcc & KNIGHT_MOVE.get(origin)));
+                break;
+            case 3:
+                // Invalidate bishop self-captures
+                temp = generateValidDiagonalRayMask(origin);
+                retMask |= (temp ^ (friendlyOcc & temp));
+                break;
+            case 4: 
+                // Invalidate rook self-capture
+                temp = generateValidStraightRayMask(origin);
+                retMask |= (generateValidStraightRayMask(origin) ^ (friendlyOcc & temp));
+                break;
+            case 5:
+                // Queen
+                temp = generateValidAllRayMask(origin);
+                retMask |= (generateValidAllRayMask(origin) ^ (friendlyOcc & temp));
+                break;
+            case 6:
+                // King - (Attack only, can never check king with king)
+                // As attack mask: Vision avoidance, move pattern, friendly occupancy
+                // As vision mask: NO vision avoidance, move pattern, no friendly occupancy (if friendly then not enemy king/castling)
+                retMask |= (KING_MOVE.get(origin) ^ friendlyOcc) ^ opponentVision;
+                break;
+
+        }
+        return retMask;
+    }
+
+    // Returns bit position in RLERF encoding
+    public static ArrayList<Integer> getSetBitPositions(long bitboard){
+        ArrayList<Integer> retArray = new ArrayList<>();
+        while (bitboard != 0){
+            int index = Long.numberOfTrailingZeros(bitboard);
+            // 63 - index for RLERF
+            retArray.add(63 - index);
+            bitboard &= bitboard - 1;
+        }
+
+        return retArray;
+    }
+
+    // Vision doesn't necessarily grant validity
+    // Vision == threat of capture == attacks
+    // Use for move validity (king move check evasion, castling, self-checking moves )
+    public long generatePieceVision(int playerSign){
+        long retMask = 0L;
+
+        // Possible attack moves for all pieces constitute vision on the king and castling path
+        // No self-check avoidance required
+        // For king: No vision avoidance required
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                int bitInd = (i * 8) + j;
+                int piece = this.boardState[i][j];
+                if ((playerSign > 0) && (piece > 0)){
+                    switch (piece){
+                        // Pawn attack
+                        case 1: 
+                            // No occupancy check required for vision
+                            // If a piece exists, the enemy king will never be there, if it doesn't exist, the square is in vision
+                            // If a piece exists, they cannot castle anyways, if it doesn't exist, they can't castle as its in vision
+                            retMask |= W_PAWN_ATTACK.get(bitInd);
+                            break;
+                        // Knight
+                        case 2:
+                            // No need for occupancy check once again
+                            retMask |= KNIGHT_MOVE.get(bitInd);
+                            break;
+                        // Bishop
+                        case 3:
+                            // Sliding pieces still require ray blocker calculations
+                            // However don't require piece checking at destination
+                            retMask |= generateValidDiagonalRayMask(bitInd);
+                            break;
+                        // Rook
+                        case 4:
+                            retMask |= generateValidStraightRayMask(bitInd);
+                            break;
+                        // Queen
+                        case 5:
+                            retMask |= generateValidAllRayMask(bitInd);
+                            break;
+                        // King
+                        case 6:
+                            // No need to check for opponent vision, 
+                            // no need to check for occupancy for same reasons
+                            retMask |= KING_MOVE.get(bitInd);
+                            break;
+                    } 
+                    // KINGS vision counts as vision
+                }
+                // Same logic for Black vision
+                else if ((playerSign < 0) && (piece < 0)){
+                    switch (piece){
+                        case -1: 
+                            retMask |= B_PAWN_ATTACK.get(bitInd);
+                            break;
+                        case -2:
+                            retMask |= KNIGHT_MOVE.get(bitInd);
+                            break;
+                        case -3:
+                            retMask |= generateValidDiagonalRayMask(bitInd);
+                            break;
+                        case -4:
+                            retMask |= generateValidStraightRayMask(bitInd);
+                            break;
+                        case -5:
+                            retMask |= generateValidAllRayMask(bitInd);
+                            break;
+                        case -6:
+                            retMask |= KING_MOVE.get(bitInd);
+                            break;
+                    } 
+                }
+            }
+        }
+        return retMask;
+    }
+
+    public long getBitState(){
+        return this.bitState;
+    }
+
+    public int[][] getBoard(){
+        int[][] retBoard = new int[8][8];
+
+        for (int i = 0; i < 8; i++){
+            retBoard[i] = this.boardState[i].clone();
+        }
+        return retBoard;
+    }
+    
+    public static long shift(long board, int direction){
+        return (direction > 0) ? (board >>> direction) : (board << -direction);
+    }
+
+    public static long generateEvasionPath(int origin, int destination){
+        int direction;
+
+        int originRank = origin / 8;
+        int originFile = origin % 8;
+        int originDiag = origin % 9;
+        int originAnti = origin% 7;
+        int destRank = destination / 8;
+        int destFile = destination % 8;
+        int destDiag = destination % 9;
+        int destAnti = destination % 7;
+
+        // Ensure two points lie on the same ray
+        if (!((originRank == destRank) || (originFile == destFile) || (originAnti == destAnti) || (originDiag == destDiag))){
+            System.out.print("Invalid origin and destination squares for evasion path generation");
+            return 0L;
+        }
+
+        // Straight path
+        if (originRank == destRank){
+            // Right straight path
+            if (destination > origin){
+                direction = 1;
+            }
+            // left straight path
+            else {
+                direction = -1;
+            }
+        }
+        else if (originFile == destFile){
+            // Straight up
+            if (destination > origin){
+                direction = 8;
+            }
+            // Straight down
+            else {
+                direction = -8;
+            }
+        }
+        // Up-right diagonal
+        else if ((destRank > originRank) && (destFile > originFile)){
+            direction = 9;
+        }
+        // Up-left diagonal
+        else if ((destRank > originRank) && (destFile < originFile)){
+            direction = 7;
+        }
+        // Down-right diagonal
+        else if ((destRank < originRank) && (destFile > originFile)){
+            direction = -7;
+        }
+        // Down-left diagonal
+        // Just an 'else' to satisfy the compiler
+        else {
+            direction = -9;
+        }
+
+        long pos = (1L << (63 - origin));
+        long retMask = (1L << (63 - origin));
+        long endMask = (1L << (63 - destination));
+
+        while ((pos = shift(pos, direction)) != endMask){
+            retMask |= pos;
+        }
+
+        return retMask;
+    }
+
+    public static int[][] deepCloneBoard(int[][] board){
+        int[][] retBoard = new int[8][8];
+
+        for (int i = 0; i < 8; i++){
+            retBoard[i] = board[i].clone();
+        }
+
+        return retBoard;
+    }
+
+
+    // TEST FUNCTION REMOVE AFTER
+    public void setBoard(int[][] newBoard){
+        this.boardState = newBoard;
+    }
+    public void setOcc(long occ){
+        this.bitState = occ;
     }
 }

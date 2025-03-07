@@ -29,8 +29,38 @@ public class entry {
         Long pieceMask = (1L << 63 - 27);
 
         System.out.println();
-        test.rayCombinationTest(20);
 
+        Board testBoard = new Board();
+        int[][] newBoard = new int[8][8];
+
+        //newBoard[2][3] = 2;
+        newBoard[1][5] = 3;
+        newBoard[5][2] = -5;
+        newBoard[6][3] = -1;
+        
+        // for (int i = 0; i < 8; i++){
+        //     newboard[1][i] = 0;
+        //     newboard[6][i] = 0;
+        // }
+
+        // testBoard.setBoard(newBoard);
+        // testBoard.setOcc(Board.boardToBitboard(newBoard));
+        // // test.bitboardVisualize(testBoard.boardToBitboard(newboard));
+        // test.boardVisualize(newBoard);
+
+        // test.bitboardVisualize(testBoard.generatePieceVision(-1));
+        // test.bitboardVisualize(testBoard.generatePieceVision(1));
+
+        int from = 32;
+        int to = 36;
+        long fromMask = (1L << (63 - from));
+        long toMask = (1L << (63 - to));
+        System.out.println("FROM:");
+        test.bitboardVisualize(fromMask);
+        System.out.println("TO");
+        test.bitboardVisualize(toMask);
+
+        
 
         // // Get occupancy along the vertical
         // Long rayOcc = occMask & vertMask;

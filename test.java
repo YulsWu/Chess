@@ -18,9 +18,28 @@ import java.io.InputStreamReader;
 import java.util.regex.*;
 import java.nio.file.*;
 import java.util.Random;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class test {
+
+    public static final Map<Integer, String> CHESS_EMOJI = new HashMap<>(){{
+        put(-6, "\u2654");
+        put(-5, "\u2655");
+        put(-4, "\u2656");
+        put(-3, "\u2657");
+        put(-2, "\u2658");
+        put(-1, "\u2659");
+        put(0, " ");
+        put(1, "\u265F");
+        put(2, "\u265E");
+        put(3, "\u265D");
+        put(4, "\u265C");
+        put(5, "\u265B");
+        put(6, "\u265A");
+    }};
+
     public static void test1 (){
         String filepath = "test_games.pgn";
         StringBuilder sb = new StringBuilder();
@@ -608,6 +627,182 @@ public class test {
         test.bitboardVisualize(combinedRays);
     }
 
+    public static void boardVisualize(int[][] board){
+        StringBuilder sbInner = new StringBuilder();
+        StringBuilder sbOuter = new StringBuilder();
 
+
+        for (int i = 0; i < 8; i++){
+            sbInner.setLength(0);
+            sbInner.append((i + 1) + " ");
+            for (int j = 0; j < 8; j++){
+                sbInner.append("[" + CHESS_EMOJI.get(board[i][j]) + " ]");
+            }
+            sbInner.append("\n");
+            sbOuter.insert(0, sbInner.toString());
+            String temp = sbOuter.toString();
+        }
+        sbOuter.append("   A   B   C   D   E   F   G   H");
+        System.out.print(sbOuter.toString());
+    }
+
+    public static void countCheckTest(){
+        Board myBoard = new Board();
+        int[][] temp = new int[][]{
+            {0,-6, 0, 0, 0, 0, 0, 0},
+            {1, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 5, 0, 0, 0, 0},
+            {0, 0, 0, 0,-5, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0,-3, 0},
+            {0, 0, 0, 0, 0,-1, 0, 0},
+            {0, 0, 0, 0, 6, 0, 0, 0},
+            {0, 4, 0, 0, 0, 0, 0, 0},
+        };
+
+        int[][] newBoard = pieceBoardMaker(temp);
+        myBoard.setBoard(newBoard);
+        myBoard.setOcc(Board.boardToBitboard(newBoard));
+
+        System.out.println();
+        test.boardVisualize(myBoard.getBoard());
+        System.out.println();
+        System.out.println("Checks on white should be 2: Computed value is: " + myBoard.getOpponentChecks(1));
+        System.out.println("Checks on black should be 3: Computed value is: " + myBoard.getOpponentChecks(-1));
+        
+    }
+
+    // A somewhat more 
+    public static int[][] pieceBoardMaker(int[][] temp){
+        int[][] retBoard = new int[8][8];
+        
+
+        for (int i = 0; i < 8; i++){
+            retBoard[i] = temp[(7 - i)];
+        }
+
+        return retBoard;
+    }
+
+    public static long shift(long board, int direction){
+        return (direction > 0) ? (board >>> direction) : (board << -direction);
+    }
+
+    public static long generateEvasionPath(int origin, int destination){
+        int direction;
+
+        int originRank = origin / 8;
+        int originFile = origin % 8;
+        int originDiag = origin % 9;
+        int originAnti = origin% 7;
+        int destRank = destination / 8;
+        int destFile = destination % 8;
+        int destDiag = destination % 9;
+        int destAnti = destination % 7;
+
+        // Ensure two points lie on the same ray
+        if (!((originRank == destRank) || (originFile == destFile) || (originAnti == destAnti) || (originDiag == destDiag))){
+            System.out.print("Invalid origin and destination squares for evasion path generation");
+            return 0L;
+        }
+
+        // Straight path
+        if (originRank == destRank){
+            // Right straight path
+            if (destination > origin){
+                direction = 1;
+            }
+            // left straight path
+            else {
+                direction = -1;
+            }
+        }
+        else if (originFile == destFile){
+            // Straight up
+            if (destination > origin){
+                direction = 8;
+            }
+            // Straight down
+            else {
+                direction = -8;
+            }
+        }
+        // Up-right diagonal
+        else if ((destRank > originRank) && (destFile > originFile)){
+            direction = 9;
+        }
+        // Up-left diagonal
+        else if ((destRank > originRank) && (destFile < originFile)){
+            direction = 7;
+        }
+        // Down-right diagonal
+        else if ((destRank < originRank) && (destFile > originFile)){
+            direction = -7;
+        }
+        // Down-left diagonal
+        // Just an 'else' to satisfy the compiler
+        else {
+            direction = -9;
+        }
+
+        long pos = (1L << (63 - origin));
+        long retMask = (1L << (63 - origin));
+        long endMask = (1L << (63 - destination));
+
+        while ((pos = shift(pos, direction)) != endMask){
+            retMask |= pos;
+        }
+
+        return retMask;
+    }
+
+    public static void testCheckEvasion(){
+        int[][] temp1 = new int[][]{
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+        };
+
+        int[][] temp2 = new int[][]{
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+        };
+
+        int[][] temp3 = new int[][]{
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+        };
+
+        int[][] temp4 = new int[][]{
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+        };
+
+
+
+
+    }
 
 }
