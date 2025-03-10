@@ -835,7 +835,7 @@ public class Board {
 
     // Move generation for FORCING check states
     // Must also account for Self-checking as this is a move generator
-    // Returns list of valid piece moves as int[]{piece, destination}
+    // Returns list of valid piece moves as int[]{piece, origin, destination}
     // If no moves exist, then checkmate
     public ArrayList<int[]> generateCheckEvasionMoves(int playerSign){
         ArrayList<int[]> retArray = new ArrayList<>();
@@ -850,7 +850,7 @@ public class Board {
         long kingMoves = generatePieceAttackMask(playerKing, kingPos);
         ArrayList<Integer> validSquares = getSetBitPositions(kingMoves);
         for (int i : validSquares){
-            retArray.add(new int[]{6, i});
+            retArray.add(new int[]{6, kingPos, i});
         }
 
         // Return king moves if double+ check, otherwise add other piece moves to king moves for check escape
@@ -882,7 +882,7 @@ public class Board {
 
                 // Ensuring we find the same players pieces
                 if ((evasionPiece * playerSign) > 0){
-                    // Find where along the attack path a piece could block
+                    // Find where along the attack path a piece could block (incl capture)
                     combinedMask = generatePieceAttackMask(evasionPiece, square) & evasionMask;
                     if (combinedMask > 0){
                         for (int pos : getSetBitPositions(combinedMask)){
@@ -890,8 +890,9 @@ public class Board {
                             int[][] candidateBoard = deepCloneBoard(this.boardState);
                             candidateBoard[i][j] = 0;
                             candidateBoard[pos / 8][pos % 8] = evasionPiece;
+                            // Ensure move doesn't result in discovered self-check
                             if (getOpponentChecks(playerSign, candidateBoard).size() == 0){
-                                retArray.add(new int[] {evasionPiece, pos});
+                                retArray.add(new int[] {evasionPiece, square, pos});
                             }
                         }
                     }
@@ -925,17 +926,22 @@ public class Board {
         return retMask;
     }
 
+    // Returns an ArrayList<int[]> with int[] containing pieceID, origin, destination
+    // These are all existing checks against player with playerSign
     public ArrayList<int[]> getOpponentChecks(int playerSign){
         ArrayList<int[]> retChecks = new ArrayList<>();
-        long kingMask = (1L << (63 - findKingBitPosition(playerSign)));
+        int kingPos = findKingBitPosition(playerSign);
+        long kingMask = (1L << (63 - kingPos));
+        // Iterate through board looking for opponent's pieces
         for (int i = 0; i < 8; i++){
             for (int j = 0; j < 8; j++){
                 int square = (i * 8) + j;
                 // If player and piece are opponents
                 // Piece sign never changes throughout, so only one of these ORs will ever be true
-                if (((this.boardState[i][j] < 0) && (playerSign > 0)) || ((this.boardState[i][j] > 0) && (playerSign < 0))){
-                    if ((kingMask & generatePieceAttackMask(this.boardState[i][j], square)) != 0){
-                        retChecks.add(new int[]{playerSign, square});
+                int piece = this.boardState[i][j];
+                if (((piece < 0) && (playerSign > 0)) || ((piece > 0) && (playerSign < 0))){
+                    if ((kingMask & generatePieceAttackMask(piece, square)) != 0){
+                        retChecks.add(new int[]{piece, square, kingPos});
                     }
                 }
             }
@@ -946,15 +952,17 @@ public class Board {
     // Overloaded parameters to check for checks in candidate board states, not the current board state
     public ArrayList<int[]> getOpponentChecks(int playerSign, int[][] boardState){
         ArrayList<int[]> retChecks = new ArrayList<>();
-        long kingMask = (1L << (63 - findKingBitPosition(playerSign)));
+        int kingPos = findKingBitPosition(playerSign);
+        long kingMask = (1L << (63 - kingPos));
         for (int i = 0; i < 8; i++){
             for (int j = 0; j < 8; j++){
                 int square = (i * 8) + j;
                 // If player and piece are opponents
                 // Piece sign never changes throughout, so only one of these ORs will ever be true
-                if (((boardState[i][j] < 0) && (playerSign > 0)) || ((boardState[i][j] > 0) && (playerSign < 0))){
-                    if ((kingMask & generatePieceAttackMask(boardState[i][j], square)) != 0){
-                        retChecks.add(new int[]{playerSign, square});
+                int piece = boardState[i][j];
+                if (((piece < 0) && (playerSign > 0)) || ((piece > 0) && (playerSign < 0))){
+                    if ((kingMask & generatePieceAttackMask(piece, square)) != 0){
+                        retChecks.add(new int[]{piece, square, kingPos});
                     }
                 }
             }
@@ -1169,6 +1177,8 @@ public class Board {
         return (direction > 0) ? (board >>> direction) : (board << -direction);
     }
 
+    // Isolates the specific ray between the checking piece and king, ignoring all other rays
+    // Includes origin (capture)
     public static long generateEvasionPath(int origin, int destination){
         int direction;
 

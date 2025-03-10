@@ -814,4 +814,10 @@ public class test {
 
     }
 
+    public static void generateCheckEvasionTest(){
+        // White/Black
+        // 1 check with all pieces
+        // 1+ check with all piecs
+        // Checkmate conditions
+    }
 }
