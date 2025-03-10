@@ -1,0 +1,7 @@
+{
+    // Referenced libraries used for code completion
+    "java.project.referencedLibraries": [
+      "lib/javafx-sdk-23.0.2/lib/*.jar",
+      "lib/mysql-connector-j-9.1.0.jar"
+    ]
+  }
