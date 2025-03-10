@@ -1,3 +1,4 @@
+package db;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -12,6 +13,10 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.sql.ResultSet;
 import java.util.Set;
+
+import exceptions.ChessServiceDoesNotExistException;
+import parser.PgnParser;
+
 import java.util.HashSet;
 import java.sql.Types;
 import java.sql.Date;

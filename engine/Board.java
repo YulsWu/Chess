@@ -1,4 +1,7 @@
+package engine;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ArrayDeque;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -8,6 +11,22 @@ public class Board {
     public enum BOARD_STATE {
         IN_PLAY, W_CHECK, B_CHECK, W_MATE, B_MATE, REPEAT_DRAW, MUTUAL_DRAW, STALEMATE, MATERIAL_DRAW, FIFTY_DRAW, W_RESIGN, B_RESIGN, W_TIME, B_TIME
     }
+
+        public static final Map<Integer, String> CHESS_EMOJI = new HashMap<>(){{
+        put(-6, "\u2654");
+        put(-5, "\u2655");
+        put(-4, "\u2656");
+        put(-3, "\u2657");
+        put(-2, "\u2658");
+        put(-1, "\u2659");
+        put(0, " ");
+        put(1, "\u265F");
+        put(2, "\u265E");
+        put(3, "\u265D");
+        put(4, "\u265C");
+        put(5, "\u265B");
+        put(6, "\u265A");
+    }};
     // 0 - empty
     // 1 - Pawn
     // 2 - Knight
@@ -677,6 +696,9 @@ public class Board {
     }
 
     //
+    public static String longToString(Long num){
+        return String.format("%64s", Long.toBinaryString(num)).replace(' ', '0');
+    }
 
     public static Long boardToBitboard(int[][] board){
         if (board.length != 8 || board[0].length != 8){
@@ -1225,7 +1247,50 @@ public class Board {
         return retBoard;
     }
 
+    public static void bitboardVisualize(Long bitboard){
+        StringBuilder sbRank = new StringBuilder();
+        StringBuilder sbFile = new StringBuilder();
+        String bitString = String.format("%64s", Long.toBinaryString(bitboard)).replace(' ', '0');
 
+        for (int i = 0; i < 64; i++){
+
+            if (i % 8 == 0){
+                sbRank.reverse().append("\n");
+                sbFile.append(sbRank.toString());
+                sbRank.setLength(0);
+            }
+
+            sbRank.append(bitString.charAt(i) + " ");
+        }
+        sbFile.append(sbRank.reverse().append('\n').toString());
+        
+        sbFile.reverse();
+        sbFile.append("\n");
+
+        System.out.print(sbFile.toString());
+
+    }
+
+    public static void boardVisualize(int[][] board){
+        StringBuilder sbInner = new StringBuilder();
+        StringBuilder sbOuter = new StringBuilder();
+
+
+        for (int i = 0; i < 8; i++){
+            sbInner.setLength(0);
+            sbInner.append((i + 1) + " ");
+            for (int j = 0; j < 8; j++){
+                sbInner.append("[" + CHESS_EMOJI.get(board[i][j]) + " ]");
+            }
+            sbInner.append("\n");
+            sbOuter.insert(0, sbInner.toString());
+            String temp = sbOuter.toString();
+        }
+        sbOuter.append("   A   B   C   D   E   F   G   H");
+        System.out.println();
+        System.out.print(sbOuter.toString());
+        System.out.println();
+    }
     // TEST FUNCTION REMOVE AFTER
     public void setBoard(int[][] newBoard){
         this.boardState = newBoard;

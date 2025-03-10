@@ -1,3 +1,4 @@
+package engine;
 public class Move {
     public enum MOVE_TYPE {
         MOVE, ATTACK, CASTLE_LONG, CASTLE_SHORT, EN_PESSANT, PROMOTE_MOVE, PROMOTE_ATTACK

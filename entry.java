@@ -1,7 +1,11 @@
 
 import java.util.ArrayList;
 
-public class entry {
+import engine.Board;
+import javafx.application.Application;
+import javafx.BoardMaker;
+
+public class entry{
     public static void main(String[] args){
         int batch_size = 100;
 
@@ -27,38 +31,10 @@ public class entry {
         Long horzMask = 0b0000000000000000000000001111111100000000000000000000000000000000L;
         Long occMask = Board.boardToBitboard(Board.generateFreshBoard());
         Long pieceMask = (1L << 63 - 27);
-
-        System.out.println();
-
-        Board testBoard = new Board();
-        int[][] newBoard = new int[8][8];
-
-        //newBoard[2][3] = 2;
-        newBoard[1][5] = 3;
-        newBoard[5][2] = -5;
-        newBoard[6][3] = -1;
         
-        // for (int i = 0; i < 8; i++){
-        //     newboard[1][i] = 0;
-        //     newboard[6][i] = 0;
-        // }
+        BoardMaker.launch(BoardMaker.class, args);
 
-        // testBoard.setBoard(newBoard);
-        // testBoard.setOcc(Board.boardToBitboard(newBoard));
-        // // test.bitboardVisualize(testBoard.boardToBitboard(newboard));
-        // test.boardVisualize(newBoard);
-
-        // test.bitboardVisualize(testBoard.generatePieceVision(-1));
-        // test.bitboardVisualize(testBoard.generatePieceVision(1));
-
-        int from = 32;
-        int to = 36;
-        long fromMask = (1L << (63 - from));
-        long toMask = (1L << (63 - to));
-        System.out.println("FROM:");
-        test.bitboardVisualize(fromMask);
-        System.out.println("TO");
-        test.bitboardVisualize(toMask);
+        
 
         
 

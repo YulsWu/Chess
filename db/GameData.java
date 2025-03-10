@@ -1,3 +1,4 @@
+package db;
 // Using this as a data structure to associate each individual game's data together
 import java.util.ArrayList;
 import java.sql.Date;

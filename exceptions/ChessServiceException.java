@@ -1,3 +1,4 @@
+package exceptions;
 public class ChessServiceException extends Exception {
     public ChessServiceException(String message){
         super(message);

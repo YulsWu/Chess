@@ -1,0 +1,45 @@
+Chatgpt source, may not be entirely accurate, must wait to test
+
+java.project.referencedLibraries
+- Used for basic code completion
+- Include all dependencies here, modular or non-modular
+
+launch.json
+- Launch configuration for in-IDE testing
+- "classPath" variable for non-module jars to be included in building + running
+- "module-path" variable
+    - Locates modular dependencies to be included in build for running
+    - Provides module-specific features for code completion of modular dependency
+    - Add --module-path, --add-modules, --cp
+
+
+Final project through Maven/Gradle
+- Tool-specific launch configs through pom.xl or build.Gradle
+
+Final project through manual build
+- Manually build each .java file with dependencies (Can use wildcard src/**/*) 
+- The 'out' in -d out only needs to be encased in "" if there are special chars
+    javac -cp "lib/*" src/com/example/Main.java (non-module)
+    javac --module-path "lib" --add-modules <module-name> src/com/example/Main.java (module)
+    javac -cp "lib/non-module/*" --module-path "lib/module" --add-modules <module-name> -d outPath src/com/example/Main.java (both)
+- Package into .jar
+    jar --create --file my-app.jar --directory out . (no need to specify dependencies here, just include in distro)
+    - Optionally add manifest.mf to specify entry point (make it executable)
+        jar --create --file my-app.jar --manifest MANIFEST.MF --directory out .
+        jar --update --file my-app.jar --manifest MANIFEST.MF -C out/ . (Updating a jar with a manifest)
+- Run jar with script in order to include dependencies
+    java -cp "path/to/non-modular/libs/*" --module-path "path/to/modular/libs" --add-modules your.module.name -jar your-app.jar
+    - Depending on EXE creation method, may not need to include this
+        - In the case of EXEs that don't need paths, Specify the RELATIVE path to the dependency in the exe creation tool
+        - Similar to a script that runs the jar, paths would also have to be relative here as well
+- Include all dependency libraries in their proper locations (as referenced in the build)
+
+Launch.json breakdown
+(compilation) classPath to compile with non-mod jars
+(compilation) module-path for CODE COMPLETION and COMPILING for modular jars
+(packaging)
+(distribution)
+(running at end-user) vmArgs: Arguments for command-line running of jar
+    --module-path to specify where modular dependencies reside (relative path)
+    --add-module to add a modular dependency
+    --cp to specify paths for non-modular dependencies

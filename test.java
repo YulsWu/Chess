@@ -16,6 +16,12 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.regex.*;
+
+import db.Database;
+import db.GameData;
+import engine.Board;
+import parser.PgnParser;
+
 import java.nio.file.*;
 import java.util.Random;
 import java.util.HashMap;
@@ -756,27 +762,30 @@ public class test {
     }
 
     public static void testCheckEvasion(){
+        // 2 checks on white and black
         int[][] temp1 = new int[][]{
-            {0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0},
+            {-6, 0, 0, 0,-4, 0, 0, 0},
+            { 1, 0, 0, 0, 0, 0, 0, 0},
+            { 0, 0, 0, 0, 0, 0, 0, 0},
+            { 0, 0, 0, 0, 0, 0, 0, 0},
+            { 0, 0, 0, 0, 0, 0, 0, 0},
+            { 0, 0, 0,-1, 0, 0, 0, 0},
+            { 0, 0, 0, 0, 6, 0, 0, 0},
+            { 0, 0, 0, 0, 0, 0, 0, 3},
         };
-
+        int temp1solution = 2;
+        // Black check escape
         int[][] temp2 = new int[][]{
-            {0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0},
+            {-6, 0, 0, 0, 0, 0, 0, 0},
+            { 0, 0, 0, 0, 0, 0, 0, 0},
+            { 0, 0, 0, 0, 0, 0, 0, 0},
+            {-2, 0, 0, 0, 0, 0, 0, 0},
+            { 0, 0, 0, 0, 0, 0, 0, 0},
+            { 0, 0, 0, 0, 0, 0, 0, 0},
+            { 0, 0, 0, 0, 0, 0, 0, 0},
+            { 0, 0, 0, 0, 0, 0, 0, 6},
         };
+        
 
         int[][] temp3 = new int[][]{
             {0, 0, 0, 0, 0, 0, 0, 0},
