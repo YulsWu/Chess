@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.StringTokenizer;
@@ -26,6 +27,10 @@ import java.nio.file.*;
 import java.util.Random;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayDeque;
+
+import engine.Move;
+import engine.Move.MOVE_TYPE;
 
 
 public class test {
@@ -814,10 +819,451 @@ public class test {
 
     }
 
-    public static void generateCheckEvasionTest(){
+    public static void generateCheckEvasionTest(int verbose){
         // White/Black
         // 1 check with all pieces
         // 1+ check with all piecs
         // Checkmate conditions
+        // Simple king check on white
+
+        //#region bitboards
+        long bitboard0 = 0b0000000000011100000101000001110000000000000000000000000000000000L;
+        long bitboard1 = 0b0000000000000000000000000000000000000000001110000010100000111000L;
+        long bitboard2 = 0b0000000000001010000001100000001000000000000000000000000000000000L;
+        long bitboard3 = 0b0000000000000000000000000000000100000000000011000000000000000100L;
+        long bitboard4 = 0b0011100000100000001100000000010000000010000000000000000000000000L;
+        long bitboard5 = 0b0000000000000000000000000000001000000100001100000010000000111000L;
+        long bitboard6_7 = 0b0000010100000101000000000000000000000000000000001010000010100000L;
+        long bitboard8_9 = 0b0000001000000000000000000000000000000000000000000000000001000000L;
+        long bitboard10_11 = 0L;
+        long bitboard12_13 = 0b0100000000000000000000000000000000000000000000000000000000000010L;
+        long bitboard14_15 = 0b0001010000000100000000000000000000000000000000000010000000101000L;
+        long bitboard16_17 = 0b0000000000000000010000111100001001000011110000100000000000000000L;
+
+        //#endregion
+        
+        //#region bitIndices
+        int[] bitIndices0 = new int[] {11, 12, 13, 19, 21, 27, 28, 29};
+        int[] bitIndices1 = new int[] {42, 43, 44, 50, 52, 58, 59, 60};
+        int[] bitIndices2 = new int[] {12, 14, 21, 22, 30};
+        int[] bitIndices3 = new int[] {31, 44, 45, 61};
+        int[] bitIndices4 = new int[] {3, 4, 10, 18, 19, 29, 38};
+        int[] bitIndices5 = new int[] {30, 37, 42, 43, 50, 59, 60};
+        int[] bitIndices6_7 = new int[] {5, 7, 13, 15, 48, 50, 56, 58};
+        int[] bitIndices8_9 = new int[] {6, 57};
+        int[] bitIndices10_11 = new int[]{};
+        int[] bitIndices12_13 = new int[] {1, 62};
+        int[] bitIndices14_15 = new int[] {3, 5, 13, 50, 58, 60};
+        int[] bitIndices16_17 = new int[] {17, 22, 23, 24, 25, 30, 33, 38, 39, 40, 41, 46};
+        
+        //#endregion
+
+        //#region pieceboards
+        int[][] pieceboard0 = new int[][] {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 6, 0, 0, 0}, {0, 0, 0, -1, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}};
+        int[][] pieceboard1 = new int[][] {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0,}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 1, 0, 0, 0}, {0, 0, 0, -6, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}};
+        int[][] pieceboard2 = new int[][] {{0, 0, 0, 0, 0, 0, 0, -4}, {0, 0, 0, 0, 0, 6, 0, 0}, {0, 0, 0, 0, 2, 0, 0, 1}, {0, 0, 0, 0, 0, 0, -2, 0}, {0, 0, -3, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}};
+        int[][] pieceboard3 = new int[][] {{0, 0, 0, 4, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {-4, 0, 0, 0, 0, 0, 0, 3}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, -6, -1, 0, 0}, {0, 0, 0, 0, -5, 0, 0, 0}};
+        int[][] pieceboard4 = new int[][] {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 6, 1, 0, 0, -4}, {0, 0, 0, 0, 0, 1, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 1}, {0, 0, 0, 0, 0, 0, -3, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}};
+        int[][] pieceboard5 = new int[][] {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 3, 0}, {0, 0, 0, 0, 0, 0, 0, -1}, {0, 0, 0, 0, 0, -1, 0, 0}, {0, 0, 0, -6, -1, 0, 0, 4}, {0, 0, 0, 0, 0, 0, 0, 0}};
+        int[][] pieceboard6_7 = new int[][] {{0, 4, 0, 0, 0, 0, 6, 0}, {0, 0, 0, 0, 0, 0, 1, 0}, {0, 0, 0, 0, 0, 0, 0, -2}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {2, 0, 0, 0, 0, 0, 0, 0}, {0, -1, 0, 0, 0, 0, 0, 0}, {0, -6, 0, 0, 0, 0, -4, 0}};
+        int[][] pieceboard8_9 = new int[][] {{0, 0, 0, 0, 0, 0, 0, 0}, {-4, 0, 0, 0, 0, 0, 3, 6}, {0, 0, 0, 0, 0, 0, 0, -5}, {0, 0, 0, 0, 0, 0, 0, -4}, {4, 0, 0, 0, 0, 0, 0, 0}, {5, 0, 0, 0, 0, 0, 0, 0}, {-6, -3, 0, 0, 0, 0, 0, 4}, {0, 0, 0, 0, 0, 0, 0, 0}};
+        int[][] pieceboard10_11 = new int[][] {{0, 0, 0, -4, 0, 0, 6, 0}, {0, 0, 0, 0, 0, 3, 1, 1}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, -3, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 3, 0, 0, 0, 0}, {-1, -1, -2, 0, 0, 0, 1, 0}, {0, -6, 0, 0, 0, 0, 0, 4}};
+        int[][] pieceboard12_13 = new int[][] {{0, 0, 6, 2, -4, 0, 0, 0}, {0, 5, 0, 3, 0, 0, 0, 0}, {-3, 0, 0, 0, -3, 0, 0, 0}, {0, 0, -4, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 4, 0, 0}, {0, 0, 0, 3, 0, 0, 0, 3}, {0, 0, 0, 0, -3, 0, -5, 0}, {0, 0, 0, 4, -2, -6, 0, 0}};
+        int[][] pieceboard14_15 = new int[][] {{0, 0, 0, 0, 6, 0, 0, 0}, {2, 0, 0, 0, 1, 0, 0, 0}, {0, 0, -3, 0, 0, -2, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 2, 0, 0, 3, 0, 0}, {0, 0, 0, -1, 0, 0, 0, -2}, {0, 0, 0, -6, 0, 0, 0, 0}};
+        int[][] pieceboard16_17 = new int[][] {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 1, -1, 0, 0, 0, 0, 6}, {-6, 0, 0, 0, 0, 1, -1, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}};
+        //#endregion
+
+        // Test 0: White king check evasion moves
+        // Test 1: Black king check evasion moves
+        // Test 2: White king checked by knight, white knight could capture but is pinned by bishop, pawn can capture, king moves
+        // Test 3: Black king checked by bishop, pawn move to block, rook capture to block, king moves
+        // Test 4: White Pawn move & attack evasion, Pawn move evasion blocked by discovered check
+        // Test 5: Test 4 for Black
+        // Test 6/7: White + Black blocked pawn capture evasion test
+        // Next: Iterate through white/black pieces check for pin blocked moves and actual moves
+        // Test 8/9: White/black pinned bishop capture evasion, king capture prevention due to vision
+        // Test 10/11 White/black checkmate test with pinned pieces
+        // Test 12/13 White/black pinned queen, rook, knight check block, only king to move 1 square
+        // Test 14/15 white/black double check with available captures (not resulting in new discovered check), only king can move
+        // Test 16/17 White/black enpassent check evasion (Double pawn move check, EP evasion)
+
+        //#region answer list creation
+        ArrayList<int[]> test0ans = new ArrayList<>();
+        for (int ind : bitIndices0){
+            test0ans.add(new int[] {6, 20, ind});
+        }
+
+        ArrayList<int[]> test1ans = new ArrayList<>();
+        for (int ind : bitIndices1){
+            test1ans.add(new int[]{-6, 51, ind});
+        }
+
+        ArrayList<int[]> test2ans = new ArrayList<>();
+        test2ans.add(new int[]{6, 13, 12});
+        test2ans.add(new int[]{6, 13, 14});
+        test2ans.add(new int[]{6, 13, 21});
+        test2ans.add(new int[]{6, 13, 22});
+        test2ans.add(new int[]{1, 23, 30});
+
+        ArrayList<int[]> test3ans = new ArrayList<>();
+        test3ans.add(new int[]{-6, 52, 44});
+        test3ans.add(new int[]{-6, 52, 61});
+        test3ans.add(new int[]{-1, 53, 45});
+        test3ans.add(new int[]{-4, 24, 31});
+
+        ArrayList<int[]> test4ans = new ArrayList<>();;
+        test4ans.add(new int[]{6, 11, 3});
+        test4ans.add(new int[]{6, 11, 4});
+        test4ans.add(new int[]{6, 11, 10});
+        test4ans.add(new int[]{6, 11, 18});
+        test4ans.add(new int[]{6, 11, 19});
+        test4ans.add(new int[]{1, 21, 29});
+        test4ans.add(new int[]{1, 31, 38});
+
+        ArrayList<int[]> test5ans = new ArrayList<>();
+        test5ans.add(new int[]{-6, 51, 59});
+        test5ans.add(new int[]{-6, 51, 60});
+        test5ans.add(new int[]{-6, 51, 50});
+        test5ans.add(new int[]{-6, 51, 42});
+        test5ans.add(new int[]{-6, 51, 43});
+        test5ans.add(new int[]{-1, 45, 37});
+        test5ans.add(new int[]{-1, 39, 30});
+
+        ArrayList<int[]> test6ans = new ArrayList<>();
+        test6ans.add(new int[]{6, 6, 5});
+        test6ans.add(new int[]{6, 6, 7});
+        test6ans.add(new int[]{6, 6, 15});
+
+        ArrayList<int[]> test7ans = new ArrayList<>();
+        test7ans.add(new int[]{-6, 57, 56});
+        test7ans.add(new int[]{-6, 57, 48});
+        test7ans.add(new int[]{-6, 57, 58});
+
+        ArrayList<int[]> test8ans = new ArrayList<>();
+        test8ans.add(new int[]{6, 15, 6});
+
+        ArrayList<int[]> test9ans = new ArrayList<>();
+        test9ans.add(new int[]{-6, 48, 57});
+
+        ArrayList<int[]> test10ans = new ArrayList<>();
+        ArrayList<int[]> test11ans = new ArrayList<>();
+
+        ArrayList<int[]> test12ans = new ArrayList<>();
+        test12ans.add(new int[]{6, 2, 1});
+
+        ArrayList<int[]> test13ans = new ArrayList<>();
+        test13ans.add(new int[]{-6, 61, 62});
+
+        ArrayList<int[]> test14ans = new ArrayList<>();
+        test14ans.add(new int[]{6, 4, 3});
+        test14ans.add(new int[]{6, 4, 5});
+        test14ans.add(new int[]{6, 4, 13});
+
+        ArrayList<int[]> test15ans = new ArrayList<>();
+        test15ans.add(new int[]{-6, 59, 50});
+        test15ans.add(new int[]{-6, 59, 58});
+        test15ans.add(new int[]{-6, 59, 60});
+
+        ArrayList<int[]> test16ans = new ArrayList<>();
+        test16ans.add(new int[]{6, 31, 22});
+        test16ans.add(new int[]{6, 31, 23});
+        test16ans.add(new int[]{6, 31, 30});
+        test16ans.add(new int[]{6, 31, 38});
+        test16ans.add(new int[]{6, 31, 39});
+        test16ans.add(new int[]{1, 37, 46});
+
+        ArrayList<int[]> test17ans = new ArrayList<>();
+        test17ans.add(new int[]{-6, 32, 24});
+        test17ans.add(new int[]{-6, 32, 25});
+        test17ans.add(new int[]{-6, 32, 33});
+        test17ans.add(new int[]{-6, 32, 40});
+        test17ans.add(new int[]{-6, 32, 41});
+        test17ans.add(new int[]{-1, 26, 17});
+
+        //#endregion
+
+        //#region board initialization
+        Board board0 = new Board();
+        board0.setBoard(pieceboard0);
+        board0.setOcc(Board.boardToBitboard(pieceboard0));
+
+        Board board1 = new Board();
+        board1.setBoard(pieceboard1);
+        board1.setOcc(Board.boardToBitboard(pieceboard1));
+
+        Board board2 = new Board();
+        board2.setBoard(pieceboard2);
+        board2.setOcc(Board.boardToBitboard(pieceboard2));
+
+        Board board3 = new Board();
+        board3.setBoard(pieceboard3);
+        board3.setOcc(Board.boardToBitboard(pieceboard3));
+
+        Board board4 = new Board();
+        board4.setBoard(pieceboard4);
+        board4.setOcc(Board.boardToBitboard(pieceboard4));
+
+        Board board5 = new Board();
+        board5.setBoard(pieceboard5);
+        board5.setOcc(Board.boardToBitboard(pieceboard5));
+
+        Board board6_7 = new Board();
+        board6_7.setBoard(pieceboard6_7);
+        board6_7.setOcc(Board.boardToBitboard(pieceboard6_7));
+
+        Board board8_9 = new Board();
+        board8_9.setBoard(pieceboard8_9);
+        board8_9.setOcc(Board.boardToBitboard(pieceboard8_9));
+
+        Board board10_11 = new Board();
+        board10_11.setBoard(pieceboard10_11);
+        board10_11.setOcc(Board.boardToBitboard(pieceboard10_11));
+
+        Board board12_13 = new Board();
+        board12_13.setBoard(pieceboard12_13);
+        board12_13.setOcc(Board.boardToBitboard(pieceboard12_13));
+
+        Board board14_15 = new Board();
+        board14_15.setBoard(pieceboard14_15);
+        board14_15.setOcc(Board.boardToBitboard(pieceboard14_15));
+
+        Board board16 = new Board();
+        board16.setBoard(pieceboard16_17);
+        board16.setOcc(Board.boardToBitboard(pieceboard16_17));
+        ArrayDeque<Move> temp = new ArrayDeque<>();
+        temp.add(new Move(-1, 54, 38, MOVE_TYPE.MOVE));
+        board16.setMoveQueue(temp);
+
+        Board board17 = new Board();
+        board17.setBoard(pieceboard16_17);
+        board17.setOcc(Board.boardToBitboard(pieceboard16_17));
+        temp = new ArrayDeque<>();
+        temp.add(new Move(1, 9, 25, MOVE_TYPE.MOVE));
+        board17.setMoveQueue(temp);
+        
+        //#endregion
+        int[][][] pieceboards = new int[][][]{
+            pieceboard0,
+            pieceboard1,
+            pieceboard2,
+            pieceboard3,
+            pieceboard4,
+            pieceboard5, 
+            pieceboard6_7, 
+            pieceboard8_9, 
+            pieceboard10_11,
+            pieceboard12_13,
+            pieceboard14_15,
+            pieceboard16_17
+        };
+        if (verbose > 0){
+            int ind = 0;
+            for (int[][] board : pieceboards){
+                System.out.println("Board: " + ind);
+                Board.boardVisualize(board);
+                ind++;
+            }
+        }
+        ArrayList<int[]> results0 = board0.generateCheckEvasionMoves(1);
+        ArrayList<int[]> results1 = board1.generateCheckEvasionMoves(-1);
+        ArrayList<int[]> results2 = board2.generateCheckEvasionMoves(1);
+        ArrayList<int[]> results3 = board3.generateCheckEvasionMoves(-1);
+        ArrayList<int[]> results4 = board4.generateCheckEvasionMoves(1);
+        ArrayList<int[]> results5 = board5.generateCheckEvasionMoves(-1);
+        ArrayList<int[]> results6 = board6_7.generateCheckEvasionMoves(1);
+        ArrayList<int[]> results7 = board6_7.generateCheckEvasionMoves(-1);
+        ArrayList<int[]> results8 = board8_9.generateCheckEvasionMoves(1);
+        ArrayList<int[]> results9 = board8_9.generateCheckEvasionMoves(-1);
+        ArrayList<int[]> results10 = board10_11.generateCheckEvasionMoves(1);
+        ArrayList<int[]> results11 = board10_11.generateCheckEvasionMoves(-1);
+        ArrayList<int[]> results12 = board12_13.generateCheckEvasionMoves(1);
+        ArrayList<int[]> results13 = board12_13.generateCheckEvasionMoves(-1);
+        ArrayList<int[]> results14 = board14_15.generateCheckEvasionMoves(1);
+        ArrayList<int[]> results15 = board14_15.generateCheckEvasionMoves(-1);
+        ArrayList<int[]> results16 = board16.generateCheckEvasionMoves(1);
+        ArrayList<int[]> results17 = board17.generateCheckEvasionMoves(-1);
+
+        // White/Black check escape with king moves, pawn capture evasion, pawn move evasion, and a blocked pawn attack/move evasion
+
+        // System.out.println("ANSWERS 1:");
+        // for (int[] intArray : test1ans){
+        //     System.out.println(Arrays.toString(intArray));
+        // }
+        // System.out.println("RESULTS 1:");
+        // for (int[] intArray : results1){
+        //     System.out.println(Arrays.toString(intArray));
+        // }
+
+        if (checkMovesEquality(0, test0ans, results0) &&
+            checkMovesEquality(1, test1ans, results1) &&
+            checkMovesEquality(2, test2ans, results2) &&
+            checkMovesEquality(3, test3ans, results3) &&
+            checkMovesEquality(4, test4ans, results4) &&
+            checkMovesEquality(5, test5ans, results5) &&
+            checkMovesEquality(6, test6ans, results6) &&
+            checkMovesEquality(7, test7ans, results7) &&
+            checkMovesEquality(8, test8ans, results8) &&
+            checkMovesEquality(9, test9ans, results9) &&
+            checkMovesEquality(10, test10ans, results10) &&
+            checkMovesEquality(11, test11ans, results11) &&
+            checkMovesEquality(12, test12ans, results12) &&
+            checkMovesEquality(13, test13ans, results13) &&
+            checkMovesEquality(14, test14ans, results14) &&
+            checkMovesEquality(15, test15ans, results15) &&
+            checkMovesEquality(16, test16ans, results16) &&
+            checkMovesEquality(17, test17ans, results17)
+            ){
+                
+
+                System.out.println("All tests succeeded");
+                
+            }
+        else {
+            System.out.println("One or more tests failed");
+        };
+
+    }
+
+    public static boolean checkMovesEquality(int test, ArrayList<int[]> answers, ArrayList<int[]> results){
+        int correct = 0;
+        if (answers.size() == results.size()){
+            for (int[] ans : answers){
+                for (int[] res : results){
+                    if (Arrays.equals(ans, res)){
+                        correct++;
+                    };
+                }
+            }
+            if (correct != answers.size()){
+                System.out.println("Test " + test + " failed on result contents");
+
+                System.out.println("ANSWERS " + test + ":");
+                for (int[] intArray : answers){
+                    System.out.println(Arrays.toString(intArray));
+                }
+                System.out.println("RESULTS " + test + ":");
+                for (int[] intArray : results){
+                    System.out.println(Arrays.toString(intArray));
+                }
+
+                return false;
+            }
+        }
+        else {
+            System.out.println("Test " + test + " failed on result size difference: " + answers.size() + " test answers, " + results.size() + " results.");
+            
+            System.out.println("ANSWERS " + test + ":");
+            for (int[] intArray : answers){
+                System.out.println(Arrays.toString(intArray));
+            }
+            System.out.println("RESULTS " + test + ":");
+            for (int[] intArray : results){
+                System.out.println(Arrays.toString(intArray));
+            }
+            
+            return false;
+        }
+        return true;
+    }
+
+    public static void generateEnPassentMaskTest(){
+        // Single pieceboard for all EP tests
+        int[][] pieceboard0 = new int[][] {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {-1, 1, 1, -1, 1, 0, 1, -1}, {1, -1, -1, 1, -1, 0, -1, 1}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}};
+
+        // White left border EP
+        long bitboard0 = 0b0000000000000000000000000000000000000000010000000000000000000000L;
+        int[] bitIndices0 = new int[] {41};
+        // White middle Left capture EP
+        long bitboard1 = 0b0000000000000000000000000000000000000000001000000000000000000000L;
+        int[] bitIndices1 = new int[] {42};
+        // White middle right capture EP
+        long bitboard2 = 0b0000000000000000000000000000000000000000000010000000000000000000L;
+        int[] bitIndices2 = new int[] {44};
+        // White right border EP
+        long bitboard3 = 0b0000000000000000000000000000000000000000000000100000000000000000L;
+        int[] bitIndices3 = new int[] {46};
+        // Black left border EP
+        long bitboard4 = 0b0000000000000000010000000000000000000000000000000000000000000000L;
+        int[] bitIndices4 = new int[] {17};
+        // Black middle left capture EP
+        long bitboard5 = 0b0000000000000000001000000000000000000000000000000000000000000000L;
+        int[] bitIndices5 = new int[] {18};
+        // Black middle right capture EP
+        long bitboard6 = 0b0000000000000000000010000000000000000000000000000000000000000000L;
+        int[] bitIndices6 = new int[] {20};
+        // Black right border EP
+        long bitboard7 = 0b0000000000000000000000100000000000000000000000000000000000000000L;
+        int[] bitIndices7 = new int[] {22};
+
+        int[] friendlyPawnSquares = new int[]{32, 35, 35, 39, 24, 27, 27, 31};
+
+        long[] answers = new long[]{
+            bitboard0, bitboard1, bitboard2, bitboard3,
+            bitboard4, bitboard5, bitboard6, bitboard7
+        };
+
+        int[] destIndices = new int[] {33, 34, 36, 38, 25, 26, 28, 30};
+
+        int[] originIndices = new int[destIndices.length];
+        for (int i = 0; i < destIndices.length; i++){
+            int shift = (i <= 3) ? 16 : -16;
+            originIndices[i] = destIndices[i] + shift;
+        }
+
+        Board[] boards = new Board[]{
+            new Board(),
+            new Board(),
+            new Board(),
+            new Board(),
+            new Board(),
+            new Board(),
+            new Board(),
+            new Board(),
+        };
+
+        Move[] moves = new Move[8];
+
+        for (int i = 0; i < destIndices.length; i++){
+            int pawn = (i <= 3) ? -1 : 1;
+            moves[i] = new Move(pawn, originIndices[i], destIndices[i], MOVE_TYPE.MOVE);
+        }
+
+        // Create boards with corresponding board states
+        for (int i = 0; i < destIndices.length; i++){
+            boards[i].setBoard(pieceboard0);
+            boards[i].setOcc(Board.boardToBitboard(pieceboard0));
+            ArrayDeque<Move> temp = new ArrayDeque<>();
+            temp.add(moves[i]);
+            boards[i].setMoveQueue(temp);
+        }
+
+        long[] results = new long[destIndices.length];
+
+        for (int i = 0; i < destIndices.length; i++){
+            int playerSign = (i <= 3) ? 1 : -1;
+            results[i] = boards[i].generateEnPassentMask(playerSign, friendlyPawnSquares[i]);
+        }
+
+        boolean success = true;
+        int i = 0;
+        while (success && (i < answers.length)){
+            success = answers[i] == results[i];
+            i++;
+        }
+
+        if (!success){
+            System.out.println("Test " + i + " failed: ");
+            System.out.println("Answers: ");
+            System.out.println(answers[i]);
+            System.out.println("Results: ");
+            System.out.println(results[i]);
+        }
+        else {
+            System.out.println("Pawn EP generation test succeeded!");
+        }
+
+
+
+
     }
 }

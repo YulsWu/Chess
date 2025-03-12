@@ -62,7 +62,7 @@ public class BoardMaker extends Application{
 
     // Non-javafx class variable initialization
     long bitboard = 0L;
-    int[][] board = new int[10][10];
+    int[][] board = new int[8][8];
     int windowHeight = 400;
     int windowWidth = 600;
     int squareHeightWidth = 50;
@@ -308,6 +308,9 @@ public class BoardMaker extends Application{
             sb.append("long bitboard" + i + " = 0b");
             sb.append(Board.longToString(this.returnBitboards.get(i)));
             sb.append("L;\n");
+            sb.append("int[] bitIndices" + i + " = new int[] ");
+            sb.append(Arrays.toString(getBitIndices(this.returnBitboards.get(i))).replace("[", "{").replace("]", "}"));
+            sb.append(";\n");
         }
         sb.append("\n");
         sb.append("Piece boards as int[][]\n");
@@ -386,7 +389,32 @@ public class BoardMaker extends Application{
     public void doneButtonHandler(Event event){
         System.out.println(dumpBoards());
 
-        Platform.exit();
-        System.exit(0);
+        this.board = new int[8][8];
+        this.bitboard = 0L;
+
+        this.returnBitboards = new ArrayList<Long>();
+        this.returnPieceboards = new ArrayList<int[][]>();
+
+        refreshBoardDisplay();
     }
+
+    public void refreshBoardDisplay(){
+        this.bitboardMode = !this.bitboardMode;
+        toggleSquareMarkers();
+        this.bitboardMode = !this.bitboardMode;
+    }
+
+    public Integer[] getBitIndices(long bitboard){
+        char[] charArray = Board.longToString(bitboard).toCharArray();
+        ArrayList<Integer> indices = new ArrayList<>();
+        
+        for (int i = 0; i < charArray.length; i++){
+            if (charArray[i] == '1') {indices.add(i);}
+        }
+
+        return indices.toArray(new Integer[0]);
+
+    }
+
+
 }

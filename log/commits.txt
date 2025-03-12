@@ -1,0 +1,16 @@
+Changed BoardMaker functionality:
+- Done button now outputs all bitboards, the flagged indicies of the bitboard longs, and the returnPieceboards
+- Done clears the current list of bitboards and boards, continues execution
+- Changed generateCheckEvasionMoves() in the way it prevents self-checking moves from being suggested
+- Added generateEnPassentMask(int playerSign, int origin) to return a 1 bit en passent mask for a pawn at origin
+    - Uses W_PAWN_ATTACK and B_PAWN_ATTACK and checks occupancy and move history
+
+- Added setMoveQueue() to board for testing
+- Added generatePawnAttackMask(int playerSign, int origin)
+    - Uses W/B_PAWN_ATTACK and generateEnPassantMask in conjunction with board occupancy to provide valid pawn attack masks
+- Modified generatePieceAttackMask()
+    - Replaced pawn move generation with generatePawnAttack()
+    - Modified Illegal move checker at the end of the function to also test for en passent moves
+
+- Added test.generateCheckEvasionTest() to test many board positions with varying states, exitCode
+- Added test.generateEnPassentMaskTest() to test en passent generation

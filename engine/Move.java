@@ -3,16 +3,17 @@ public class Move {
     public enum MOVE_TYPE {
         MOVE, ATTACK, CASTLE_LONG, CASTLE_SHORT, EN_PESSANT, PROMOTE_MOVE, PROMOTE_ATTACK
     }
+    private int piece;
+    private MOVE_TYPE type;
     private int originBit;
     private int destBit;
+    
     private int originRank;
     private int originFile;
     private int destRank;
     private int destFile;
-    private int piece;
-    private MOVE_TYPE type;
 
-    private Move(int pieceValue, int originBitIndex, int destinationBitIndex, MOVE_TYPE type){
+    public Move(int pieceValue, int originBitIndex, int destinationBitIndex, MOVE_TYPE type){
         originRank = originBitIndex / 8;
         originFile = originBitIndex % 8;
         destRank = destinationBitIndex / 8;
@@ -51,5 +52,9 @@ public class Move {
 
     public int getPiece(){
         return this.piece;
+    }
+
+    public MOVE_TYPE getType(){
+        return this.type;
     }
 }

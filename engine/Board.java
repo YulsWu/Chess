@@ -5,6 +5,9 @@ import java.util.Map;
 import java.util.ArrayDeque;
 import java.util.concurrent.ThreadLocalRandom;
 
+import engine.Move.MOVE_TYPE;
+
+
 public class Board {
     // Any state with W_ or B_ signifies they LOST due to the reason
     // ie W_MATE means that White was Mated
@@ -702,7 +705,7 @@ public class Board {
 
     public static Long boardToBitboard(int[][] board){
         if (board.length != 8 || board[0].length != 8){
-            System.out.println("ERROR: Incompatible board format provided.");
+            System.out.println("boardToBitboard ERROR: Incompatible board format provided.");
             return 0L;
         }
 
@@ -850,56 +853,99 @@ public class Board {
         long kingMoves = generatePieceAttackMask(playerKing, kingPos);
         ArrayList<Integer> validSquares = getSetBitPositions(kingMoves);
         for (int i : validSquares){
-            retArray.add(new int[]{6, kingPos, i});
+            retArray.add(new int[]{playerKing, kingPos, i});
         }
 
-        // Return king moves if double+ check, otherwise add other piece moves to king moves for check escape
-        if (checks.size() > 1){
-            return retArray;
-        }
-
-        // SINGLE check:
-        // Find Enemy pieces and paths checking king
-        // checks should only contain ONE check at this point
-        int checkingPiece = checks.get(0)[0];
-        int checkingPos = checks.get(0)[1];
-
-        // Differentiate between Sliding vs non pieces.
-            // Non-sliding pieces MUST be captured, their piecemask is the only valid evasion square
-            // Sliding pieces can be blocked along their attack path or captured
-            // Sliding pieces are > 2
-        long evasionMask = (Math.abs(checkingPiece) > 2) ? generateEvasionPath(checkingPos, kingPos) : (1L << (63 - checkingPos));
-        // Remove king from attack mask, friendly pieces can't capture king to block check
-
-        // Iterate through players pieces to find ones that can block or capture
-        int evasionPiece;
-        int square;
-        long combinedMask;
-        for (int i = 0; i < 8; i++){
-            for (int j = 0; j < 8; j++){
-                evasionPiece = this.boardState[i][j];
-                square = (i * 8) + j;
-
-                // Ensuring we find the same players pieces
-                if ((evasionPiece * playerSign) > 0){
-                    // Find where along the attack path a piece could block (incl capture)
-                    combinedMask = generatePieceAttackMask(evasionPiece, square) & evasionMask;
-                    if (combinedMask > 0){
-                        for (int pos : getSetBitPositions(combinedMask)){
-                            // Ensure moves don't result in self-check through discovered check
-                            int[][] candidateBoard = deepCloneBoard(this.boardState);
-                            candidateBoard[i][j] = 0;
-                            candidateBoard[pos / 8][pos % 8] = evasionPiece;
-                            // Ensure move doesn't result in discovered self-check
-                            if (getOpponentChecks(playerSign, candidateBoard).size() == 0){
+        // Add other piece moves for single check, otherwise skip
+        if (!(checks.size() > 1)){
+            // SINGLE check:
+            // Find Enemy pieces and paths checking king
+            // checks should only contain ONE check at this point
+            int checkingPiece = checks.get(0)[0];
+            int checkingPos = checks.get(0)[1];
+    
+            // Differentiate between Sliding vs non pieces.
+                // Non-sliding pieces MUST be captured, their piecemask is the only valid evasion square
+                // Sliding pieces can be blocked along their attack path or captured
+                // Sliding pieces are > 2
+            long evasionMask = (Math.abs(checkingPiece) > 2) ? generateEvasionPath(checkingPos, kingPos) : (1L << (63 - checkingPos));
+    
+            // Iterate through players pieces to find ones that can block or capture
+            int evasionPiece;
+            int square;
+            long combinedMask;
+            for (int i = 0; i < 8; i++){
+                for (int j = 0; j < 8; j++){
+                    evasionPiece = this.boardState[i][j];
+                    square = (i * 8) + j;
+    
+                    // Skip king as we've already calculated it
+                    if (Math.abs(evasionPiece) == 6){continue;}
+    
+                    // Ensuring we find the same players pieces
+                    if ((evasionPiece * playerSign) > 0){
+                        // Find where along the attack path a piece could block (incl capture)
+                        // Since pawns move and attack differently, we must first combine the valid move and attack masks since either are eligible
+                        // for check blocking
+                        if (Math.abs(evasionPiece) == 1){
+                            // Combine valid pawn moves and attacks, then filter using evasion mask
+                            // generatePieceAttackMasks returns valid en passent as well
+                            // generateEnPassentMask() will only return a non 0 value IF the checking move was an eligible double pawn forward.
+                            //      - Pawn double move check: Will only return non-zero IF current pawn can en passent it
+                            //      - Other checks: returns 0L;
+                            combinedMask = (generatePieceAttackMask(evasionPiece, square) | generatePawnMoveMask(evasionPiece, square)) & (evasionMask | generateEnPassentMask(playerSign, square));
+                        }
+                        else {
+                            combinedMask = generatePieceAttackMask(evasionPiece, square) & evasionMask;
+                        }
+                        if (combinedMask > 0){
+                            for (int pos : getSetBitPositions(combinedMask)){
                                 retArray.add(new int[] {evasionPiece, square, pos});
                             }
                         }
                     }
                 }
+            }    
+        }// endif
+        
+        ArrayList<int[]> retArrayFinal = new ArrayList<>();
+        // Remove moves resulting in self-check
+        int[][] realBoard = getBoard();
+        long realOcc = getOcc();
+
+        for (int[] move : retArray){
+            int evasionPiece = move[0];
+            int originRank = move[1] / 8;
+            int originFile = move[1] % 8;
+            int destRank = move[2] / 8;
+            int destFile = move[2] % 8;
+            
+            int[][] candidateBoard = deepCloneBoard(realBoard);
+            candidateBoard[originRank][originFile] = 0; // Remove piece from origin
+            candidateBoard[destRank][destFile] = evasionPiece; // Put piece in destination
+            long candidateOcc = boardToBitboard(candidateBoard);
+            
+            // IF PAWN & ATTACK & ON EMPTY SQUARE, then en passent
+            // If en passent, we have to 'capture' the pawn, set to 0 in board
+            if ((Math.abs(evasionPiece) == 1) && (originFile != destFile) && (realBoard[destRank][destFile] == 0)){
+                int epRank = (evasionPiece > 0) ? destRank - 1 : destRank + 1;
+                candidateBoard[epRank][destFile] = 0; // Set pawn that was en-passented to 0
+                candidateOcc = boardToBitboard(candidateBoard); // Overwrite occupancy
             }
+            
+            // Switch for checking
+            this.boardState = candidateBoard;
+            this.bitState = candidateOcc;
+            // Ensure move doesn't result in discovered self-check
+            if (getOpponentChecks(playerSign, candidateBoard).size() == 0){
+                retArrayFinal.add(move);
+            }
+
         }
-        return retArray;
+        // Switch for real board state
+        this.boardState = realBoard;
+        this.bitState = realOcc;
+        return retArrayFinal;
     }
 
     public long generatePlayerPieceMask(int piece){
@@ -1023,7 +1069,6 @@ public class Board {
     public long generatePieceAttackMask(int piece, int origin){
         long retMask = 0L;
         long friendlyOcc = (piece < 0) ? generatePlayerPieceMask(-1) : generatePlayerPieceMask(1);
-        long opponentOcc = (piece < 0) ? generatePlayerPieceMask(1) : generatePlayerPieceMask(-1);
         long opponentVision = (piece < 0) ? generatePieceVision(1) : generatePieceVision(-1);
         long temp;
         switch (Math.abs(piece)){
@@ -1031,13 +1076,7 @@ public class Board {
                 // Pawn vision vs Attack is also different like Kings
                 // Attacks: Requires occupancy check at destination square
                 // Vision: No occupancy check, Possible attack moves on a square next turn if king moves into that square
-                if (piece > 0){
-                    // Valid attacks are ones with opponents on the destination square
-                    retMask |= (W_PAWN_ATTACK.get(origin) & opponentOcc);
-                }
-                else {
-                    retMask |= (B_PAWN_ATTACK.get(origin) & opponentOcc);
-                }
+                retMask |= generatePawnAttackMask(piece, origin);
                 break;
             case 2:
                 // Invaldiate self captures
@@ -1062,11 +1101,67 @@ public class Board {
                 // King - (Attack only, can never check king with king)
                 // As attack mask: Vision avoidance, move pattern, friendly occupancy
                 // As vision mask: NO vision avoidance, move pattern, no friendly occupancy (if friendly then not enemy king/castling)
-                retMask |= (KING_MOVE.get(origin) ^ friendlyOcc) ^ opponentVision;
+                long kingPosMask = (1L << (63 - origin));
+                // If king is in check, we must remove the king's position from the valid moves as XORing with opponent vision in this case
+                // will flip the king position to 1
+                if ((opponentVision & kingPosMask) > 0){
+                    retMask |= (KING_MOVE.get(origin) & ~friendlyOcc) & ~opponentVision & ~kingPosMask;
+                }
+                else {
+                    retMask |= (KING_MOVE.get(origin) & ~friendlyOcc) & ~opponentVision;
+                }
+
+
+
+
                 break;
 
         }
         return retMask;
+    }
+
+    public long generatePawnMoveMask(int playerSign, int origin){
+        int rank = origin / 8;
+        int file = origin % 8;
+
+        if ((playerSign > 0) && (rank == 1)){
+            long above = (1L << (63 - origin + 8));
+            // if square above the pawn is blocked, it cannot move at all
+            if ((above & this.bitState) > 0){
+                return 0L;
+            }
+            else {
+                // Pawn can move forward 1 even if the 2nd square is blocked
+                return W_PAWN_MOVE.get(origin) & ~this.bitState;
+            }
+        }
+        else if ((playerSign) < 0 && (rank == 6)){
+            long below = (1L << (63 - origin - 8));
+            if ((below & this.bitState) > 0){
+                return 0L;
+            }
+            else {
+                return B_PAWN_MOVE.get(origin) & ~this.bitState;
+            }
+        }
+        else {
+            return (playerSign > 0) ? (W_PAWN_MOVE.get(origin) & ~this.bitState) : (B_PAWN_MOVE.get(origin) & ~this.bitState);
+        }
+
+    }
+
+    public long generatePawnAttackMask(int playerSign, int origin){
+        long opponentOcc = (playerSign > 0) ? generatePlayerPieceMask(-1) : generatePlayerPieceMask(1);
+        long retMask = 0L;
+        if (playerSign > 0){
+            // Valid attacks are ones with opponents on the destination square
+            retMask |= (W_PAWN_ATTACK.get(origin) & opponentOcc);
+        }
+        else {
+            retMask |= (B_PAWN_ATTACK.get(origin) & opponentOcc);
+        }
+
+        return retMask | generateEnPassentMask(playerSign, origin);
     }
 
     // Returns bit position in RLERF encoding
@@ -1102,6 +1197,7 @@ public class Board {
                             // No occupancy check required for vision
                             // If a piece exists, the enemy king will never be there, if it doesn't exist, the square is in vision
                             // If a piece exists, they cannot castle anyways, if it doesn't exist, they can't castle as its in vision
+                            // Additionally, if friendly piece is capture by enemy, it is now in vision (prevents king captures)
                             retMask |= W_PAWN_ATTACK.get(bitInd);
                             break;
                         // Knight
@@ -1171,6 +1267,10 @@ public class Board {
             retBoard[i] = this.boardState[i].clone();
         }
         return retBoard;
+    }
+
+    public long getOcc(){
+        return this.bitState;
     }
     
     public static long shift(long board, int direction){
@@ -1301,6 +1401,73 @@ public class Board {
         System.out.print(sbOuter.toString());
         System.out.println();
     }
+    
+
+    // Returns a one-bit enpassent mask
+    // Doesn't check for destination square occupancy since EP is only vaid if a pawn has JUST moved
+    // through those squares
+    public long generateEnPassentMask(int playerSign, int origin){
+        int rank = origin / 8;
+        int file = origin % 8;
+        Move lastMove = this.playedMoves.peek();
+        // return 0L if move is null
+        if (lastMove == null){return 0L;}
+        int lastMovePiece = lastMove.getPiece();
+        int lastMoveDestBit = lastMove.getDestBit();
+        int lastMoveRankDiff = Math.abs(lastMove.getOriginRank() - lastMove.getDestinationRank());
+        
+        int opponentPawn = (playerSign > 0) ? -1 : 1;
+        int rightAttackShift = (playerSign > 0) ? 9 : -7;
+        int leftAttackShift = (playerSign > 0) ? 7 : -9;
+        int epRank = (playerSign > 0) ? 4 : 3;
+        
+        // Return 0L if:
+        // - Last move was not enemy pawn move
+        // - Current rank is not eligible for EP
+        if ((rank != epRank) || (Math.abs(lastMovePiece) != 1)){return 0L;}
+
+        long retMask = 0L;
+
+       
+        // Left border, only check right EP
+        if (file == 0){
+            int rightPiece = this.boardState[rank][file + 1];
+            int rightSquare = (rank * 8) + file + 1;
+            //       If piece == pawn                  Check correct pawn,           2 squares 'forward'
+            if ((rightPiece == opponentPawn) && (lastMoveDestBit == rightSquare) && (lastMoveRankDiff > 1)){
+                retMask |= (1L << (63 - (origin + rightAttackShift))); // Return with the right-forward attack mask
+            }
+            
+        }
+        // Right border, only check left EP
+        else if (file == 7){
+            int leftPiece = this.boardState[rank][file - 1];
+            int leftSquare = (rank * 8) + file - 1;
+
+            if ((leftPiece == opponentPawn) && (lastMoveDestBit == leftSquare) && (lastMoveRankDiff > 1)){
+                retMask |= (1L << (63 - (origin + leftAttackShift))); // Return with the left-forward attack mask
+            }
+        }
+        // Middle, check both side EP
+        else {
+            int leftPiece = this.boardState[rank][file -1];
+            int rightPiece = this.boardState[rank][file + 1];
+
+            int leftSquare = (rank * 8) + file - 1;
+            int rightSquare = leftSquare + 2;
+
+            if ((leftPiece == opponentPawn) && (lastMoveDestBit == leftSquare) && (lastMoveRankDiff > 1)){
+                retMask |= (1L << (63 - (origin + leftAttackShift))); // Add the left-forward attack mask
+            }
+            else if ((rightPiece == opponentPawn) && (lastMoveDestBit == rightSquare) && (lastMoveRankDiff > 1)){
+                retMask |= (1L << (63 - (origin + rightAttackShift))); // Add the left-forward attack mask
+            }
+
+        }
+
+        return retMask;
+    }
+
     // TEST FUNCTION REMOVE AFTER
     public void setBoard(int[][] newBoard){
         this.boardState = newBoard;
@@ -1308,4 +1475,11 @@ public class Board {
     public void setOcc(long occ){
         this.bitState = occ;
     }
+    public void addMoveToQueue(Move move){
+        this.playedMoves.add(move);
+    }
+    public void setMoveQueue(ArrayDeque<Move> queue){
+        this.playedMoves = queue;
+    }
+    
 }

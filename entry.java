@@ -1,12 +1,24 @@
 
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import engine.Board;
 import javafx.application.Application;
 import javafx.BoardMaker;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
+
 
 public class entry{
     public static void main(String[] args){
+        // try(PrintStream out = new PrintStream(System.out, true, StandardCharsets.UTF_8.name())){
+        //     System.setOut(out);
+        // }
+        // catch (Exception e){
+        //     System.out.println("Exception occurred setting system OUT encoding: " + e);
+        // }
+        // chcp 65001
         int batch_size = 100;
 
         String mysqlServer = "jdbc:mysql://localhost:3306";
@@ -32,11 +44,10 @@ public class entry{
         Long occMask = Board.boardToBitboard(Board.generateFreshBoard());
         Long pieceMask = (1L << 63 - 27);
         
-        BoardMaker.launch(BoardMaker.class, args);
-
-        
-
-        
+        //BoardMaker.launch(BoardMaker.class, args);
+        test.generateCheckEvasionTest(1);
+        //test.generateEnPassentMaskTest();
+        //Board.bitboardVisualize(0b000000000000000000000000000000000000000000000100000000000000000L);
 
         // // Get occupancy along the vertical
         // Long rayOcc = occMask & vertMask;
