@@ -46,7 +46,7 @@ public class entry{
         
         //BoardMaker.launch(BoardMaker.class, args);
         test.generateCheckEvasionTest(1);
-        //test.generateEnPassentMaskTest();
+        test.generateEnPassentMaskTest();
         //Board.bitboardVisualize(0b000000000000000000000000000000000000000000000100000000000000000L);
 
         // // Get occupancy along the vertical

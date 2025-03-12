@@ -38,6 +38,7 @@ public class Board {
     // 5 - Queen
     // 6 - King
 
+    //#region Board state variables
     /*
      * Game loop:
      * - Initialize
@@ -93,7 +94,7 @@ public class Board {
     public final Long B_CASTLE_SHORT = 0b0000000000000000000000000000000000000000000000000000000000000110L;
     public final Long W_CASTLE_LONG = 0b0011000000000000000000000000000000000000000000000000000000000000L;
     public final Long B_CASTLE_LONG = 0b0000000000000000000000000000000000000000000000000000000000110000L;
-
+    //#endregion
     public Board(){
         // Generate fresh moves queue
         playedMoves = new ArrayDeque<>();
@@ -108,8 +109,8 @@ public class Board {
         boardState = generateFreshBoard();
     }
 
+    //#region Base ray generation
     // Generate non-sliding piece masks
-
     public static ArrayList<Long> generateWhitePawnMoveMask(){
         
         ArrayList<Long> retMask = new ArrayList<>();
@@ -477,10 +478,8 @@ public class Board {
         }
         return retMasks;
     }
-
     // Generate sliding masks
     // These are simply rays that flag the entire path
-
     // Straight rays return 8 masks instead of 64
     // Easy to modify later, simply add 8 copies of each rank/file instead of 1
     public static ArrayList<Long> generateVerticalRayMask(){
@@ -507,7 +506,6 @@ public class Board {
 
         return retMasks;
     }
-
     // Diagonals return 64 masks again as diagonals change with both rank and file
     public static ArrayList<Long> generateDiagonalRayMask(){
         ArrayList<Long> retMasks = new ArrayList<>();
@@ -570,14 +568,14 @@ public class Board {
         return retMasks;
     }
     
-
+    
     // White/black en pessant, White/black king castling
     // Unused, generate valid moves ray-by-ray with hypQuint()
-
+    /*
     public static ArrayList<Long> generateQueenMoveMask(){
         ArrayList<Long> retMasks = new ArrayList<>();
         // For the rank and file, set 1s to the whole row and column
-
+        
         for (int i = 0; i < 64; i++){
             int rank = i / 8;
             int file = i % 8;
@@ -697,145 +695,387 @@ public class Board {
 
         return retMasks;
     }
-
+     */
     //
-    public static String longToString(Long num){
-        return String.format("%64s", Long.toBinaryString(num)).replace(' ', '0');
+    //#endregion
+
+    //#region Mask generation
+    // generate ATTACK masks accounting for blockers
+    public long generatePlayerPieceMask(int piece){
+        long retMask = 0L;
+        //Rank
+        for (int i = 0; i < 8; i++){
+            //File
+            for (int j = 0; j < 8; j++){
+                if (piece < 0){
+                    if (this.boardState[i][j] < 0){
+                        int bitPos = (i * 8) + j;
+                        retMask |= (1L << (63 - bitPos));
+                    }
+                }
+                else {
+                    if (this.boardState[i][j] > 0){
+                        int bitPos = (i * 8) + j;
+                        retMask |= (1L << (63 - bitPos));
+                    }
+                }
+            }
+        }
+
+        return retMask;
     }
 
-    public static Long boardToBitboard(int[][] board){
-        if (board.length != 8 || board[0].length != 8){
-            System.out.println("boardToBitboard ERROR: Incompatible board format provided.");
+    public long generateValidStraightRayMask(int position){
+        long retBoard = 0L;
+        long pieceMask = (1L << (63 - position));
+
+        retBoard |= hypQuint(this.bitState, HORIZONTAL_RAY.get(position / 8), pieceMask);
+        retBoard |= hypQuint(this.bitState, VERTICAL_RAY.get(position % 8), pieceMask);
+
+        return retBoard;
+    }
+
+    public long generateValidDiagonalRayMask(int position){
+        long retBoard = 0L;
+        long pieceMask = (1L << (63 - position));
+
+        retBoard |= hypQuint(this.bitState, DIAGONAL_MOVE.get(position), pieceMask);
+        retBoard |= hypQuint(this.bitState, ANTI_MOVE.get(position), pieceMask);
+
+        return retBoard;
+    }
+
+    public long generateValidAllRayMask(int position){
+        long retBoard = generateValidStraightRayMask(position);
+        retBoard |= generateValidDiagonalRayMask(position);
+
+        return retBoard;
+    }
+
+        // Checks for:
+    //  - Piece attack pattern given origin square
+    //  - Sliding piece blocking (hypQuint)
+    //  - Opponent occupancy in attacked square (Mask comparison for non-sliders, hypQuint for sliding pieces)
+    //  - Friendly occupancy invalidating self-captures
+    // Does not check for:
+    //  - Forcing moves (Different method is invoked to find valid check escape moves)
+    //  - Self-check (Should check right before Move object creation)
+    public long generatePieceAttackMask(int piece, int origin){
+        long retMask = 0L;
+        long friendlyOcc = (piece < 0) ? generatePlayerPieceMask(-1) : generatePlayerPieceMask(1);
+        long opponentVision = (piece < 0) ? generatePieceVision(1) : generatePieceVision(-1);
+        long temp;
+        switch (Math.abs(piece)){
+            case 1:
+                // Pawn vision vs Attack is also different like Kings
+                // Attacks: Requires occupancy check at destination square
+                // Vision: No occupancy check, Possible attack moves on a square next turn if king moves into that square
+                retMask |= generatePawnAttackMask(piece, origin);
+                break;
+            case 2:
+                // Invaldiate self captures
+                retMask |= (KNIGHT_MOVE.get(origin) ^ (friendlyOcc & KNIGHT_MOVE.get(origin)));
+                break;
+            case 3:
+                // Invalidate bishop self-captures
+                temp = generateValidDiagonalRayMask(origin);
+                retMask |= (temp ^ (friendlyOcc & temp));
+                break;
+            case 4: 
+                // Invalidate rook self-capture
+                temp = generateValidStraightRayMask(origin);
+                retMask |= (generateValidStraightRayMask(origin) ^ (friendlyOcc & temp));
+                break;
+            case 5:
+                // Queen
+                temp = generateValidAllRayMask(origin);
+                retMask |= (generateValidAllRayMask(origin) ^ (friendlyOcc & temp));
+                break;
+            case 6:
+                // King - (Attack only, can never check king with king)
+                // As attack mask: Vision avoidance, move pattern, friendly occupancy
+                // As vision mask: NO vision avoidance, move pattern, no friendly occupancy (if friendly then not enemy king/castling)
+                long kingPosMask = (1L << (63 - origin));
+                // If king is in check, we must remove the king's position from the valid moves as XORing with opponent vision in this case
+                // will flip the king position to 1
+                if ((opponentVision & kingPosMask) > 0){
+                    retMask |= (KING_MOVE.get(origin) & ~friendlyOcc) & ~opponentVision & ~kingPosMask;
+                }
+                else {
+                    retMask |= (KING_MOVE.get(origin) & ~friendlyOcc) & ~opponentVision;
+                }
+
+
+
+
+                break;
+
+        }
+        return retMask;
+    }
+
+    public long generatePawnMoveMask(int playerSign, int origin){
+        int rank = origin / 8;
+        int file = origin % 8;
+
+        if ((playerSign > 0) && (rank == 1)){
+            long above = (1L << (63 - origin + 8));
+            // if square above the pawn is blocked, it cannot move at all
+            if ((above & this.bitState) > 0){
+                return 0L;
+            }
+            else {
+                // Pawn can move forward 1 even if the 2nd square is blocked
+                return W_PAWN_MOVE.get(origin) & ~this.bitState;
+            }
+        }
+        else if ((playerSign) < 0 && (rank == 6)){
+            long below = (1L << (63 - origin - 8));
+            if ((below & this.bitState) > 0){
+                return 0L;
+            }
+            else {
+                return B_PAWN_MOVE.get(origin) & ~this.bitState;
+            }
+        }
+        else {
+            return (playerSign > 0) ? (W_PAWN_MOVE.get(origin) & ~this.bitState) : (B_PAWN_MOVE.get(origin) & ~this.bitState);
+        }
+
+    }
+
+    public long generatePawnAttackMask(int playerSign, int origin){
+        long opponentOcc = (playerSign > 0) ? generatePlayerPieceMask(-1) : generatePlayerPieceMask(1);
+        long retMask = 0L;
+        if (playerSign > 0){
+            // Valid attacks are ones with opponents on the destination square
+            retMask |= (W_PAWN_ATTACK.get(origin) & opponentOcc);
+        }
+        else {
+            retMask |= (B_PAWN_ATTACK.get(origin) & opponentOcc);
+        }
+
+        return retMask | generateEnPassentMask(playerSign, origin);
+    }
+
+    // Vision doesn't necessarily grant validity
+    // Vision == threat of capture == attacks
+    // Use for move validity (king move check evasion, castling, self-checking moves )
+    public long generatePieceVision(int playerSign){
+        long retMask = 0L;
+
+        // Possible attack moves for all pieces constitute vision on the king and castling path
+        // No self-check avoidance required
+        // For king: No vision avoidance required
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                int bitInd = (i * 8) + j;
+                int piece = this.boardState[i][j];
+                if ((playerSign > 0) && (piece > 0)){
+                    switch (piece){
+                        // Pawn attack
+                        case 1: 
+                            // No occupancy check required for vision
+                            // If a piece exists, the enemy king will never be there, if it doesn't exist, the square is in vision
+                            // If a piece exists, they cannot castle anyways, if it doesn't exist, they can't castle as its in vision
+                            // Additionally, if friendly piece is capture by enemy, it is now in vision (prevents king captures)
+                            retMask |= W_PAWN_ATTACK.get(bitInd);
+                            break;
+                        // Knight
+                        case 2:
+                            // No need for occupancy check once again
+                            retMask |= KNIGHT_MOVE.get(bitInd);
+                            break;
+                        // Bishop
+                        case 3:
+                            // Sliding pieces still require ray blocker calculations
+                            // However don't require piece checking at destination
+                            retMask |= generateValidDiagonalRayMask(bitInd);
+                            break;
+                        // Rook
+                        case 4:
+                            retMask |= generateValidStraightRayMask(bitInd);
+                            break;
+                        // Queen
+                        case 5:
+                            retMask |= generateValidAllRayMask(bitInd);
+                            break;
+                        // King
+                        case 6:
+                            // No need to check for opponent vision, 
+                            // no need to check for occupancy for same reasons
+                            retMask |= KING_MOVE.get(bitInd);
+                            break;
+                    } 
+                    // KINGS vision counts as vision
+                }
+                // Same logic for Black vision
+                else if ((playerSign < 0) && (piece < 0)){
+                    switch (piece){
+                        case -1: 
+                            retMask |= B_PAWN_ATTACK.get(bitInd);
+                            break;
+                        case -2:
+                            retMask |= KNIGHT_MOVE.get(bitInd);
+                            break;
+                        case -3:
+                            retMask |= generateValidDiagonalRayMask(bitInd);
+                            break;
+                        case -4:
+                            retMask |= generateValidStraightRayMask(bitInd);
+                            break;
+                        case -5:
+                            retMask |= generateValidAllRayMask(bitInd);
+                            break;
+                        case -6:
+                            retMask |= KING_MOVE.get(bitInd);
+                            break;
+                    } 
+                }
+            }
+        }
+        return retMask;
+    }
+
+    // Isolates the specific ray between the checking piece and king, ignoring all other rays
+    // Includes origin (capture)
+    public static long generateEvasionPath(int origin, int destination){
+        int direction;
+
+        int originRank = origin / 8;
+        int originFile = origin % 8;
+        int originDiag = origin % 9;
+        int originAnti = origin% 7;
+        int destRank = destination / 8;
+        int destFile = destination % 8;
+        int destDiag = destination % 9;
+        int destAnti = destination % 7;
+
+        // Ensure two points lie on the same ray
+        if (!((originRank == destRank) || (originFile == destFile) || (originAnti == destAnti) || (originDiag == destDiag))){
+            System.out.print("Invalid origin and destination squares for evasion path generation");
             return 0L;
         }
 
-        Long retBoard = 0L;
-        int bitCount = 0;
-        // Bitcount increments for each inner loop (8x8 = 64) allowing it to index the 64bit bitboard properly
-        for (int i = 0; i < 8; i ++){
-            for (int j = 0; j < 8; j++){
-                // If there is any piece, shift a 1 down to that position in the bitboard
-                if (board[i][j] != 0){
-                    retBoard |= (1L << (63 - bitCount));
-                }
-                bitCount++;
+        // Straight path
+        if (originRank == destRank){
+            // Right straight path
+            if (destination > origin){
+                direction = 1;
+            }
+            // left straight path
+            else {
+                direction = -1;
             }
         }
-
-        return retBoard;
-    };
-
-    public static Long[][] generateRandomZobrist(){
-        Long[][] retArray = new Long[8][8];
-
-        for (int i = 0; i < 8; i++){
-            for (int j = 0; j < 8; j++){
-                retArray[i][j] = ThreadLocalRandom.current().nextLong();
+        else if (originFile == destFile){
+            // Straight up
+            if (destination > origin){
+                direction = 8;
+            }
+            // Straight down
+            else {
+                direction = -8;
             }
         }
-
-        return retArray;
-    };
-
-    public void updateZobrist(int pieceValue, int bitIndex){}
-
-    public static int[][] generateFreshBoard(){
-        int[][] retArray = new int[8][8];
-
-        for (int i = 0; i < 8; i++){
-            for (int j = 0; j < 8; j++){
-                retArray[i][j] = 0;
-            }
+        // Up-right diagonal
+        else if ((destRank > originRank) && (destFile > originFile)){
+            direction = 9;
+        }
+        // Up-left diagonal
+        else if ((destRank > originRank) && (destFile < originFile)){
+            direction = 7;
+        }
+        // Down-right diagonal
+        else if ((destRank < originRank) && (destFile > originFile)){
+            direction = -7;
+        }
+        // Down-left diagonal
+        // Just an 'else' to satisfy the compiler
+        else {
+            direction = -9;
         }
 
-        // Fill pawns
-        for (int i = 0; i < 8; i++){
-            retArray[1][i] = 1;
+        long pos = (1L << (63 - origin));
+        long retMask = (1L << (63 - origin));
+        long endMask = (1L << (63 - destination));
+
+        while ((pos = shift(pos, direction)) != endMask){
+            retMask |= pos;
         }
-        for (int i = 0; i < 8; i++){
-            retArray[6][i] = -1;
-        }
 
-        // Set white major pieces
-        retArray[0][0] = 4;
-        retArray[0][1] = 2;
-        retArray[0][2] = 3;
-        retArray[0][3] = 5;
-        retArray[0][4] = 6;
-        retArray[0][5] = 3;
-        retArray[0][6] = 2;
-        retArray[0][7] = 4;
-
-        // Set black major pieces
-        retArray[7][0] = -4;
-        retArray[7][1] = -2;
-        retArray[7][2] = -3;
-        retArray[7][3] = -5;
-        retArray[7][4] = -6;
-        retArray[7][5] = -3;
-        retArray[7][6] = -2;
-        retArray[7][7] = -4;
-
-        return retArray;
-    };
-
-    // Optimized in terms of operation types, still high number of operations
-    public static Long transpose(Long board){
-        Long retBoard = 0L;
-        int iteration = 0;
-        for (int i = 0; i < 8; i++){
-            for (int j = 0; j < 8; j++){
-                // Shift down to current index
-                int index = (j * 8) + i;
-                Long indexBit = (1L << index);
-
-                // Read board at index, 1 for something 0 for nothing
-                indexBit &= board;
-
-                // If we read a 1 at the index, shift down by that index and OR it, to add to retBoard
-                // If not, then we skip the index as it is already 0
-                if (indexBit != 0){
-                    retBoard |= (1L << iteration);
-                }
-                iteration ++;
-            }
-        }
-        return retBoard;
+        return retMask;
     }
-
-    // occMask DOES NOT INCLUDE the piece in question
-    // rayMask is the specific ray we're calculating at the moment
-    // pieceMask is the location of the piece
-    // Provide RLERF encoded parameters, returns RLERF encoded mask
-    public static Long hypQuint(Long occMask, Long rayMask, Long pieceMask){
-        Long retBits;
-        // Reverse all provided bitmasks from RLERF --> LERF
-        occMask = Long.reverse(occMask);
-        rayMask = Long.reverse(rayMask);
-        pieceMask = Long.reverse(pieceMask);
-
-        // occMask becomes only the pieces in the path of the ray
-        occMask = occMask & rayMask;
-
-        //retBits = ((rayOcc & rayMask) - (2 * pieceMask)) ^ (Long.reverse(Long.reverse(rayOcc & rayMask) - 2 * Long.reverse(pieceMask))) & rayMask;
-        //retBits = ((rayOcc & rayMask) - (2 * pieceMask)) ^ (Long.reverse(Long.reverse(rayOcc & rayMask) - Long.reverse(2 *pieceMask))) & rayMask;
-        //retBits = ((rayMask & occMask) - (2 * pieceMask)) ^ Long.reverse(Long.reverse(rayMask & occMask) - Long.reverse(pieceMask * 2)) & rayMask;
-        Long forward = rayMask & occMask;
-        Long reverse = Long.reverse(forward);
-        forward = forward - (2 * pieceMask);
-        reverse = reverse - (2 * Long.reverse(pieceMask));
-
-        // System.out.println("rayMask: " + test.longToString(rayMask));
-        // System.out.println("occMask: " + test.longToString(occMask));
-        // System.out.println("pieceMask: " + test.longToString(pieceMask));
-
-        retBits = (forward ^ Long.reverse(reverse)) & rayMask;
-       
-        // Reverse final bitmask from LERF --> RLERF
-        return Long.reverse(retBits);
+    
+    // Returns a one-bit enpassent mask
+    // Doesn't check for destination square occupancy since EP is only vaid if a pawn has JUST moved
+    // through those squares
+    public long generateEnPassentMask(int playerSign, int origin){
+        int rank = origin / 8;
+        int file = origin % 8;
+        Move lastMove = this.playedMoves.peek();
+        // return 0L if move is null
+        if (lastMove == null){return 0L;}
+        int lastMovePiece = lastMove.getPiece();
+        int lastMoveDestBit = lastMove.getDestBit();
+        int lastMoveRankDiff = Math.abs(lastMove.getOriginRank() - lastMove.getDestinationRank());
         
-    }
+        int opponentPawn = (playerSign > 0) ? -1 : 1;
+        int rightAttackShift = (playerSign > 0) ? 9 : -7;
+        int leftAttackShift = (playerSign > 0) ? 7 : -9;
+        int epRank = (playerSign > 0) ? 4 : 3;
+        
+        // Return 0L if:
+        // - Last move was not enemy pawn move
+        // - Current rank is not eligible for EP
+        if ((rank != epRank) || (Math.abs(lastMovePiece) != 1)){return 0L;}
 
+        long retMask = 0L;
+
+       
+        // Left border, only check right EP
+        if (file == 0){
+            int rightPiece = this.boardState[rank][file + 1];
+            int rightSquare = (rank * 8) + file + 1;
+            //       If piece == pawn                  Check correct pawn,           2 squares 'forward'
+            if ((rightPiece == opponentPawn) && (lastMoveDestBit == rightSquare) && (lastMoveRankDiff > 1)){
+                retMask |= (1L << (63 - (origin + rightAttackShift))); // Return with the right-forward attack mask
+            }
+            
+        }
+        // Right border, only check left EP
+        else if (file == 7){
+            int leftPiece = this.boardState[rank][file - 1];
+            int leftSquare = (rank * 8) + file - 1;
+
+            if ((leftPiece == opponentPawn) && (lastMoveDestBit == leftSquare) && (lastMoveRankDiff > 1)){
+                retMask |= (1L << (63 - (origin + leftAttackShift))); // Return with the left-forward attack mask
+            }
+        }
+        // Middle, check both side EP
+        else {
+            int leftPiece = this.boardState[rank][file -1];
+            int rightPiece = this.boardState[rank][file + 1];
+
+            int leftSquare = (rank * 8) + file - 1;
+            int rightSquare = leftSquare + 2;
+
+            if ((leftPiece == opponentPawn) && (lastMoveDestBit == leftSquare) && (lastMoveRankDiff > 1)){
+                retMask |= (1L << (63 - (origin + leftAttackShift))); // Add the left-forward attack mask
+            }
+            else if ((rightPiece == opponentPawn) && (lastMoveDestBit == rightSquare) && (lastMoveRankDiff > 1)){
+                retMask |= (1L << (63 - (origin + rightAttackShift))); // Add the left-forward attack mask
+            }
+
+        }
+
+        return retMask;
+    }
+    
+    
+    //#endregion
+
+    //#region Move generation
     // Move generation for FORCING check states
     // Must also account for Self-checking as this is a move generator
     // Returns list of valid piece moves as int[]{piece, origin, destination}
@@ -948,30 +1188,6 @@ public class Board {
         return retArrayFinal;
     }
 
-    public long generatePlayerPieceMask(int piece){
-        long retMask = 0L;
-        //Rank
-        for (int i = 0; i < 8; i++){
-            //File
-            for (int j = 0; j < 8; j++){
-                if (piece < 0){
-                    if (this.boardState[i][j] < 0){
-                        int bitPos = (i * 8) + j;
-                        retMask |= (1L << (63 - bitPos));
-                    }
-                }
-                else {
-                    if (this.boardState[i][j] > 0){
-                        int bitPos = (i * 8) + j;
-                        retMask |= (1L << (63 - bitPos));
-                    }
-                }
-            }
-        }
-
-        return retMask;
-    }
-
     // Returns an ArrayList<int[]> with int[] containing pieceID, origin, destination
     // These are all existing checks against player with playerSign
     public ArrayList<int[]> getOpponentChecks(int playerSign){
@@ -1016,336 +1232,86 @@ public class Board {
         return retChecks;
     }
 
-    public int findKingBitPosition(int playerSign){
-        int kingInt = (playerSign > 0) ? 6 : -6;
-        for (int i = 0; i < 8; i++){
-            for (int j = 0; j < 8; j++){
-                if (this.boardState[i][j] == kingInt){
-                    return (i * 8) + j;
-                }
-            }
-        }
-        // returns negative if not found
-        return -1;
+    //#endregion
+
+    //#region Board utility
+    public static String longToString(Long num){
+        return String.format("%64s", Long.toBinaryString(num)).replace(' ', '0');
     }
 
-    // generate ATTACK masks accounting for blockers
-    public long generateValidStraightRayMask(int position){
-        long retBoard = 0L;
-        long pieceMask = (1L << (63 - position));
-
-        retBoard |= hypQuint(this.bitState, HORIZONTAL_RAY.get(position / 8), pieceMask);
-        retBoard |= hypQuint(this.bitState, VERTICAL_RAY.get(position % 8), pieceMask);
-
-        return retBoard;
-    }
-
-    public long generateValidDiagonalRayMask(int position){
-        long retBoard = 0L;
-        long pieceMask = (1L << (63 - position));
-
-        retBoard |= hypQuint(this.bitState, DIAGONAL_MOVE.get(position), pieceMask);
-        retBoard |= hypQuint(this.bitState, ANTI_MOVE.get(position), pieceMask);
-
-        return retBoard;
-    }
-
-    public long generateValidAllRayMask(int position){
-        long retBoard = generateValidStraightRayMask(position);
-        retBoard |= generateValidDiagonalRayMask(position);
-
-        return retBoard;
-    }
-
-
-    // Checks for:
-    //  - Piece attack pattern given origin square
-    //  - Sliding piece blocking (hypQuint)
-    //  - Opponent occupancy in attacked square (Mask comparison for non-sliders, hypQuint for sliding pieces)
-    //  - Friendly occupancy invalidating self-captures
-    // Does not check for:
-    //  - Forcing moves (Different method is invoked to find valid check escape moves)
-    //  - Self-check (Should check right before Move object creation)
-    public long generatePieceAttackMask(int piece, int origin){
-        long retMask = 0L;
-        long friendlyOcc = (piece < 0) ? generatePlayerPieceMask(-1) : generatePlayerPieceMask(1);
-        long opponentVision = (piece < 0) ? generatePieceVision(1) : generatePieceVision(-1);
-        long temp;
-        switch (Math.abs(piece)){
-            case 1:
-                // Pawn vision vs Attack is also different like Kings
-                // Attacks: Requires occupancy check at destination square
-                // Vision: No occupancy check, Possible attack moves on a square next turn if king moves into that square
-                retMask |= generatePawnAttackMask(piece, origin);
-                break;
-            case 2:
-                // Invaldiate self captures
-                retMask |= (KNIGHT_MOVE.get(origin) ^ (friendlyOcc & KNIGHT_MOVE.get(origin)));
-                break;
-            case 3:
-                // Invalidate bishop self-captures
-                temp = generateValidDiagonalRayMask(origin);
-                retMask |= (temp ^ (friendlyOcc & temp));
-                break;
-            case 4: 
-                // Invalidate rook self-capture
-                temp = generateValidStraightRayMask(origin);
-                retMask |= (generateValidStraightRayMask(origin) ^ (friendlyOcc & temp));
-                break;
-            case 5:
-                // Queen
-                temp = generateValidAllRayMask(origin);
-                retMask |= (generateValidAllRayMask(origin) ^ (friendlyOcc & temp));
-                break;
-            case 6:
-                // King - (Attack only, can never check king with king)
-                // As attack mask: Vision avoidance, move pattern, friendly occupancy
-                // As vision mask: NO vision avoidance, move pattern, no friendly occupancy (if friendly then not enemy king/castling)
-                long kingPosMask = (1L << (63 - origin));
-                // If king is in check, we must remove the king's position from the valid moves as XORing with opponent vision in this case
-                // will flip the king position to 1
-                if ((opponentVision & kingPosMask) > 0){
-                    retMask |= (KING_MOVE.get(origin) & ~friendlyOcc) & ~opponentVision & ~kingPosMask;
-                }
-                else {
-                    retMask |= (KING_MOVE.get(origin) & ~friendlyOcc) & ~opponentVision;
-                }
-
-
-
-
-                break;
-
-        }
-        return retMask;
-    }
-
-    public long generatePawnMoveMask(int playerSign, int origin){
-        int rank = origin / 8;
-        int file = origin % 8;
-
-        if ((playerSign > 0) && (rank == 1)){
-            long above = (1L << (63 - origin + 8));
-            // if square above the pawn is blocked, it cannot move at all
-            if ((above & this.bitState) > 0){
-                return 0L;
-            }
-            else {
-                // Pawn can move forward 1 even if the 2nd square is blocked
-                return W_PAWN_MOVE.get(origin) & ~this.bitState;
-            }
-        }
-        else if ((playerSign) < 0 && (rank == 6)){
-            long below = (1L << (63 - origin - 8));
-            if ((below & this.bitState) > 0){
-                return 0L;
-            }
-            else {
-                return B_PAWN_MOVE.get(origin) & ~this.bitState;
-            }
-        }
-        else {
-            return (playerSign > 0) ? (W_PAWN_MOVE.get(origin) & ~this.bitState) : (B_PAWN_MOVE.get(origin) & ~this.bitState);
-        }
-
-    }
-
-    public long generatePawnAttackMask(int playerSign, int origin){
-        long opponentOcc = (playerSign > 0) ? generatePlayerPieceMask(-1) : generatePlayerPieceMask(1);
-        long retMask = 0L;
-        if (playerSign > 0){
-            // Valid attacks are ones with opponents on the destination square
-            retMask |= (W_PAWN_ATTACK.get(origin) & opponentOcc);
-        }
-        else {
-            retMask |= (B_PAWN_ATTACK.get(origin) & opponentOcc);
-        }
-
-        return retMask | generateEnPassentMask(playerSign, origin);
-    }
-
-    // Returns bit position in RLERF encoding
-    public static ArrayList<Integer> getSetBitPositions(long bitboard){
-        ArrayList<Integer> retArray = new ArrayList<>();
-        while (bitboard != 0){
-            int index = Long.numberOfTrailingZeros(bitboard);
-            // 63 - index for RLERF
-            retArray.add(63 - index);
-            bitboard &= bitboard - 1;
-        }
-
-        return retArray;
-    }
-
-    // Vision doesn't necessarily grant validity
-    // Vision == threat of capture == attacks
-    // Use for move validity (king move check evasion, castling, self-checking moves )
-    public long generatePieceVision(int playerSign){
-        long retMask = 0L;
-
-        // Possible attack moves for all pieces constitute vision on the king and castling path
-        // No self-check avoidance required
-        // For king: No vision avoidance required
-        for (int i = 0; i < 8; i++){
-            for (int j = 0; j < 8; j++){
-                int bitInd = (i * 8) + j;
-                int piece = this.boardState[i][j];
-                if ((playerSign > 0) && (piece > 0)){
-                    switch (piece){
-                        // Pawn attack
-                        case 1: 
-                            // No occupancy check required for vision
-                            // If a piece exists, the enemy king will never be there, if it doesn't exist, the square is in vision
-                            // If a piece exists, they cannot castle anyways, if it doesn't exist, they can't castle as its in vision
-                            // Additionally, if friendly piece is capture by enemy, it is now in vision (prevents king captures)
-                            retMask |= W_PAWN_ATTACK.get(bitInd);
-                            break;
-                        // Knight
-                        case 2:
-                            // No need for occupancy check once again
-                            retMask |= KNIGHT_MOVE.get(bitInd);
-                            break;
-                        // Bishop
-                        case 3:
-                            // Sliding pieces still require ray blocker calculations
-                            // However don't require piece checking at destination
-                            retMask |= generateValidDiagonalRayMask(bitInd);
-                            break;
-                        // Rook
-                        case 4:
-                            retMask |= generateValidStraightRayMask(bitInd);
-                            break;
-                        // Queen
-                        case 5:
-                            retMask |= generateValidAllRayMask(bitInd);
-                            break;
-                        // King
-                        case 6:
-                            // No need to check for opponent vision, 
-                            // no need to check for occupancy for same reasons
-                            retMask |= KING_MOVE.get(bitInd);
-                            break;
-                    } 
-                    // KINGS vision counts as vision
-                }
-                // Same logic for Black vision
-                else if ((playerSign < 0) && (piece < 0)){
-                    switch (piece){
-                        case -1: 
-                            retMask |= B_PAWN_ATTACK.get(bitInd);
-                            break;
-                        case -2:
-                            retMask |= KNIGHT_MOVE.get(bitInd);
-                            break;
-                        case -3:
-                            retMask |= generateValidDiagonalRayMask(bitInd);
-                            break;
-                        case -4:
-                            retMask |= generateValidStraightRayMask(bitInd);
-                            break;
-                        case -5:
-                            retMask |= generateValidAllRayMask(bitInd);
-                            break;
-                        case -6:
-                            retMask |= KING_MOVE.get(bitInd);
-                            break;
-                    } 
-                }
-            }
-        }
-        return retMask;
-    }
-
-    public long getBitState(){
-        return this.bitState;
-    }
-
-    public int[][] getBoard(){
-        int[][] retBoard = new int[8][8];
-
-        for (int i = 0; i < 8; i++){
-            retBoard[i] = this.boardState[i].clone();
-        }
-        return retBoard;
-    }
-
-    public long getOcc(){
-        return this.bitState;
-    }
-    
-    public static long shift(long board, int direction){
-        return (direction > 0) ? (board >>> direction) : (board << -direction);
-    }
-
-    // Isolates the specific ray between the checking piece and king, ignoring all other rays
-    // Includes origin (capture)
-    public static long generateEvasionPath(int origin, int destination){
-        int direction;
-
-        int originRank = origin / 8;
-        int originFile = origin % 8;
-        int originDiag = origin % 9;
-        int originAnti = origin% 7;
-        int destRank = destination / 8;
-        int destFile = destination % 8;
-        int destDiag = destination % 9;
-        int destAnti = destination % 7;
-
-        // Ensure two points lie on the same ray
-        if (!((originRank == destRank) || (originFile == destFile) || (originAnti == destAnti) || (originDiag == destDiag))){
-            System.out.print("Invalid origin and destination squares for evasion path generation");
+    public static Long boardToBitboard(int[][] board){
+        if (board.length != 8 || board[0].length != 8){
+            System.out.println("boardToBitboard ERROR: Incompatible board format provided.");
             return 0L;
         }
 
-        // Straight path
-        if (originRank == destRank){
-            // Right straight path
-            if (destination > origin){
-                direction = 1;
+        Long retBoard = 0L;
+        int bitCount = 0;
+        // Bitcount increments for each inner loop (8x8 = 64) allowing it to index the 64bit bitboard properly
+        for (int i = 0; i < 8; i ++){
+            for (int j = 0; j < 8; j++){
+                // If there is any piece, shift a 1 down to that position in the bitboard
+                if (board[i][j] != 0){
+                    retBoard |= (1L << (63 - bitCount));
+                }
+                bitCount++;
             }
-            // left straight path
-            else {
-                direction = -1;
-            }
-        }
-        else if (originFile == destFile){
-            // Straight up
-            if (destination > origin){
-                direction = 8;
-            }
-            // Straight down
-            else {
-                direction = -8;
-            }
-        }
-        // Up-right diagonal
-        else if ((destRank > originRank) && (destFile > originFile)){
-            direction = 9;
-        }
-        // Up-left diagonal
-        else if ((destRank > originRank) && (destFile < originFile)){
-            direction = 7;
-        }
-        // Down-right diagonal
-        else if ((destRank < originRank) && (destFile > originFile)){
-            direction = -7;
-        }
-        // Down-left diagonal
-        // Just an 'else' to satisfy the compiler
-        else {
-            direction = -9;
         }
 
-        long pos = (1L << (63 - origin));
-        long retMask = (1L << (63 - origin));
-        long endMask = (1L << (63 - destination));
+        return retBoard;
+    };
 
-        while ((pos = shift(pos, direction)) != endMask){
-            retMask |= pos;
+    public static Long[][] generateRandomZobrist(){
+        Long[][] retArray = new Long[8][8];
+
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                retArray[i][j] = ThreadLocalRandom.current().nextLong();
+            }
         }
 
-        return retMask;
-    }
+        return retArray;
+    };
+
+    public static int[][] generateFreshBoard(){
+        int[][] retArray = new int[8][8];
+
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                retArray[i][j] = 0;
+            }
+        }
+
+        // Fill pawns
+        for (int i = 0; i < 8; i++){
+            retArray[1][i] = 1;
+        }
+        for (int i = 0; i < 8; i++){
+            retArray[6][i] = -1;
+        }
+
+        // Set white major pieces
+        retArray[0][0] = 4;
+        retArray[0][1] = 2;
+        retArray[0][2] = 3;
+        retArray[0][3] = 5;
+        retArray[0][4] = 6;
+        retArray[0][5] = 3;
+        retArray[0][6] = 2;
+        retArray[0][7] = 4;
+
+        // Set black major pieces
+        retArray[7][0] = -4;
+        retArray[7][1] = -2;
+        retArray[7][2] = -3;
+        retArray[7][3] = -5;
+        retArray[7][4] = -6;
+        retArray[7][5] = -3;
+        retArray[7][6] = -2;
+        retArray[7][7] = -4;
+
+        return retArray;
+    };
 
     public static int[][] deepCloneBoard(int[][] board){
         int[][] retBoard = new int[8][8];
@@ -1401,71 +1367,116 @@ public class Board {
         System.out.print(sbOuter.toString());
         System.out.println();
     }
-    
 
-    // Returns a one-bit enpassent mask
-    // Doesn't check for destination square occupancy since EP is only vaid if a pawn has JUST moved
-    // through those squares
-    public long generateEnPassentMask(int playerSign, int origin){
-        int rank = origin / 8;
-        int file = origin % 8;
-        Move lastMove = this.playedMoves.peek();
-        // return 0L if move is null
-        if (lastMove == null){return 0L;}
-        int lastMovePiece = lastMove.getPiece();
-        int lastMoveDestBit = lastMove.getDestBit();
-        int lastMoveRankDiff = Math.abs(lastMove.getOriginRank() - lastMove.getDestinationRank());
-        
-        int opponentPawn = (playerSign > 0) ? -1 : 1;
-        int rightAttackShift = (playerSign > 0) ? 9 : -7;
-        int leftAttackShift = (playerSign > 0) ? 7 : -9;
-        int epRank = (playerSign > 0) ? 4 : 3;
-        
-        // Return 0L if:
-        // - Last move was not enemy pawn move
-        // - Current rank is not eligible for EP
-        if ((rank != epRank) || (Math.abs(lastMovePiece) != 1)){return 0L;}
+    //#endregion
 
-        long retMask = 0L;
+    //#region Bit utility
+    // Optimized in terms of operation types, still high number of operations
+    public static Long transpose(Long board){
+        Long retBoard = 0L;
+        int iteration = 0;
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                // Shift down to current index
+                int index = (j * 8) + i;
+                Long indexBit = (1L << index);
 
+                // Read board at index, 1 for something 0 for nothing
+                indexBit &= board;
+
+                // If we read a 1 at the index, shift down by that index and OR it, to add to retBoard
+                // If not, then we skip the index as it is already 0
+                if (indexBit != 0){
+                    retBoard |= (1L << iteration);
+                }
+                iteration ++;
+            }
+        }
+        return retBoard;
+    }
+
+    // occMask DOES NOT INCLUDE the piece in question
+    // rayMask is the specific ray we're calculating at the moment
+    // pieceMask is the location of the piece
+    // Provide RLERF encoded parameters, returns RLERF encoded mask
+    public static Long hypQuint(Long occMask, Long rayMask, Long pieceMask){
+        Long retBits;
+        // Reverse all provided bitmasks from RLERF --> LERF
+        occMask = Long.reverse(occMask);
+        rayMask = Long.reverse(rayMask);
+        pieceMask = Long.reverse(pieceMask);
+
+        // occMask becomes only the pieces in the path of the ray
+        occMask = occMask & rayMask;
+
+        //retBits = ((rayOcc & rayMask) - (2 * pieceMask)) ^ (Long.reverse(Long.reverse(rayOcc & rayMask) - 2 * Long.reverse(pieceMask))) & rayMask;
+        //retBits = ((rayOcc & rayMask) - (2 * pieceMask)) ^ (Long.reverse(Long.reverse(rayOcc & rayMask) - Long.reverse(2 *pieceMask))) & rayMask;
+        //retBits = ((rayMask & occMask) - (2 * pieceMask)) ^ Long.reverse(Long.reverse(rayMask & occMask) - Long.reverse(pieceMask * 2)) & rayMask;
+        Long forward = rayMask & occMask;
+        Long reverse = Long.reverse(forward);
+        forward = forward - (2 * pieceMask);
+        reverse = reverse - (2 * Long.reverse(pieceMask));
+
+        // System.out.println("rayMask: " + test.longToString(rayMask));
+        // System.out.println("occMask: " + test.longToString(occMask));
+        // System.out.println("pieceMask: " + test.longToString(pieceMask));
+
+        retBits = (forward ^ Long.reverse(reverse)) & rayMask;
        
-        // Left border, only check right EP
-        if (file == 0){
-            int rightPiece = this.boardState[rank][file + 1];
-            int rightSquare = (rank * 8) + file + 1;
-            //       If piece == pawn                  Check correct pawn,           2 squares 'forward'
-            if ((rightPiece == opponentPawn) && (lastMoveDestBit == rightSquare) && (lastMoveRankDiff > 1)){
-                retMask |= (1L << (63 - (origin + rightAttackShift))); // Return with the right-forward attack mask
-            }
-            
-        }
-        // Right border, only check left EP
-        else if (file == 7){
-            int leftPiece = this.boardState[rank][file - 1];
-            int leftSquare = (rank * 8) + file - 1;
+        // Reverse final bitmask from LERF --> RLERF
+        return Long.reverse(retBits);
+        
+    }
 
-            if ((leftPiece == opponentPawn) && (lastMoveDestBit == leftSquare) && (lastMoveRankDiff > 1)){
-                retMask |= (1L << (63 - (origin + leftAttackShift))); // Return with the left-forward attack mask
+    public int findKingBitPosition(int playerSign){
+        int kingInt = (playerSign > 0) ? 6 : -6;
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                if (this.boardState[i][j] == kingInt){
+                    return (i * 8) + j;
+                }
             }
         }
-        // Middle, check both side EP
-        else {
-            int leftPiece = this.boardState[rank][file -1];
-            int rightPiece = this.boardState[rank][file + 1];
+        // returns negative if not found
+        return -1;
+    }
 
-            int leftSquare = (rank * 8) + file - 1;
-            int rightSquare = leftSquare + 2;
-
-            if ((leftPiece == opponentPawn) && (lastMoveDestBit == leftSquare) && (lastMoveRankDiff > 1)){
-                retMask |= (1L << (63 - (origin + leftAttackShift))); // Add the left-forward attack mask
-            }
-            else if ((rightPiece == opponentPawn) && (lastMoveDestBit == rightSquare) && (lastMoveRankDiff > 1)){
-                retMask |= (1L << (63 - (origin + rightAttackShift))); // Add the left-forward attack mask
-            }
-
+    // Returns bit position in RLERF encoding
+    public static ArrayList<Integer> getSetBitPositions(long bitboard){
+        ArrayList<Integer> retArray = new ArrayList<>();
+        while (bitboard != 0){
+            int index = Long.numberOfTrailingZeros(bitboard);
+            // 63 - index for RLERF
+            retArray.add(63 - index);
+            bitboard &= bitboard - 1;
         }
 
-        return retMask;
+        return retArray;
+    }
+
+    public static long shift(long board, int direction){
+        return (direction > 0) ? (board >>> direction) : (board << -direction);
+    }
+    
+    //#endregion
+
+    //#region Getters/Setters
+
+    public long getBitState(){
+        return this.bitState;
+    }
+
+    public int[][] getBoard(){
+        int[][] retBoard = new int[8][8];
+
+        for (int i = 0; i < 8; i++){
+            retBoard[i] = this.boardState[i].clone();
+        }
+        return retBoard;
+    }
+
+    public long getOcc(){
+        return this.bitState;
     }
 
     // TEST FUNCTION REMOVE AFTER
@@ -1482,4 +1493,5 @@ public class Board {
         this.playedMoves = queue;
     }
     
+    //#endregion
 }
