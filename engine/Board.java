@@ -57,7 +57,7 @@ public class Board {
 
     private Long bitState; // Current occupancy map for the whole board
     private int[][] boardState; // True board representation
-    private Long[][] zobristHash; // Zobrist hash
+    private long[][] zobristHash; // Zobrist hash
     private ArrayDeque<Move> playedMoves;
 
     private boolean whitesTurn = true;
@@ -90,10 +90,10 @@ public class Board {
         ANTI_MOVE = generateAntiRayMask();
     }
 
-    public final Long W_CASTLE_SHORT = 0b0000011000000000000000000000000000000000000000000000000000000000L;
-    public final Long B_CASTLE_SHORT = 0b0000000000000000000000000000000000000000000000000000000000000110L;
-    public final Long W_CASTLE_LONG = 0b0011000000000000000000000000000000000000000000000000000000000000L;
-    public final Long B_CASTLE_LONG = 0b0000000000000000000000000000000000000000000000000000000000110000L;
+    public final long W_CASTLE_SHORT = 0b0000011000000000000000000000000000000000000000000000000000000000L;
+    public final long B_CASTLE_SHORT = 0b0000000000000000000000000000000000000000000000000000000000000110L;
+    public final long W_CASTLE_LONG = 0b0011000000000000000000000000000000000000000000000000000000000000L;
+    public final long B_CASTLE_LONG = 0b0000000000000000000000000000000000000000000000000000000000110000L;
     //#endregion
     public Board(){
         // Generate fresh moves queue
@@ -1239,13 +1239,13 @@ public class Board {
         return String.format("%64s", Long.toBinaryString(num)).replace(' ', '0');
     }
 
-    public static Long boardToBitboard(int[][] board){
+    public static long boardToBitboard(int[][] board){
         if (board.length != 8 || board[0].length != 8){
             System.out.println("boardToBitboard ERROR: Incompatible board format provided.");
             return 0L;
         }
 
-        Long retBoard = 0L;
+        long retBoard = 0L;
         int bitCount = 0;
         // Bitcount increments for each inner loop (8x8 = 64) allowing it to index the 64bit bitboard properly
         for (int i = 0; i < 8; i ++){
@@ -1261,8 +1261,8 @@ public class Board {
         return retBoard;
     };
 
-    public static Long[][] generateRandomZobrist(){
-        Long[][] retArray = new Long[8][8];
+    public static long[][] generateRandomZobrist(){
+        long[][] retArray = new long[8][8];
 
         for (int i = 0; i < 8; i++){
             for (int j = 0; j < 8; j++){
@@ -1323,7 +1323,7 @@ public class Board {
         return retBoard;
     }
 
-    public static void bitboardVisualize(Long bitboard){
+    public static void bitboardVisualize(long bitboard){
         StringBuilder sbRank = new StringBuilder();
         StringBuilder sbFile = new StringBuilder();
         String bitString = String.format("%64s", Long.toBinaryString(bitboard)).replace(' ', '0');
@@ -1372,8 +1372,8 @@ public class Board {
 
     //#region Bit utility
     // Optimized in terms of operation types, still high number of operations
-    public static Long transpose(Long board){
-        Long retBoard = 0L;
+    public static long transpose(Long board){
+        long retBoard = 0L;
         int iteration = 0;
         for (int i = 0; i < 8; i++){
             for (int j = 0; j < 8; j++){
@@ -1399,8 +1399,8 @@ public class Board {
     // rayMask is the specific ray we're calculating at the moment
     // pieceMask is the location of the piece
     // Provide RLERF encoded parameters, returns RLERF encoded mask
-    public static Long hypQuint(Long occMask, Long rayMask, Long pieceMask){
-        Long retBits;
+    public static long hypQuint(long occMask, long rayMask, long pieceMask){
+        long retBits;
         // Reverse all provided bitmasks from RLERF --> LERF
         occMask = Long.reverse(occMask);
         rayMask = Long.reverse(rayMask);
@@ -1412,8 +1412,8 @@ public class Board {
         //retBits = ((rayOcc & rayMask) - (2 * pieceMask)) ^ (Long.reverse(Long.reverse(rayOcc & rayMask) - 2 * Long.reverse(pieceMask))) & rayMask;
         //retBits = ((rayOcc & rayMask) - (2 * pieceMask)) ^ (Long.reverse(Long.reverse(rayOcc & rayMask) - Long.reverse(2 *pieceMask))) & rayMask;
         //retBits = ((rayMask & occMask) - (2 * pieceMask)) ^ Long.reverse(Long.reverse(rayMask & occMask) - Long.reverse(pieceMask * 2)) & rayMask;
-        Long forward = rayMask & occMask;
-        Long reverse = Long.reverse(forward);
+        long forward = rayMask & occMask;
+        long reverse = Long.reverse(forward);
         forward = forward - (2 * pieceMask);
         reverse = reverse - (2 * Long.reverse(pieceMask));
 
