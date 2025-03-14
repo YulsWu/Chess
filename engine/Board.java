@@ -824,7 +824,6 @@ public class Board {
 
     public long generatePawnMoveMask(int playerSign, int origin){
         int rank = origin / 8;
-        int file = origin % 8;
 
         if ((playerSign > 0) && (rank == 1)){
             long above = (1L << (63 - (origin + 8)));
@@ -1245,6 +1244,8 @@ public class Board {
     // Returns zero length array, meaning checkmate or stalemate
     public ArrayList<int[]> generateValidMoves(int playerSign){
         ArrayList<int[]> retArray = new ArrayList<>();
+        boolean shortCastleRights = (playerSign > 0) ? this.whiteCanShortCastle : this.blackCanShortCastle;
+        boolean longCastleRights = (playerSign > 0) ? this.whiteCanLongCastle : this.blackCanLongCastle;
         
         if (this.state == BOARD_STATE.CHECK){
             // Already filters for self-checking moves
@@ -1258,6 +1259,14 @@ public class Board {
                     int piece = this.boardState[i][j];
 
                     if ((piece * playerSign) > 0){
+                        // Check if piece is a king, and if the player can castle at all
+                        if ((piece == 6 || piece == -6) && (shortCastleRights || longCastleRights)){
+                            // Add valid castling moves
+                            for (int[] move : generateValidCastlingMoves(playerSign)){
+                                retArray.add(move);
+                            };
+                        }
+
                         for (int pos : getSetBitPositions(generatePieceAttackMask(piece, square))){
                             retArray.add(new int[] {piece, square, pos});
                         }
@@ -1501,7 +1510,6 @@ public class Board {
             }
             sbInner.append("\n");
             sbOuter.insert(0, sbInner.toString());
-            String temp = sbOuter.toString();
         }
         sbOuter.append("   A   B   C   D   E   F   G   H");
         System.out.println();
@@ -1516,7 +1524,6 @@ public class Board {
         
         // Remove moves resulting in self-check
         int[][] realBoard = getBoard();
-        long realOcc = getOcc();
 
         for (int[] move : movesArray){
             int evasionPiece = move[0];

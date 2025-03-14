@@ -1301,63 +1301,161 @@ public class test {
     }
 
     public static void generateValidMovesTest(){
+        // Test 0/1 white/black valid moves on a starting board state
+        // Test 2/3 white/black valid moves including castling
+        
+        //#region Test0/1
         // Default piece initialization
-        Board myBoard = new Board();
+        Board board0_1 = new Board();
 
-        ArrayList<int[]> ans0 = new ArrayList<>();
+        ArrayList<int[]> answers0 = new ArrayList<>();
         // White pawn moves
-        ans0.add(new int[]{1, 8, 16});
-        ans0.add(new int[]{1, 8, 24});
-        ans0.add(new int[]{1, 9, 17});
-        ans0.add(new int[]{1, 9, 25});
-        ans0.add(new int[]{1, 10, 18});
-        ans0.add(new int[]{1, 10, 26});
-        ans0.add(new int[]{1, 11, 19});
-        ans0.add(new int[]{1, 11, 27});
-        ans0.add(new int[]{1, 12, 20});
-        ans0.add(new int[]{1, 12, 28});
-        ans0.add(new int[]{1, 13, 21});
-        ans0.add(new int[]{1, 13, 29});
-        ans0.add(new int[]{1, 14, 22});
-        ans0.add(new int[]{1, 14, 30});
-        ans0.add(new int[]{1, 15, 23});
-        ans0.add(new int[]{1, 15, 31});
+        answers0.add(new int[]{1, 8, 16});
+        answers0.add(new int[]{1, 8, 24});
+        answers0.add(new int[]{1, 9, 17});
+        answers0.add(new int[]{1, 9, 25});
+        answers0.add(new int[]{1, 10, 18});
+        answers0.add(new int[]{1, 10, 26});
+        answers0.add(new int[]{1, 11, 19});
+        answers0.add(new int[]{1, 11, 27});
+        answers0.add(new int[]{1, 12, 20});
+        answers0.add(new int[]{1, 12, 28});
+        answers0.add(new int[]{1, 13, 21});
+        answers0.add(new int[]{1, 13, 29});
+        answers0.add(new int[]{1, 14, 22});
+        answers0.add(new int[]{1, 14, 30});
+        answers0.add(new int[]{1, 15, 23});
+        answers0.add(new int[]{1, 15, 31});
 
         // White knight moves
-        ans0.add(new int[]{2, 1, 16});
-        ans0.add(new int[]{2, 1, 18});
-        ans0.add(new int[]{2, 6, 21});
-        ans0.add(new int[]{2, 6, 23});
+        answers0.add(new int[]{2, 1, 16});
+        answers0.add(new int[]{2, 1, 18});
+        answers0.add(new int[]{2, 6, 21});
+        answers0.add(new int[]{2, 6, 23});
         
-        ArrayList<int[]> ans1 = new ArrayList<>();
+        ArrayList<int[]> answers1 = new ArrayList<>();
         // Black pawn moves
-        ans1.add(new int[]{-1, 48, 40});
-        ans1.add(new int[]{-1, 48, 32});
-        ans1.add(new int[]{-1, 49, 41});
-        ans1.add(new int[]{-1, 49, 33});
-        ans1.add(new int[]{-1, 50, 42});
-        ans1.add(new int[]{-1, 50, 34});
-        ans1.add(new int[]{-1, 51, 43});
-        ans1.add(new int[]{-1, 51, 35});
-        ans1.add(new int[]{-1, 52, 44});
-        ans1.add(new int[]{-1, 52, 36});
-        ans1.add(new int[]{-1, 53, 45});
-        ans1.add(new int[]{-1, 53, 37});
-        ans1.add(new int[]{-1, 54, 46});
-        ans1.add(new int[]{-1, 54, 38});
-        ans1.add(new int[]{-1, 55, 47});
-        ans1.add(new int[]{-1, 55, 39});
+        answers1.add(new int[]{-1, 48, 40});
+        answers1.add(new int[]{-1, 48, 32});
+        answers1.add(new int[]{-1, 49, 41});
+        answers1.add(new int[]{-1, 49, 33});
+        answers1.add(new int[]{-1, 50, 42});
+        answers1.add(new int[]{-1, 50, 34});
+        answers1.add(new int[]{-1, 51, 43});
+        answers1.add(new int[]{-1, 51, 35});
+        answers1.add(new int[]{-1, 52, 44});
+        answers1.add(new int[]{-1, 52, 36});
+        answers1.add(new int[]{-1, 53, 45});
+        answers1.add(new int[]{-1, 53, 37});
+        answers1.add(new int[]{-1, 54, 46});
+        answers1.add(new int[]{-1, 54, 38});
+        answers1.add(new int[]{-1, 55, 47});
+        answers1.add(new int[]{-1, 55, 39});
         // Black knight moves
-        ans1.add(new int[]{-2, 57, 40});
-        ans1.add(new int[]{-2, 57, 42});
-        ans1.add(new int[]{-2, 62, 45});
-        ans1.add(new int[]{-2, 62, 47});
+        answers1.add(new int[]{-2, 57, 40});
+        answers1.add(new int[]{-2, 57, 42});
+        answers1.add(new int[]{-2, 62, 45});
+        answers1.add(new int[]{-2, 62, 47});
 
-        ArrayList<int[]> results0 = myBoard.generateValidMoves(1);
-        ArrayList<int[]> results1 = myBoard.generateValidMoves(-1);
+        ArrayList<int[]> results0 = board0_1.generateValidMoves(1);
+        ArrayList<int[]> results1 = board0_1.generateValidMoves(-1);
 
-        if (checkMovesEquality(0, ans0, results0) && 
-            checkMovesEquality(1, ans1, results1)
+        //#endregion
+
+        //#region Test2/3
+        Board board2_3 = new Board();
+        int[][] pieceboard2_3 = new int[][] {{4, 2, 3, 5, 6, 0, 0, 4}, {1, 1, 1, 0, 0, 1, 1, 1}, {0, 0, 0, 1, 0, 2, 0, 0}, {0, 0, 0, 0, 1, 0, 0, 0}, {0, 3, -3, -1, -1, 0, 0, 0}, {0, 0, -2, 0, 0, -3, 0, 0}, {-1, -1, -1, 0, -2, -1, -1, -1}, {-4, 0, 0, -5, -6, 0, 0, -4}};
+        board2_3.setBoard(pieceboard2_3);
+        board2_3.setOcc(Board.boardToBitboard(pieceboard2_3));
+
+        // Test2 answers
+        ArrayList<int[]> answers2 = new ArrayList<>();
+        answers2.add(new int[]{1, 8, 16});
+        answers2.add(new int[]{1, 8, 24});
+        answers2.add(new int[]{1, 9, 17});
+        answers2.add(new int[]{1, 9, 25});
+        answers2.add(new int[]{1, 10, 18});
+        answers2.add(new int[]{1, 10, 26});
+        answers2.add(new int[]{1, 19, 27});
+        answers2.add(new int[]{1, 28, 35});
+        answers2.add(new int[]{1, 14, 22});
+        answers2.add(new int[]{1, 14, 30});
+        answers2.add(new int[]{1, 15, 23});
+        answers2.add(new int[]{1, 15, 31});
+        answers2.add(new int[]{3, 33, 42});
+        answers2.add(new int[]{3, 33, 24});
+        answers2.add(new int[]{3, 33, 26});
+        answers2.add(new int[]{3, 33, 40});
+        answers2.add(new int[]{5, 3, 11});
+        answers2.add(new int[]{5, 3, 12});
+        answers2.add(new int[]{6, 4, 12});
+        answers2.add(new int[]{6, 4, 11});
+        answers2.add(new int[]{6, 4, 5});
+        answers2.add(new int[]{6, 4, 6}); // White king short castle
+        answers2.add(new int[]{2, 21, 6});
+        answers2.add(new int[]{2, 21, 11});
+        answers2.add(new int[]{2, 21, 27});
+        answers2.add(new int[]{2, 21, 36});
+        answers2.add(new int[]{2, 21, 38});
+        answers2.add(new int[]{2, 21, 31});
+        answers2.add(new int[]{2, 1, 16});
+        answers2.add(new int[]{2, 1, 18});
+        answers2.add(new int[]{2, 1, 11});
+        answers2.add(new int[]{3, 2, 11});
+        answers2.add(new int[]{3, 2, 20});
+        answers2.add(new int[]{3, 2, 29});
+        answers2.add(new int[]{3, 2, 38});
+        answers2.add(new int[]{3, 2, 47});
+        answers2.add(new int[]{4, 7, 6});
+        answers2.add(new int[]{4, 7, 5});
+
+        ArrayList<int[]> answers3 = new ArrayList<>();
+        //Rank 8
+        answers3.add(new int[]{-4, 56, 57});
+        answers3.add(new int[]{-4, 56, 58});
+        answers3.add(new int[]{-5, 59, 57});
+        answers3.add(new int[]{-5, 59, 58});
+        answers3.add(new int[]{-5, 59, 51});
+        answers3.add(new int[]{-5, 59, 43});
+        answers3.add(new int[]{-6, 60, 51});
+        answers3.add(new int[]{-6, 60, 61});
+        answers3.add(new int[]{-6, 60, 62});
+        answers3.add(new int[]{-4, 63, 62});
+        answers3.add(new int[]{-4, 63, 61});
+        // Rank 7
+        answers3.add(new int[]{-1, 48, 40});
+        answers3.add(new int[]{-1, 48, 32});
+        answers3.add(new int[]{-1, 49, 41});
+        answers3.add(new int[]{-2, 52, 58});
+        answers3.add(new int[]{-2, 52, 37});
+        answers3.add(new int[]{-2, 52, 46});
+        answers3.add(new int[]{-2, 52, 62});
+        answers3.add(new int[]{-1, 54, 46});
+        answers3.add(new int[]{-1, 54, 38});
+        answers3.add(new int[]{-1, 55, 47});
+        answers3.add(new int[]{-1, 55, 39});
+        // Rank 6
+        // Knight on 42 is pinned
+        answers3.add(new int[]{-3, 45, 38});
+        answers3.add(new int[]{-3, 45, 31});
+        //Rank 5
+        answers3.add(new int[]{-3, 34, 41});
+        answers3.add(new int[]{-3, 34, 43});
+        answers3.add(new int[]{-3, 34, 25});
+        answers3.add(new int[]{-3, 34, 16});
+        answers3.add(new int[]{-3, 34, 27});
+        answers3.add(new int[]{-3, 34, 20});
+        answers3.add(new int[]{-3, 34, 13});
+        answers3.add(new int[]{-1, 35, 27});
+        answers3.add(new int[]{-1, 35, 28});
+
+        ArrayList<int[]> results2 = board2_3.generateValidMoves(1);
+        ArrayList<int[]> results3 = board2_3.generateValidMoves(-1);
+        
+        if (checkMovesEquality(0, answers0, results0) 
+            && checkMovesEquality(1, answers1, results1)
+            && checkMovesEquality(2, answers2, results2)
+            && checkMovesEquality(3, answers3, results3)
             )
         {
             System.out.println("generateValidMovesTest() Passed all tests!");
