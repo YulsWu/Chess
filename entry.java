@@ -44,10 +44,12 @@ public class entry{
         Long occMask = Board.boardToBitboard(Board.generateFreshBoard());
         Long pieceMask = (1L << 63 - 27);
         
+        // test.generateCheckEvasionTest(0);
+        // test.generateEnPassentMaskTest();
+        // test.generateValidMovesTest();
+        test.generateValidCastlingMovesTest();
         //BoardMaker.launch(BoardMaker.class, args);
-        test.generateCheckEvasionTest(1);
-        test.generateEnPassentMaskTest();
-        //Board.bitboardVisualize(0b000000000000000000000000000000000000000000000100000000000000000L);
+        // Board.bitboardVisualize(0b000000000000000000000000000000000000000000000100000000000000000L);
 
         // // Get occupancy along the vertical
         // Long rayOcc = occMask & vertMask;

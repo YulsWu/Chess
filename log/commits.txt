@@ -14,3 +14,19 @@ Changed BoardMaker functionality:
 
 - Added test.generateCheckEvasionTest() to test many board positions with varying states, exitCode
 - Added test.generateEnPassentMaskTest() to test en passent generation
+
+Valid move generation:
+- Should create a method to handle filtering of self-checking moves.
+- Created and tested generateValidMoves() on starting positions
+    - Add castling move generation
+        - Add board utility to detect if a piece has moved
+
+Castling rights: 
+- Store as boolean for white and black
+- If "true" check for possible castling rights for king moves, else skip checking
+- During Move object Playing, Check if its a castling move, if so then toggle players' castling boolean so no more checks occur
+- Also toggle if either KING moves at all, or BOTH rooks have moved.
+
+Modified generateValidCastlingMoves() to also check for the occupancy of the square directly right of the long castle rook,
+since that square must be unoccupied. The square however does not have to be free of enemy vision, which is why I don't add
+directly to W/B_CASTLE_LONG mask

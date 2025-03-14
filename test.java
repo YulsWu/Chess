@@ -1169,7 +1169,7 @@ public class test {
     public static void generateEnPassentMaskTest(){
         // Single pieceboard for all EP tests
         int[][] pieceboard0 = new int[][] {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {-1, 1, 1, -1, 1, 0, 1, -1}, {1, -1, -1, 1, -1, 0, -1, 1}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}};
-
+        
         // White left border EP
         long bitboard0 = 0b0000000000000000000000000000000000000000010000000000000000000000L;
         int[] bitIndices0 = new int[] {41};
@@ -1194,17 +1194,18 @@ public class test {
         // Black right border EP
         long bitboard7 = 0b0000000000000000000000100000000000000000000000000000000000000000L;
         int[] bitIndices7 = new int[] {22};
-
+        
         int[] friendlyPawnSquares = new int[]{32, 35, 35, 39, 24, 27, 27, 31};
-
+        
         long[] answers = new long[]{
             bitboard0, bitboard1, bitboard2, bitboard3,
             bitboard4, bitboard5, bitboard6, bitboard7
         };
-
+        // Origin and dest indices refer to the opponent pawn that JUST moved
         int[] destIndices = new int[] {33, 34, 36, 38, 25, 26, 28, 30};
-
+        
         int[] originIndices = new int[destIndices.length];
+
         for (int i = 0; i < destIndices.length; i++){
             int shift = (i <= 3) ? 16 : -16;
             originIndices[i] = destIndices[i] + shift;
@@ -1244,26 +1245,283 @@ public class test {
             results[i] = boards[i].generateEnPassentMask(playerSign, friendlyPawnSquares[i]);
         }
 
+        // Check move equality
         boolean success = true;
         int i = 0;
         while (success && (i < answers.length)){
             success = answers[i] == results[i];
             i++;
         }
+        
 
         if (!success){
-            System.out.println("Test " + i + " failed: ");
+            System.out.println("Test " + (i - 1) + " failed: ");
             System.out.println("Answers: ");
-            System.out.println(answers[i]);
+            System.out.println(answers[i-1]);
             System.out.println("Results: ");
-            System.out.println(results[i]);
+            System.out.println(results[i-1]);
         }
         else {
             System.out.println("Pawn EP generation test succeeded!");
         }
 
+        // Test EP failure due to empty move deque
+        for (Board b : boards){
+            b.setMoveQueue(new ArrayDeque<Move>());
+        }
+
+        long[] emptyAnswers = new long[]{0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L};
+        long[] emptyResults = new long[boards.length];
+
+        for (int j = 0; j < boards.length; j++){
+            int playerSign = (i < 3) ? 1 : -1;
+            emptyResults[j] = boards[j].generateEnPassentMask(playerSign, friendlyPawnSquares[j]);
+        }
+
+        success = true;
+        int k = 0;
+        while (success && (k < emptyAnswers.length)){
+            success = emptyAnswers[k] == emptyResults[k];
+            k++;
+        }
+
+        if (!success){
+            System.out.println("EP failure test " + k + " failed: ");
+            System.out.println("Answers: ");
+            System.out.println(emptyAnswers[k]);
+            System.out.println("Results: ");
+            System.out.println(emptyResults[k]);
+        }
+        else {
+            System.out.println("EP failure generation test succeeded!");
+        }
 
 
 
     }
+
+    public static void generateValidMovesTest(){
+        // Default piece initialization
+        Board myBoard = new Board();
+
+        ArrayList<int[]> ans0 = new ArrayList<>();
+        // White pawn moves
+        ans0.add(new int[]{1, 8, 16});
+        ans0.add(new int[]{1, 8, 24});
+        ans0.add(new int[]{1, 9, 17});
+        ans0.add(new int[]{1, 9, 25});
+        ans0.add(new int[]{1, 10, 18});
+        ans0.add(new int[]{1, 10, 26});
+        ans0.add(new int[]{1, 11, 19});
+        ans0.add(new int[]{1, 11, 27});
+        ans0.add(new int[]{1, 12, 20});
+        ans0.add(new int[]{1, 12, 28});
+        ans0.add(new int[]{1, 13, 21});
+        ans0.add(new int[]{1, 13, 29});
+        ans0.add(new int[]{1, 14, 22});
+        ans0.add(new int[]{1, 14, 30});
+        ans0.add(new int[]{1, 15, 23});
+        ans0.add(new int[]{1, 15, 31});
+
+        // White knight moves
+        ans0.add(new int[]{2, 1, 16});
+        ans0.add(new int[]{2, 1, 18});
+        ans0.add(new int[]{2, 6, 21});
+        ans0.add(new int[]{2, 6, 23});
+        
+        ArrayList<int[]> ans1 = new ArrayList<>();
+        // Black pawn moves
+        ans1.add(new int[]{-1, 48, 40});
+        ans1.add(new int[]{-1, 48, 32});
+        ans1.add(new int[]{-1, 49, 41});
+        ans1.add(new int[]{-1, 49, 33});
+        ans1.add(new int[]{-1, 50, 42});
+        ans1.add(new int[]{-1, 50, 34});
+        ans1.add(new int[]{-1, 51, 43});
+        ans1.add(new int[]{-1, 51, 35});
+        ans1.add(new int[]{-1, 52, 44});
+        ans1.add(new int[]{-1, 52, 36});
+        ans1.add(new int[]{-1, 53, 45});
+        ans1.add(new int[]{-1, 53, 37});
+        ans1.add(new int[]{-1, 54, 46});
+        ans1.add(new int[]{-1, 54, 38});
+        ans1.add(new int[]{-1, 55, 47});
+        ans1.add(new int[]{-1, 55, 39});
+        // Black knight moves
+        ans1.add(new int[]{-2, 57, 40});
+        ans1.add(new int[]{-2, 57, 42});
+        ans1.add(new int[]{-2, 62, 45});
+        ans1.add(new int[]{-2, 62, 47});
+
+        ArrayList<int[]> results0 = myBoard.generateValidMoves(1);
+        ArrayList<int[]> results1 = myBoard.generateValidMoves(-1);
+
+        if (checkMovesEquality(0, ans0, results0) && 
+            checkMovesEquality(1, ans1, results1)
+            )
+        {
+            System.out.println("generateValidMovesTest() Passed all tests!");
+        } 
+        else {
+            System.out.println("generateValidMovesTest() failed one or more tests.");
+        }
+        
+    }
+
+    public static void generateValidCastlingMovesTest(){
+        int[] wCastleLong = new int[]{6, 4, 2};
+        int[] wCastleShort = new int[]{6, 4, 6};
+        int[] bCastleLong = new int[] {-6, 60, 58};
+        int[] bCastleShort = new int[] {-6, 60, 62};
+
+        int[][] pieceboard0_1 = new int[][] {{4, 0, 0, 0, 6, 0, 0, 4}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {-4, 0, 0, 0, -6, 0, 0, -4}};
+        int[][] pieceboard2_3 = new int[][] {{0, 0, 0, 0, 6, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, -6, 0, 0, 0}};
+        int[][] pieceboard4_5 = new int[][] {{4, 0, 0, 6, 0, 0, 0, 4}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {-4, 0, 0, -6, 0, 0, 0, -4}};
+        int[][] pieceboard6_7 = new int[][] {{4, 0, 0, 0, 6, 0, 0, 4}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, -4, 0, 0, 0, 0, 0}, {0, 0, 4, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {-4, 0, 0, 0, -6, 0, 0, -4}};
+        int[][] pieceboard8_9 = new int[][] {{4, 0, 0, 0, 6, 0, 0, 4}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, -4, 0}, {0, 0, 0, 0, 0, 0, 4, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {-4, 0, 0, 0, -6, 0, 0, -4}};
+        int[][] pieceboard10_11 = new int[][] {{4, 0, 2, 0, 6, 0, 0, 4}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {-4, 0, -3, 0, -6, 0, 0, -4}};
+        int[][] pieceboard12_13 = new int[][] {{4, 0, 0, 0, 6, 0, 3, 4}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {-4, 0, 0, 0, -6, 0, -2, -4}};
+        int[][] pieceboard14_15 = new int[][] {{4, 0, 0, 0, 6, 3, 2, 4}, {1, 0, 1, 0, 0, 1, 1, 1}, {3, 1, 2, 5, 1, 0, 0, 0}, {0, 0, 0, 1, 0, 0, 0, 0}, {0, 0, 0, -1, -1, -3, 0, 0}, {0, 0, 0, 0, 0, -2, 0, 0}, {-1, -1, -1, -5, 0, -1, -1, -1}, {-4, -2, 0, 0, -6, 0, 0, -4}};
+        int[][] pieceboard16_17 = new int[][] {{4, 3, 0, 0, 6, 0, 0, 4}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {-4, -3, 0, 0, -6, 0, 0, -4}};
+
+        //Test0/1 plain white/black long/short castling with no blockers
+        // Test2/3 White/black no rooks at all
+        // Test4/5 White/black kings moved, rooks in proper positions
+        // Test 6/7 White/black long castle blocked by opponent vision
+        // Test 8/9 white/black short castle blocked by opponent vision
+        // Test 10/11 White/black long castle blocked by friendly occupancy
+        // Test 12/13 White/black short castle blocked by friendly occupancy
+        // Test 14/15 White/black castling on a fuller more realistic board
+        // Test 16/17 White/black explicit testing of occupied long-castle square not travelled by king (B1 for white, B8 for black)
+
+        // Create boards for each test
+        Board board0_1 = new Board();
+        board0_1.setBoard(pieceboard0_1);
+        board0_1.setOcc(Board.boardToBitboard(pieceboard0_1));
+
+        Board board2_3 = new Board();
+        board2_3.setBoard(pieceboard2_3);
+        board2_3.setOcc(Board.boardToBitboard(pieceboard2_3));
+
+        Board board4_5 = new Board();
+        board4_5.setBoard(pieceboard4_5);
+        board4_5.setOcc(Board.boardToBitboard(pieceboard4_5));
+
+        Board board6_7 = new Board();
+        board6_7.setBoard(pieceboard6_7);
+        board6_7.setOcc(Board.boardToBitboard(pieceboard6_7));
+
+        Board board8_9 = new Board();
+        board8_9.setBoard(pieceboard8_9);
+        board8_9.setOcc(Board.boardToBitboard(pieceboard8_9));
+
+        Board board10_11 = new Board();
+        board10_11.setBoard(pieceboard10_11);
+        board10_11.setOcc(Board.boardToBitboard(pieceboard10_11));
+
+        Board board12_13 = new Board();
+        board12_13.setBoard(pieceboard12_13);
+        board12_13.setOcc(Board.boardToBitboard(pieceboard12_13));
+
+        Board board14_15 = new Board();
+        board14_15.setBoard(pieceboard14_15);
+        board14_15.setOcc(Board.boardToBitboard(pieceboard14_15));
+
+        Board board16_17 = new Board();
+        board16_17.setBoard(pieceboard16_17);
+        board16_17.setOcc(Board.boardToBitboard(pieceboard16_17));
+
+        // Create answers for each test
+        ArrayList<int[]> answers0 = new ArrayList<>();
+        answers0.add(wCastleLong); 
+        answers0.add(wCastleShort);
+        ArrayList<int[]> answers1 = new ArrayList<>();
+        answers1.add(bCastleLong); 
+        answers1.add(bCastleShort);
+
+        ArrayList<int[]> answers2 = new ArrayList<>();
+        ArrayList<int[]> answers3 = new ArrayList<>();
+
+        ArrayList<int[]> answers4 = new ArrayList<>();
+        ArrayList<int[]> answers5 = new ArrayList<>();
+
+        ArrayList<int[]> answers6 = new ArrayList<>();
+        answers6.add(wCastleShort);
+        ArrayList<int[]> answers7 = new ArrayList<>();
+        answers7.add(bCastleShort);
+
+        ArrayList<int[]> answers8 = new ArrayList<>();
+        answers8.add(wCastleLong);
+        ArrayList<int[]> answers9 = new ArrayList<>();
+        answers9.add(bCastleLong);
+
+        ArrayList<int[]> answers10 = new ArrayList<>();
+        answers10.add(wCastleShort);
+        ArrayList<int[]> answers11 = new ArrayList<>();
+        answers11.add(bCastleShort);
+
+        ArrayList<int[]> answers12 = new ArrayList<>();
+        answers12.add(wCastleLong);
+        ArrayList<int[]> answers13 = new ArrayList<>();
+        answers13.add(bCastleLong);
+
+        ArrayList<int[]> answers14 = new ArrayList<>();
+        answers14.add(wCastleLong);
+        ArrayList<int[]> answers15 = new ArrayList<>();
+
+        ArrayList<int[]> answers16 = new ArrayList<>();
+        answers16.add(wCastleShort);
+        ArrayList<int[]> answers17 = new ArrayList<>();
+        answers17.add(bCastleShort);
+
+        // Get the results for the test
+        ArrayList<int[]> results0 = board0_1.generateValidCastlingMoves(1);
+        ArrayList<int[]> results1 = board0_1.generateValidCastlingMoves(-1);
+        ArrayList<int[]> results2 = board2_3.generateValidCastlingMoves(1);
+        ArrayList<int[]> results3 = board2_3.generateValidCastlingMoves(-1);
+        ArrayList<int[]> results4 = board4_5.generateValidCastlingMoves(1);
+        ArrayList<int[]> results5 = board4_5.generateValidCastlingMoves(-1);
+        ArrayList<int[]> results6 = board6_7.generateValidCastlingMoves(1);
+        ArrayList<int[]> results7 = board6_7.generateValidCastlingMoves(-1);
+        ArrayList<int[]> results8 = board8_9.generateValidCastlingMoves(1);
+        ArrayList<int[]> results9 = board8_9.generateValidCastlingMoves(-1);
+        ArrayList<int[]> results10 = board10_11.generateValidCastlingMoves(1);
+        ArrayList<int[]> results11 = board10_11.generateValidCastlingMoves(-1);
+        ArrayList<int[]> results12 = board12_13.generateValidCastlingMoves(1);
+        ArrayList<int[]> results13 = board12_13.generateValidCastlingMoves(-1);
+        ArrayList<int[]> results14 = board14_15.generateValidCastlingMoves(1);
+        ArrayList<int[]> results15 = board14_15.generateValidCastlingMoves(-1);
+        ArrayList<int[]> results16 = board16_17.generateValidCastlingMoves(1);
+        ArrayList<int[]> results17 = board16_17.generateValidCastlingMoves(-1);
+
+        if (
+            checkMovesEquality(0, answers0, results0)
+            && checkMovesEquality(1, answers1, results1) 
+            && checkMovesEquality(2, answers2, results2) 
+            && checkMovesEquality(3, answers3, results3)
+            && checkMovesEquality(4, answers4, results4)
+            && checkMovesEquality(5, answers5, results5)
+            && checkMovesEquality(6, answers6, results6)
+            && checkMovesEquality(7, answers7, results7)
+            && checkMovesEquality(8, answers8, results8)
+            && checkMovesEquality(9, answers9, results9)
+            && checkMovesEquality(10, answers10, results10)
+            && checkMovesEquality(11, answers11, results11)
+            && checkMovesEquality(12, answers12, results12)
+            && checkMovesEquality(13, answers13, results13)
+            && checkMovesEquality(14, answers14, results14)
+            && checkMovesEquality(15, answers15, results15)
+            && checkMovesEquality(16, answers16, results16)
+            && checkMovesEquality(17, answers17, results17)
+        ){
+            System.out.println("generateValidCastlingMovesTest() passed all tests!");
+        }
+        else {
+            System.out.println("generateValidCastlingMovesTest() failed one or more tests");
+        }
+
+    }
+
+
+
 }
