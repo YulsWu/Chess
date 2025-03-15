@@ -1373,14 +1373,57 @@ public class Board {
     //#endregion-----------------------------------------------------------------------------------------------------------------
 
     //#region Move Object creation------------------------------------------------------------------------------------------------------------------------
-    public Move createMove(int[] moveList){
-        // Attack/Move detection using opponent piece masks
-        // Promotion detection using piece type, playerSign, and destination rank
-        // EP detection using piece type, destination square and opponenent occupancy mask
+    public Move createMove(int[] move){
+        // EP attack (Move to empty square but still taking piece)
+        // Attack? (Move to enemy occupied square)
+        // Move? (Move to empty square)
+        //  - Promotion (Pawn move to 'end' rank)
+        //  - Castle?   (King move of 2 spaces in either direction)
+        int piece = move[0];
+        int origin = move[1];
+        int originFile = origin % 8;
+        int dest = move[2];
+        int destRank = dest / 8;
+        int destFile = dest % 8;
+        int destOccPiece = this.boardState[destRank][destFile];
+        int promotionRank = (piece > 0) ? 7 : 0;
 
-        // Castling? Add CASTLING to GENERATE VALID MOVES
-        return new Move(0, 0, 0, MOVE_TYPE.MOVE);
+        // IF piece is pawn AND its a pawn attack AND the destination square is empty, then EN PASSENT
+        if ((Math.abs(piece) == 1) && (originFile != destFile) && (destOccPiece == 0)){
+            return new Move(piece, origin, dest, MOVE_TYPE.EN_PASSENT);
+        }
+        // Attack moves
+        else if (destOccPiece != 0){
+            // Pawn promotion attack
+            if ((Math.abs(piece) == 1) && (destRank == promotionRank)){
+                return new Move(piece, origin, dest, MOVE_TYPE.PROMOTE_ATTACK);
+            }
+            // Regular attack
+            else {
+                return new Move(piece, origin, dest, MOVE_TYPE.ATTACK);
+            }
+        }
+        // Move moves
+        else {
+            // Castling
+            if (Math.abs(piece) == 6){
+                // Short castle
+                if ((destFile - originFile) == 2){
+                    return new Move(piece, origin, dest, MOVE_TYPE.CASTLE_SHORT);
+                }
+                // Long castle
+                else if ((destFile - originFile) == -2){
+                    return new Move(piece, origin, dest, MOVE_TYPE.CASTLE_LONG);
+                }
+            }
+            // Pawn promotion move
+            else if ((Math.abs(piece) == 1) && (destRank == promotionRank)){
+                return new Move(piece, origin, dest, MOVE_TYPE.PROMOTE_MOVE);
+            }
+            // All other moves
 
+            return new Move(piece, origin, dest, MOVE_TYPE.MOVE);
+        }
     }
     //#endregion--------------------------------------------------------------------------------------------------------------------------------------------------
 

@@ -1620,6 +1620,94 @@ public class test {
 
     }
 
+    public static void createMoveTest(){
+        // Test for White and Black: Move, Attack, CastleLong, CastleShort, EnPassent, PromoteMove, PromoteAttack
 
+        ArrayList<int[]> answers0 = new ArrayList<>();
+        ArrayList<int[]> answers1 = new ArrayList<>();
+        ArrayList<MOVE_TYPE> types0 = new ArrayList<>();
+        answers0.add(new int[]{6, 4, 6});
+        answers0.add(new int[]{6, 4, 2});
+        answers1.add(new int[]{-6, 60, 62});
+        answers1.add(new int[]{-6, 60, 58});
+        types0.add(MOVE_TYPE.CASTLE_SHORT);
+        types0.add(MOVE_TYPE.CASTLE_LONG);
+
+        answers0.add(new int[]{1, 54, 63});
+        answers0.add(new int[]{1, 54, 62});
+        answers1.add(new int[]{-1, 14, 7});
+        answers1.add(new int[]{-1, 14, 6});       
+        types0.add(MOVE_TYPE.PROMOTE_ATTACK);
+        types0.add(MOVE_TYPE.PROMOTE_MOVE);
+
+        answers0.add(new int[]{1, 38, 47});
+        answers1.add(new int[]{-1, 30, 21});
+        types0.add(MOVE_TYPE.EN_PASSENT);
+
+        answers0.add(new int[]{2, 28, 34});
+        answers0.add(new int[]{2, 28, 18});
+        answers1.add(new int[]{-2, 34, 28});
+        answers1.add(new int[]{-2, 34, 24});
+        types0.add(MOVE_TYPE.ATTACK);
+        types0.add(MOVE_TYPE.MOVE);
+
+        // Generate results
+        int[][] pieceboard0_1 = new int[][] {{4, 0, 0, 0, 6, 0, 0, 4}, {0, 0, 0, 0, 0, 0, -1, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 2, 0, -1, 0}, {0, 0, -2, 0, 0, 0, 1, 0}, {0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 1, 0}, {-4, 0, 0, 0, -6, 0, 0, -4}};
+        Board board0_1 = new Board();
+        board0_1.setBoard(pieceboard0_1);
+        board0_1.setOcc(Board.boardToBitboard(pieceboard0_1));
+
+        ArrayList<Move> results0 = new ArrayList<>();
+        ArrayList<Move> results1 = new ArrayList<>();
+
+        for (int i = 0; i < answers0.size(); i++){
+            results0.add(board0_1.createMove(answers0.get(i)));
+            results1.add(board0_1.createMove(answers1.get(i)));
+        }
+
+        //#region Test evaluation
+        for (int i = 0; i < results0.size(); i++){
+            Move currentMove = results0.get(i);
+            int[] currentAnswer = answers0.get(i);
+            MOVE_TYPE currentType = types0.get(i);
+            
+            if (!(
+                (currentMove.getPiece() == currentAnswer[0]) &&
+                (currentMove.getOriginBit() == currentAnswer[1]) &&
+                (currentMove.getDestBit() == currentAnswer[2]) &&
+                (currentMove.getType() == currentType))
+            ){
+                System.out.println("createMoveTest failed on test 0:");
+                System.out.println(currentMove);
+                System.out.println(Arrays.toString(currentAnswer));
+                System.out.println(currentType);
+                return;
+            }
+        }
+
+        for (int i = 0; i < results1.size(); i++){
+            Move currentMove = results1.get(i);
+            int[] currentAnswer = answers1.get(i);
+            MOVE_TYPE currentType = types0.get(i);
+            
+            if (!(
+                (currentMove.getPiece() == currentAnswer[0]) &&
+                (currentMove.getOriginBit() == currentAnswer[1]) &&
+                (currentMove.getDestBit() == currentAnswer[2]) &&
+                (currentMove.getType() == currentType))
+            ){
+                System.out.println("createMoveTest failed on test 1:");
+                System.out.println(currentMove);
+                System.out.println(Arrays.toString(currentAnswer));
+                System.out.println(currentType);
+                return;
+            }
+
+        }
+        System.out.println("createMoveTest() passed all tests!");
+
+        //#endregion
+
+    }
 
 }

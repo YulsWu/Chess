@@ -44,11 +44,12 @@ public class entry{
         Long occMask = Board.boardToBitboard(Board.generateFreshBoard());
         Long pieceMask = (1L << 63 - 27);
         
-        // test.generateCheckEvasionTest(0);
-        // test.generateEnPassentMaskTest();
+        test.generateCheckEvasionTest(0);
+        test.generateEnPassentMaskTest();
         test.generateValidMovesTest();
-        //test.generateValidCastlingMovesTest();
-        // BoardMaker.launch(BoardMaker.class, args);
+        test.generateValidCastlingMovesTest();
+        test.createMoveTest();
+        //BoardMaker.launch(BoardMaker.class, args);
         // Board.bitboardVisualize(0b000000000000000000000000000000000000000000000100000000000000000L);
         // System.out.println();
         // Board.boardVisualize(new int[][] {{4, 2, 3, 5, 6, 0, 0, 4}, {1, 1, 1, 0, 0, 1, 1, 1}, {0, 0, 0, 1, 0, 2, 0, 0}, {0, 0, 0, 0, 1, 0, 0, 0}, {0, 3, -3, -1, -1, 0, 0, 0}, {0, 0, -2, 0, 0, -3, 0, 0}, {-1, -1, -1, 0, -2, -1, -1, -1}, {-4, 0, 0, -5, -6, 0, 0, -4}});

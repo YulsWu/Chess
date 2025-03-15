@@ -1,7 +1,7 @@
 package engine;
 public class Move {
     public enum MOVE_TYPE {
-        MOVE, ATTACK, CASTLE_LONG, CASTLE_SHORT, EN_PESSANT, PROMOTE_MOVE, PROMOTE_ATTACK
+        MOVE, ATTACK, CASTLE_LONG, CASTLE_SHORT, EN_PASSENT, PROMOTE_MOVE, PROMOTE_ATTACK
     }
     private int piece;
     private MOVE_TYPE type;
@@ -23,8 +23,9 @@ public class Move {
         destBit = destinationBitIndex;
 
         piece = pieceValue; 
-    };
 
+        this.type = type;
+    };
 
     public int getOriginRank(){
         return this.originRank;
@@ -56,5 +57,32 @@ public class Move {
 
     public MOVE_TYPE getType(){
         return this.type;
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        Move temp;
+        if (obj instanceof Move){
+            temp = (Move)obj;
+            if (
+                (this.piece == temp.getPiece()) &&
+                (this.originBit == temp.getOriginBit()) &&
+                (this.destBit == temp.getDestBit()) &&
+                (this.type == temp.getType())
+            ){
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return false;
+        }
+    }
+
+    @Override
+    public String toString(){
+        return "Piece: " + piece + "\nOrigin: " + originBit + "\nDestination: " + destBit + "\nType: " + type;
     }
 }
