@@ -68,6 +68,10 @@ public class Board {
     private boolean blackCanLongCastle = true;
     private boolean blackCanShortCastle = true;
 
+    // Optional draw flags
+    private boolean threeFoldDrawAvailable = false; // Also automatic 5-fold rule
+    private boolean fiftyMoveDrawAvailable = false; // Also automatic 75 move rule
+
     private boolean whitesTurn = true;
     private BOARD_STATE state = BOARD_STATE.IN_PLAY;
 
@@ -1714,6 +1718,40 @@ public class Board {
         return this.bitState;
     }
 
+    public void addMove(Move newMove){
+        this.playedMoves.add(newMove);
+    }
+
+    public Move peekMove(){
+        return this.playedMoves.peek().clone();
+    }
+
+    public BOARD_STATE getState(){
+        return this.state;
+    }
+
+    public void setState(BOARD_STATE newState){
+        this.state = newState;
+    }
+   
+    public void setShortCastleRights(int playerSign, boolean bool){
+        if (playerSign > 0){
+            this.whiteCanShortCastle = bool;
+        }
+        else {
+            this.blackCanShortCastle = bool;
+        }
+    }
+
+    public void setLongCastleRights(int playerSign, boolean bool){
+        if (playerSign > 0){
+            this.whiteCanLongCastle = bool;
+        }
+        else {
+            this.blackCanLongCastle = bool;
+        }
+    }
+   
     // TEST FUNCTION REMOVE AFTER
     public void setBoard(int[][] newBoard){
         this.boardState = newBoard;
@@ -1729,4 +1767,111 @@ public class Board {
     }
     
     //#endregion
+
+    //#region Game loop methods
+    // Strictly plays the moves and modifies board state, no move validity checking here
+    public void playMove(Move mv){
+        MOVE_TYPE mvType = mv.getType();
+        int origin = mv.getOriginBit();
+        int originRank = origin / 8;
+        int originFile = origin % 8;
+        int dest = mv.getDestBit();
+        int destRank = dest / 8;
+        int destFile = dest % 8;
+        int piece = mv.getPiece();
+
+        // Unique behaviour for Castling, en passent
+        // Move/Attack same behaviour
+        //  - Promotion unique behaviour
+
+        if (mvType == MOVE_TYPE.CASTLE_LONG){
+            this.boardState[originRank][originFile] = 0;
+            this.boardState[destRank][destFile] = piece;
+
+            if (piece > 0){
+                this.boardState[0][0] = 0;
+                this.boardState[destRank][destFile + 1] = 4;
+            }
+            else{
+                this.boardState[7][0] = 0;
+                this.boardState[destRank][destFile + 1] = -4;
+            }
+        }
+        else if (mvType == MOVE_TYPE.CASTLE_SHORT){
+            if (piece > 0){
+                this.boardState[0][7] = 0;
+                this.boardState[destRank][destFile - 1] = 4;
+            }
+            else{
+                this.boardState[7][7] = 0;
+                this.boardState[destRank][destFile - 1] = -4;
+            }
+        }
+        else if (mvType == MOVE_TYPE.EN_PASSENT){
+            this.boardState[originRank][originFile] = 0;
+            this.boardState[destRank][destFile] = piece;
+
+            if (piece > 0){
+                this.boardState[destRank - 1][destFile] = 0;
+            }
+            else {
+                this.boardState[destRank + 1][destFile] = 0;
+            }
+        }
+        //Promotions
+        else if ((mvType == MOVE_TYPE.PROMOTE_ATTACK) || (mvType == MOVE_TYPE.PROMOTE_MOVE)) {
+            this.boardState[originRank][originFile] = 0;
+            this.boardState[destRank][destFile] = getUserPromotion(piece);
+        }
+        // Behaviour for valid attacks/moves is the same
+        else{
+            this.boardState[originRank][originFile] = 0;
+            this.boardState[destRank][destFile] = piece;
+        }
+
+        // Add move to playedMoves
+        addMove(mv);
+    }
+
+    public void updateState(int lastPlayerSign){
+        boolean shortCastleRights = (lastPlayerSign > 0) ? whiteCanShortCastle : blackCanShortCastle;
+        boolean longCastleRights = (lastPlayerSign > 0) ? whiteCanLongCastle : blackCanLongCastle;
+        
+        // Check/Checkmate
+        if (getOpponentChecks(lastPlayerSign).size() > 0){
+            setState(BOARD_STATE.CHECK);
+        }
+        
+        // Castling rights
+        if (shortCastleRights || longCastleRights){
+            Move lastMove = peekMove();
+            if (lastMove != null){
+                int lastMovePiece = Math.abs(lastMove.getPiece());
+                if ((Math.abs(lastMove.getPiece()) == 6)){
+                    setShortCastleRights(lastPlayerSign, false);
+                    setLongCastleRights(lastPlayerSign, false);
+                }
+                // STOPPE DHERE
+    
+            }
+
+        }
+        // Repeated moves
+        // 50 move rule
+        // Insufficient material
+        // 
+    }
+    
+    
+    // Implement stalemate in loop -  generateValidMoves().size() == 0
+    // FIX LATER
+    // Just promote to queen for now, figure out user input later
+    // Static function? No ties to board state
+    // GUI vs CMD line playing?
+    public int getUserPromotion(int playerSign){
+        return (playerSign > 0) ? 5 : -5;
+    }
+
+    //#endregion
+
 }

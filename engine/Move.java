@@ -85,4 +85,9 @@ public class Move {
     public String toString(){
         return "Piece: " + piece + "\nOrigin: " + originBit + "\nDestination: " + destBit + "\nType: " + type;
     }
+
+    @Override
+    public Move clone(){
+        return new Move(this.piece, this.originBit, this.destBit, this.type);
+    }
 }
