@@ -1,2 +1,63 @@
-generateValidMoves():
-- Added the generation of castling moves for given player
+Created updateState()
+    - Need to implement zobrist hashing so I can check it in "Update state"
+        - randomly generated piece-square zobrist hash table
+        - randomly generated board state variables for:
+            - 4 for castling
+            - 2 for en EN_PASSENT
+            - 2 for turntomove
+        - updateZobrist()
+        - Method to check for 3 and 5
+
+Created generateZobristTable()
+How to update zobrist?
+- Square by square: Avoids move logic considerations (en passent, castling) by looking at current vs previous board state
+- Move-informed: Use last Move information to only 'touch' the squares that have changed. More work upfront, faster execution?
+
+Move-informed:
+- MOVE:
+    - ORIGIN: newPiece(origin)
+    - DESTINATION: newPiece(dest)
+- ATTACK:
+    - ORIGIN: newPiece(origin)
+    - DESTINATION oldPiece(dest), then newPiece(dest)
+- EN_PASSENT:
+    - ORIGIN newPiece(origin)
+    - DESTINATION newPiece(destination)
+    - EP_SQUARE oldPiece([destRank][destFile + 1 (-1 depending on turn)])
+- CASTLE_LONG:
+    - ORIGIN newPiece(origin)
+    - DESTINATION newPiece(destination)
+    - LONG ROOK SQUARE Rook(destination - 2)
+    - NEW ROOK SQURE Rook(destination + 1);
+- CASTLE_SHORT:
+    - ORIGIN newPiece(origin)
+    - DESTINATION newPiece(destination)
+    - SHORT ROOK SQUARE Rook(destination + 1)
+    - NEW ROOK SQURE Rook(destination - 1)
+- PROMOTE_ATTACK:
+    - ORIGIN newPiece(origin)
+    - DESTINATION oldPiece(destination), promotedPiece(destination)
+- PROMOTE_MOVE:
+    - ORIGIN newPiece(origin)
+    - DESTINATION promotedPiece(destination)
+
+Finished board state zobrist updating
+What about castling? Update zobrist through 'setters' for castling rights
+
+Modified En Passent zobrist encoding to record different hashes for each possible EP square
+- Added another final hashMap epHashTable to store hashes corresponding to all possible EP squares (only 16, 2 ranks)
+
+Creating game-end method to detect and execute different game ending conditions.
+- Submethod for Insufficient material
+- Submethod for 50/75 halfclock draw
+- Submethod for 3/5 fold repetition
+- Not currently concerned about time controls
+- Checkmate/Stalemate? Valid moves are generated before calling this function, then provided to this function so it can check length for checkmate/stalemate
+
+Fifty/Seventy five halfclock draw:
+- Implement halfclock
+    - primitive int class attribute halfClock = 0;
+    - Added updateHalfClock(), implemented in updateState()
+    - Added checkNMoveDraw(int n) to check for 50/75 move draw, implemented in updateState and evaluateGameEndConditions
+    - Added checkNFoldRepeat(int n) to check for 3/5 fold repeat draw, implemented in updateState and evaluateGameEndConditions
+    

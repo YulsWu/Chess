@@ -8,6 +8,8 @@ import javafx.application.Application;
 import javafx.BoardMaker;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.Arrays;
 
 
 public class entry{
@@ -44,48 +46,18 @@ public class entry{
         Long occMask = Board.boardToBitboard(Board.generateFreshBoard());
         Long pieceMask = (1L << 63 - 27);
         
-        test.generateCheckEvasionTest(0);
-        test.generateEnPassentMaskTest();
-        test.generateValidMovesTest();
-        test.generateValidCastlingMovesTest();
-        test.createMoveTest();
+        // test.generateCheckEvasionTest(0);
+        // test.generateEnPassentMaskTest();
+        // test.generateValidMovesTest();
+        // test.generateValidCastlingMovesTest();
+        // test.createMoveTest();
         //BoardMaker.launch(BoardMaker.class, args);
         // Board.bitboardVisualize(0b000000000000000000000000000000000000000000000100000000000000000L);
         // System.out.println();
         // Board.boardVisualize(new int[][] {{4, 2, 3, 5, 6, 0, 0, 4}, {1, 1, 1, 0, 0, 1, 1, 1}, {0, 0, 0, 1, 0, 2, 0, 0}, {0, 0, 0, 0, 1, 0, 0, 0}, {0, 3, -3, -1, -1, 0, 0, 0}, {0, 0, -2, 0, 0, -3, 0, 0}, {-1, -1, -1, 0, -2, -1, -1, -1}, {-4, 0, 0, -5, -6, 0, 0, -4}});
+        test.foolsMateTest();
 
-        // // Get occupancy along the vertical
-        // Long rayOcc = occMask & vertMask;
-
-        // // Transpose and calculate vertical rays
-        // Long validVerticalPaths = test.hyperbolicQuintessence(test.transposeBitboard(rayOcc), test.transposeBitboard(vertMask), test.transposeBitboard(pieceMask));
-        // validVerticalPaths = test.transposeBitboard(validVerticalPaths);
-        // System.out.println("Valid vertical moves:");
-        // test.bitboardVisualize(validVerticalPaths);
-
-        // // Get occupancy along the horizontal ray
-        // rayOcc = occMask & horzMask;
-
-        // // Transpose and calculate horizontal rays
-        // Long validHorizontalPaths = test.hyperbolicQuintessence(test.transposeBitboard(rayOcc), test.transposeBitboard(horzMask), test.transposeBitboard(pieceMask));
-        // validHorizontalPaths = test.transposeBitboard(validHorizontalPaths);
-        // System.out.println("Valid horizontal moves:");
-        // test.bitboardVisualize(validHorizontalPaths);
-        //======================================================================================================================================================================
-        // // Occmask in custom order (reverse LERF)
-        // System.out.println(test.longToString(occMask));
-
-        // // Occmask in LittleEndianRankFile
-        // System.out.println(test.longToString(Long.reverse(occMask)));
-
-        // System.out.println(test.longToString(test.transposeBitboard(Long.reverse(occMask))));
-        // System.out.println(test.longToString(test.transposeBitboard(test.transposeBitboard(Long.reverse(occMask)))));
-
-        // System.out.println(test.longToString(test.transpose(Long.reverse(occMask))));
-        // System.out.println(test.longToString(test.transpose(test.transpose(Long.reverse(occMask)))));
-
-        
-    
 
     }
 }
+

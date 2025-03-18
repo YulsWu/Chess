@@ -28,6 +28,7 @@ import java.util.Random;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayDeque;
+import java.util.Scanner;
 
 import engine.Move;
 import engine.Move.MOVE_TYPE;
@@ -1710,4 +1711,56 @@ public class test {
 
     }
 
+    public static void foolsMateTest(){
+        Move mv0 = new Move(1, 13, 21, MOVE_TYPE.MOVE);
+        Move mv1 = new Move(-1 , 52, 36, MOVE_TYPE.MOVE);
+        Move mv2 = new Move(1, 14, 30, MOVE_TYPE.MOVE);
+        Move mv3 = new Move(-5, 59, 31, MOVE_TYPE.MOVE);
+
+        Move[] foolsMate = new Move[]{mv0, mv1, mv2, mv3};
+
+        Board board = new Board();
+        
+        // Play
+        // Update state
+        // Generate moves
+        // Game end conditions (moves)
+        // Play
+        try(Scanner scanner = new Scanner(System.in)){
+            int turn = 1;
+            String turnString;
+            for (Move mv : foolsMate){
+                turnString = (turn > 0) ? "White" : "Black";
+                System.out.println("Turn " + turn);
+                ArrayList<int[]> validMoves = board.generateValidMoves(turn);
+                System.out.println(turnString + " has " + validMoves.size() + " valid moves");
+                for (int[] i : validMoves){
+                    System.out.println(Arrays.toString(i));
+                }
+                Board.boardVisualize(board.getBoard());
+                scanner.nextLine();
+                board.playMove(mv);
+                board.updateState(turn);
+                board.evaluateGameEndConditions(validMoves);
+                turn *= -1;
+            }
+            
+            turnString = (turn > 0) ? "White" : "Black";
+            System.out.println("Turn " + turn);
+            ArrayList<int[]> validMoves = board.generateValidMoves(turn);
+            System.out.println(turnString + " has " + validMoves.size() + " valid moves");
+            for (int[] i : validMoves){
+                System.out.println(Arrays.toString(i));
+            }
+            Board.boardVisualize(board.getBoard());
+            Board.boardVisualize(board.getBoard());
+            System.out.println("Game ended");
+            scanner.nextLine();
+        }
+        catch (Exception e){
+            System.out.println("foolsMateTest(): Error initializing scanner");
+        }
+        
+        
+    }
 }

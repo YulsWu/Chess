@@ -58,19 +58,41 @@ public class Board {
 
     private Long bitState; // Current occupancy map for the whole board
     private int[][] boardState; // True board representation
-    private long[][] zobristHash; // Zobrist hash
+    private int[][] lastBoardState;
     private ArrayDeque<Move> playedMoves;
+    private ArrayDeque<Long> zobristHistory;
+    
+    // These are not constants as they are unique to each Board instance, not consistent across all Boards
+    private long zobristHash; // Zobrist hash
+    private long lastEpHash = 0L;
+    private final long whiteLongHash;
+    private final long whiteShortHash;
+    private final long blackLongHash;
+    private final long blackShortHash;
+    private final long whiteTurnHash;
+    
+    private final Map<Integer, Long> epHashTable;
+    private final Map<Integer, long[]> zobristTable;
 
     // Castling rights
     // Toggled to false if KING moves, or a Castling move is PLAYED
-    private boolean whiteCanLongCastle = true;
-    private boolean whiteCanShortCastle = true;
-    private boolean blackCanLongCastle = true;
-    private boolean blackCanShortCastle = true;
+    private boolean whiteLong = true;
+    private boolean whiteShort = true;
+    private boolean blackLong = true;
+    private boolean blackShort = true;
+    
+    // Flags indicating caslting permissions have just changed
+    private boolean WLF = false;
+    private boolean WSF = false;
+    private boolean BLF = false;
+    private boolean BSF = false;
 
     // Optional draw flags
     private boolean threeFoldDrawAvailable = false; // Also automatic 5-fold rule
     private boolean fiftyMoveDrawAvailable = false; // Also automatic 75 move rule
+
+    // Halfclock
+    private int halfClock = 0;
 
     private boolean whitesTurn = true;
     private BOARD_STATE state = BOARD_STATE.IN_PLAY;
@@ -110,15 +132,29 @@ public class Board {
     public Board(){
         // Generate fresh moves queue
         playedMoves = new ArrayDeque<>();
+        zobristHistory = new ArrayDeque<>();
 
         // Generate new zobrist hash
-        zobristHash = generateRandomZobrist();
-
+        whiteLongHash = ThreadLocalRandom.current().nextLong();
+        whiteShortHash = ThreadLocalRandom.current().nextLong();
+        blackLongHash = ThreadLocalRandom.current().nextLong();
+        blackShortHash = ThreadLocalRandom.current().nextLong();
+        
+        whiteTurnHash = ThreadLocalRandom.current().nextLong();
+        epHashTable = generateEPHashTable();
+        
+        zobristTable = generateZobristTable();
+        
+        
         // Fresh bitboard
         bitState = 0xFFFF00000000FFFFL;
-
+        
         // Populate freshboard
         boardState = generateFreshBoard();
+        
+        // Set "last board" to new board
+        lastBoardState = generateFreshBoard();
+        zobristHash = generateCurrentZobristHash();
     }
 
     //#region Base ray generation -----------------------------------------------------------------------------------------------------------
@@ -1248,8 +1284,8 @@ public class Board {
     // Returns zero length array, meaning checkmate or stalemate
     public ArrayList<int[]> generateValidMoves(int playerSign){
         ArrayList<int[]> retArray = new ArrayList<>();
-        boolean shortCastleRights = (playerSign > 0) ? this.whiteCanShortCastle : this.blackCanShortCastle;
-        boolean longCastleRights = (playerSign > 0) ? this.whiteCanLongCastle : this.blackCanLongCastle;
+        boolean shortCastleRights = (playerSign > 0) ? this.whiteShort : this.blackShort;
+        boolean longCastleRights = (playerSign > 0) ? this.whiteLong : this.blackLong;
         
         if (this.state == BOARD_STATE.CHECK){
             // Already filters for self-checking moves
@@ -1260,7 +1296,7 @@ public class Board {
             for (int i = 0; i < 8; i++){
                 for (int j = 0; j < 8; j++){
                     int square = (i * 8) + j;
-                    int piece = this.boardState[i][j];
+                     int piece = this.boardState[i][j];
 
                     if ((piece * playerSign) > 0){
                         // Check if piece is a king, and if the player can castle at all
@@ -1302,8 +1338,8 @@ public class Board {
         ArrayList<int[]> retArray = new ArrayList<>();
         // If the player whose turn it is can't castle, return an empty array (should not get here anyway)
         if (
-            ((playerSign > 0) && !(whiteCanLongCastle && whiteCanShortCastle)) || 
-            ((playerSign < 0) && !(blackCanLongCastle && blackCanShortCastle))){
+            ((playerSign > 0) && !(whiteLong) && !(whiteShort)) || 
+            ((playerSign < 0) && !(blackLong) && (blackShort))){
             return retArray;
         }
 
@@ -1431,7 +1467,7 @@ public class Board {
     }
     //#endregion--------------------------------------------------------------------------------------------------------------------------------------------------
 
-    //#region Board utility
+    //#region Board utility--------------------------------------------------------------------------------------------------------------------------------------
     public static String longToString(Long num){
         return String.format("%64s", Long.toBinaryString(num)).replace(' ', '0');
     }
@@ -1456,18 +1492,6 @@ public class Board {
         }
 
         return retBoard;
-    };
-
-    public static long[][] generateRandomZobrist(){
-        long[][] retArray = new long[8][8];
-
-        for (int i = 0; i < 8; i++){
-            for (int j = 0; j < 8; j++){
-                retArray[i][j] = ThreadLocalRandom.current().nextLong();
-            }
-        }
-
-        return retArray;
     };
 
     public static int[][] generateFreshBoard(){
@@ -1620,7 +1644,274 @@ public class Board {
         return -1;
     }
 
-    //#endregion
+    // Only one en passent destination square is possible
+    public long getPlayerEPMask(int playerSign){
+        int friendlyPawn = (playerSign > 0) ? 1 : -1;
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                if (this.boardState[i][j] == friendlyPawn){
+                    long temp = generateEnPassentMask(playerSign, ((i * 8) + j));
+                    if (temp > 0){
+                        return temp;
+                    }
+                }
+            }
+        }
+        return 0L;
+    }
+
+    // Generates a random zobrist table using a Map to store piece ID values, corresponding to a 64 length 
+    // long[] holding each unique hash for each corresponding board square bit 0 to 63
+    public static Map<Integer, long[]> generateZobristTable(){
+        // Each piece identifier is mapped to a 64 length int[], corresponding to each square on the board
+        Map<Integer, long[]> retMap = new HashMap<>();
+
+        int[] pieces = new int[]{-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6};
+
+        for (int piece : pieces){
+            // Generate fresh hashes for each square, for this current piece
+            long[] temp = new long[64];
+            for (int i = 0; i < 63; i++){
+                temp[i] = ThreadLocalRandom.current().nextLong();
+            }
+
+            retMap.put(piece, temp);
+        }
+
+        return retMap;
+    }
+
+    public static Map<Integer, Long> generateEPHashTable(){
+        Map<Integer,Long> retMap = new HashMap<>();
+        int[] epSquares = new int[]{16, 17, 18, 19, 20, 21, 22, 23, 40, 41, 42, 43, 44, 45, 46, 47};
+
+        for (int i : epSquares){
+            retMap.put(i, ThreadLocalRandom.current().nextLong());
+        }
+
+        return retMap;
+    }
+
+    public long generateCurrentZobristHash(){
+        long retLong = 0L;
+
+        // Piece positions
+        int piece;
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                piece = this.boardState[i][j];
+                if (piece != 0){
+                    retLong ^= this.zobristTable.get(piece)[(i * 8) + j];
+                }
+            }
+        }
+
+        // Castling rights
+        if (whiteShort){retLong ^= whiteShortHash;};
+        if (whiteLong){retLong ^= whiteLongHash;};
+        if (blackShort){retLong ^= blackShortHash;};
+        if (blackLong){retLong ^= blackLongHash;};
+
+        // En passent rights (If they exist, if not this is just xoring with 0)
+        retLong ^= lastEpHash;
+
+        // Player turn
+        if (whitesTurn){retLong ^= whiteTurnHash;};
+
+        return retLong;
+    }
+    // Invoked after a player plays a move to calculate the starting board state for the OPPONENT
+    // Updates zobrist hash based on affected squares of the last played move
+    // For other pieces it looks at CURRENT board state, therefore this must be run AFTER moves are PLAYED
+    public void updateZobrist(){
+        Move lastMove = this.playedMoves.peek();
+        int origin = lastMove.getOriginBit();
+        int dest = lastMove.getDestBit();
+        int piece = lastMove.getPiece();
+        MOVE_TYPE lastType = lastMove.getType();
+        
+        //#region Piece Position
+        // Moves will always remove piece from origin
+        this.zobristHash ^= this.zobristTable.get(piece)[origin];
+
+        if (lastType == MOVE_TYPE.MOVE){
+            this.zobristHash ^= this.zobristTable.get(piece)[dest]; // Place piece in destination
+        }
+        else if (lastType == MOVE_TYPE.ATTACK){
+            int capturedPiece = this.lastBoardState[dest/8][dest%8];
+            this.zobristHash ^= this.zobristTable.get(capturedPiece)[dest]; // Remove captured piece from dest
+            this.zobristHash ^= this.zobristTable.get(piece)[dest]; // Add new piece to dest
+
+        }
+        else if (lastType == MOVE_TYPE.EN_PASSENT){
+            int rankAdjustment = (piece > 0) ? -8 : 8;
+            int capturedPiece = (piece > 0) ? -1 : 1;
+
+            this.zobristHash ^= this.zobristTable.get(capturedPiece)[dest + rankAdjustment]; // Remove captured pawn
+            this.zobristHash ^= this.zobristTable.get(piece)[dest]; // Place moved piece
+        }
+        else if (lastType == MOVE_TYPE.CASTLE_LONG){
+            int rook = (piece > 0) ? 4 : -4;
+            // place king
+            this.zobristHash ^= this.zobristTable.get(piece)[dest];
+
+            // Remove and place rook
+            this.zobristHash ^= this.zobristTable.get(rook)[dest - 2];
+            this.zobristHash ^= this.zobristTable.get(rook)[dest + 1];
+        }
+        else if (lastType == MOVE_TYPE.CASTLE_SHORT){
+            int rook = (piece > 0) ? 4 : -4;
+            // place king
+            this.zobristHash ^= this.zobristTable.get(piece)[dest];
+
+            // Remove and place rook
+            this.zobristHash ^= this.zobristTable.get(rook)[dest + 1];
+            this.zobristHash ^= this.zobristTable.get(rook)[dest - 1];
+        }
+        else if (lastType == MOVE_TYPE.PROMOTE_ATTACK){
+            int promotedPiece = this.boardState[dest/8][dest%8];
+            int capturedPiece = this.lastBoardState[dest/8][dest%8];
+            this.zobristHash ^= this.zobristTable.get(capturedPiece)[dest];// remove captured piece
+            this.zobristHash ^= this.zobristTable.get(promotedPiece)[dest];// add newly promoted piece
+        }
+        else if (lastType == MOVE_TYPE.PROMOTE_MOVE){
+            int promotedPiece = this.boardState[dest/8][dest%8];
+            this.zobristHash ^= this.zobristTable.get(promotedPiece)[dest]; // Place promoted piece
+        }
+        else{
+            System.out.println("updateZorbist() ERROR: INVALID MOVE TYPE");
+        }
+        //#endregion
+        //#region En Passent
+        // En passent availability for next player
+        long epMask = getPlayerEPMask(piece * -1);
+        // If current player can EP
+        if (epMask > 0){
+            int epDest = getSetBitPositions(epMask).get(0);
+            long currentEpHash = epHashTable.get(epDest);
+            // Incoming zobrist is not ep-enabled
+            if (this.lastEpHash == 0){
+                this.zobristHash ^= currentEpHash; // Add current
+                this.lastEpHash = currentEpHash; // Rewrite last ep as current ep for next turn
+            }
+            else {
+                this.zobristHash ^= this.lastEpHash; // Remove last EP
+                this.zobristHash ^= currentEpHash; // Add current EP
+                this.lastEpHash = currentEpHash; // Rewrite last ep as current ep for next turn
+            }
+        }
+        // If no current EP possibility exists
+        else {
+            this.zobristHash ^= this.lastEpHash; // Either removes the last EP hash, or XOR's with 0 which doesn't matter
+            this.lastEpHash = 0L;
+        }
+        //#endregion     
+        //#region Castling Rights
+        if (this.WSF){
+            this.zobristHash ^= this.whiteShortHash;
+            this.WSF = false;
+        }
+        if (this.WLF){
+            this.zobristHash ^= this.whiteLongHash;
+            this.WLF = false;
+        }
+        if (this.BSF){
+            this.zobristHash ^= this.blackShortHash;
+            this.BSF = false;
+        }
+        if (this.BLF){
+            this.zobristHash ^= this.blackLongHash;
+            this.BLF = false;
+        }
+        //endregion        
+        //#region Toggle turn
+        this.zobristHash ^= this.whiteTurnHash;
+        //#endregion
+    
+        // Add zobrist hash to zobrist history
+        this.zobristHistory.push(this.zobristHash); // Should push a copy as it is a primitive long
+
+    }
+    
+    // Checks the board to see if both players have insufficent material
+    // Returns false if any pawns, rooks, or queens are detected
+    // Returns false if either players material exceeds 9 points
+    // Only returns true if after tallying all material, both players are still 9 or under
+    public boolean checkInsufficientMaterial(){
+        int whiteMat = 0;
+        int blackMat = 0;
+
+        // Iterate through all board squares
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                int piece = this.boardState[i][j];
+                int pieceID = Math.abs(piece);
+                // If any pawn, rook, or queen is detected return false
+                if (pieceID == 1 || pieceID == 5 || pieceID == 4){
+                    return false;
+                }
+                // If its another piece, add to appropriate material count
+                else {
+                    if (piece < 0){
+                        blackMat += piece;
+                    }
+                    else{
+                        whiteMat += piece;
+                    }
+
+                    // After each addition, if white or black material reaches greater than 9, then its not insufficent material
+                    if ((whiteMat > 9) || (blackMat < -9)){
+                        return false;
+                    }
+                    
+                }
+            }
+        }
+
+        // If the loop terminates without returning, then it means both white and black have 
+        // material <= 9 with NO pawns, queens, or rooks - Insufficient material
+        return true;
+    }
+    
+    // Basic halfclock updating method
+    // Increments halfclock if non-capture, non-pawn move
+    // resets halfclock otherwise
+    // NO reverse functionality
+    public void updateHalfClock(){
+        MOVE_TYPE lastType = this.playedMoves.peek().getType();
+        int lastPieceID = Math.abs(this.playedMoves.peek().getPiece());
+
+        // If last move was a MOVE and NOT PAWN OR Castle
+        if (((lastType == MOVE_TYPE.MOVE) && (lastPieceID != 1)) || (lastType == MOVE_TYPE.CASTLE_LONG) || (lastType == MOVE_TYPE.CASTLE_SHORT)){
+            this.halfClock++;
+        }
+        else {
+            this.halfClock = 0;
+        }
+    }
+
+    public boolean checkNMoveDraw(int n){
+        return (this.halfClock >= n) ? true : false;
+    }
+
+    public boolean checkNFoldRepeat(int n){
+        if (this.zobristHistory.size() < n){
+            return false;
+        }
+        else {
+            int matches = 0;
+            long current = this.zobristHistory.peek();
+            
+            for (long past : this.zobristHistory){
+                if (current == past){
+                    matches++;
+                }
+            }
+            return (matches >= n) ? true : false;
+        }
+    }
+
+    //#endregion--------------------------------------------------------------------------------------------------------------------------------------
 
     //#region Bit utility
     // Optimized in terms of operation types, still high number of operations
@@ -1719,7 +2010,7 @@ public class Board {
     }
 
     public void addMove(Move newMove){
-        this.playedMoves.add(newMove);
+        this.playedMoves.push(newMove);
     }
 
     public Move peekMove(){
@@ -1736,19 +2027,32 @@ public class Board {
    
     public void setShortCastleRights(int playerSign, boolean bool){
         if (playerSign > 0){
-            this.whiteCanShortCastle = bool;
+            if (this.whiteShort != bool){
+                this.WSF = true;
+            }
+            this.whiteShort = bool;
+            
         }
         else {
-            this.blackCanShortCastle = bool;
+            if (this.blackShort != bool){
+                this.BSF = true;
+            }
+            this.blackShort = bool;
         }
     }
 
     public void setLongCastleRights(int playerSign, boolean bool){
         if (playerSign > 0){
-            this.whiteCanLongCastle = bool;
+            if (this.whiteLong != bool){
+                this.WLF = bool;
+            }
+            this.whiteLong = bool;
         }
         else {
-            this.blackCanLongCastle = bool;
+            if (this.blackLong != bool){
+                this.BLF = true;
+            }
+            this.blackLong = bool;
         }
     }
    
@@ -1779,6 +2083,8 @@ public class Board {
         int destRank = dest / 8;
         int destFile = dest % 8;
         int piece = mv.getPiece();
+
+        int[][] lastBoard = deepCloneBoard(this.boardState);
 
         // Unique behaviour for Castling, en passent
         // Move/Attack same behaviour
@@ -1830,39 +2136,97 @@ public class Board {
         }
 
         // Add move to playedMoves
-        addMove(mv);
+        this.playedMoves.push(mv);
+
+        // Update last board state
+        this.lastBoardState = lastBoard;
     }
 
     public void updateState(int lastPlayerSign){
-        boolean shortCastleRights = (lastPlayerSign > 0) ? whiteCanShortCastle : blackCanShortCastle;
-        boolean longCastleRights = (lastPlayerSign > 0) ? whiteCanLongCastle : blackCanLongCastle;
-        
+        boolean shortCastleRights = (lastPlayerSign > 0) ? whiteShort : blackShort;
+        boolean longCastleRights = (lastPlayerSign > 0) ? whiteLong : blackLong;
+        int shortRookSquare = (lastPlayerSign > 0) ? 7 : 63;
+        int longRookSquare = (lastPlayerSign > 0) ? 0 : 56;  
+
         // Check/Checkmate
-        if (getOpponentChecks(lastPlayerSign).size() > 0){
+        // Determine if last move but opponent in check
+        if (getOpponentChecks(lastPlayerSign * -1).size() > 0){
             setState(BOARD_STATE.CHECK);
         }
+        else {
+            setState(BOARD_STATE.IN_PLAY);
+        }
         
-        // Castling rights
+        // Updating Castling rights
+        // If any castling right is changed, its corresponding zobrist flag is set to true, causing updateZobrist() to update the hash accordingly
         if (shortCastleRights || longCastleRights){
             Move lastMove = peekMove();
             if (lastMove != null){
                 int lastMovePiece = Math.abs(lastMove.getPiece());
+                // If either castling right is active, and the move is a King, set both rights to false
                 if ((Math.abs(lastMove.getPiece()) == 6)){
                     setShortCastleRights(lastPlayerSign, false);
                     setLongCastleRights(lastPlayerSign, false);
                 }
-                // STOPPE DHERE
-    
+                else {
+                    int lastMoveOrigin = lastMove.getOriginBit();
+                    // If either castling right is active, check if rook moved from corresponding origin square
+                    if (lastMovePiece == 4){
+                        if (shortCastleRights && (lastMoveOrigin == shortRookSquare)){
+                            setShortCastleRights(lastPlayerSign, false);
+                        }
+                        else if(longCastleRights && (lastMoveOrigin == longRookSquare)){
+                            setLongCastleRights(lastPlayerSign, false);
+                        }
+                    }
+                }
             }
+        } // End castling IF
 
+        // Update halfClock based on previous turn
+        updateHalfClock();
+
+        // Update board, castling, turn, and EP zobrist based on flags set previously in UpdateBoard()
+        updateZobrist();
+        
+        // Update optional draw flags
+        this.fiftyMoveDrawAvailable = checkNMoveDraw(50);
+        this.threeFoldDrawAvailable = checkNFoldRepeat(3);
+
+        if (this.whitesTurn){
+            this.whitesTurn = false;
         }
-        // Repeated moves
-        // 50 move rule
-        // Insufficient material
-        // 
+        else {
+            this.whitesTurn = true;
+        }
     }
     
-    
+    // We can generate valid moves for the next player before this method runs
+    // Since all the state is done changing by this time, now we're just evaluating the state + moves
+    public void evaluateGameEndConditions(ArrayList<int[]> validMoves){
+        // Stalemate and Checkmate detection based on provided moves
+        if (validMoves.size() == 0){
+            if (this.state == BOARD_STATE.CHECK){
+                System.out.println("Checkmate!"); // Replace with proper game-ending code
+            }
+            else {
+                System.out.println("Stalemate!");
+            }
+        }
+
+        // Check forced draw conditions
+        if (checkInsufficientMaterial()){
+            System.out.println("Insufficient materal!"); // Implement game-end method
+        }
+        else if (this.fiftyMoveDrawAvailable && checkNMoveDraw(75)){
+            System.out.println("75 move draw!");
+        }
+        else if (this.threeFoldDrawAvailable && checkNFoldRepeat(5)){
+            System.out.println("Five fold repeat draw!");
+        }
+        // If function exits without ending the game, then we can give control to next player
+    }
+
     // Implement stalemate in loop -  generateValidMoves().size() == 0
     // FIX LATER
     // Just promote to queen for now, figure out user input later
