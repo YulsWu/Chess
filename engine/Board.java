@@ -1198,43 +1198,6 @@ public class Board {
         // Remove self-checking positions
         ArrayList<int[]> retArrayFinal = removeSelfCheckingMoves(playerSign, retArray);
         return retArrayFinal;
-
-        // // Remove moves resulting in self-check
-        // int[][] realBoard = getBoard();
-        // long realOcc = getOcc();
-
-        // for (int[] move : retArray){
-        //     int evasionPiece = move[0];
-        //     int originRank = move[1] / 8;
-        //     int originFile = move[1] % 8;
-        //     int destRank = move[2] / 8;
-        //     int destFile = move[2] % 8;
-            
-        //     int[][] candidateBoard = deepCloneBoard(realBoard);
-        //     candidateBoard[originRank][originFile] = 0; // Remove piece from origin
-        //     candidateBoard[destRank][destFile] = evasionPiece; // Put piece in destination
-        //     long candidateOcc = boardToBitboard(candidateBoard);
-            
-        //     // IF PAWN & ATTACK & ON EMPTY SQUARE, then en passent
-        //     // If en passent, we have to 'capture' the pawn, set to 0 in board
-        //     if ((Math.abs(evasionPiece) == 1) && (originFile != destFile) && (realBoard[destRank][destFile] == 0)){
-        //         int epRank = (evasionPiece > 0) ? destRank - 1 : destRank + 1;
-        //         candidateBoard[epRank][destFile] = 0; // Set pawn that was en-passented to 0
-        //         candidateOcc = boardToBitboard(candidateBoard); // Overwrite occupancy
-        //     }
-            
-        //     // Switch for checking
-        //     this.boardState = candidateBoard;
-        //     this.bitState = candidateOcc;
-        //     // Ensure move doesn't result in discovered self-check
-        //     if (getOpponentChecks(playerSign, candidateBoard).size() == 0){
-        //         retArrayFinal.add(move);
-        //     }
-
-        // }
-        // // Switch for real board state
-        // this.boardState = realBoard;
-        // this.bitState = realOcc;
     }
 
     // Returns an ArrayList<int[]> with int[] containing pieceID, origin, destination
@@ -1840,6 +1803,8 @@ public class Board {
     public boolean checkInsufficientMaterial(){
         int whiteMat = 0;
         int blackMat = 0;
+        boolean whiteKnight = false;
+        boolean blackKnight = false;
 
         // Iterate through all board squares
         for (int i = 0; i < 8; i++){
@@ -1847,8 +1812,14 @@ public class Board {
                 int piece = this.boardState[i][j];
                 int pieceID = Math.abs(piece);
                 // If any pawn, rook, or queen is detected return false
+                // Detect knights for both sides
                 if (pieceID == 1 || pieceID == 5 || pieceID == 4){
                     return false;
+                }else if (piece == 2){
+                    whiteKnight = true;
+                }
+                else if (piece == -2){
+                    blackKnight = true;
                 }
                 // If its another piece, add to appropriate material count
                 else {
@@ -1860,7 +1831,7 @@ public class Board {
                     }
 
                     // After each addition, if white or black material reaches greater than 9, then its not insufficent material
-                    if ((whiteMat > 9) || (blackMat < -9)){
+                    if ((whiteMat > 9) && (blackMat < -9)){
                         return false;
                     }
                     
@@ -1868,9 +1839,13 @@ public class Board {
             }
         }
 
-        // If the loop terminates without returning, then it means both white and black have 
-        // material <= 9 with NO pawns, queens, or rooks - Insufficient material
-        return true;
+        // If material for both is < 9, but both have knights, then technically its not insufficient material, otherwise it is
+        if (whiteKnight && blackKnight){
+            return false;
+        }
+        else {
+            return true;
+        }
     }
     
     // Basic halfclock updating method
@@ -1988,6 +1963,23 @@ public class Board {
         return (direction > 0) ? (board >>> direction) : (board << -direction);
     }
     
+    public void setOccBit(int value, int bitIndex){
+        long temp = (1L << (63 - bitIndex));
+
+        if (!(value == 0 || value == 1)){
+            System.out.println("setOccBit(): Invalid value provided, only 1 or 0 allowed.");
+            return;
+        }
+        else if (value == 1){
+            this.bitState |= temp; // Sets bit to 1 regardless of what it was before
+        }
+        else {
+            this.bitState &= ~temp; // Sets the bit to 0 regardless of whether it was a 1 or 0
+        }
+
+
+
+    }
     //#endregion
 
     //#region Getters/Setters
@@ -2055,7 +2047,56 @@ public class Board {
             this.blackLong = bool;
         }
     }
-   
+
+    public boolean getCastlingRights(String label){
+        if (label.equals("whiteShort")){
+            return this.whiteShort;
+        }
+        else if(label.equals("whiteLong")){
+            return this.whiteLong;
+        }
+        else if (label.equals("blackShort")){
+            return this.blackShort;
+        }
+        else if (label.equals("blackLong")){
+            return this.blackLong;
+        }
+        else {
+            System.out.println("getCastlingRights(): Invalid rights label");
+            return false;
+        }
+    }
+    
+    public boolean getClaimableDraw(String label){
+        if (label.equals("fiftyMove")){
+            return this.fiftyMoveDrawAvailable;
+        }
+        else if (label.equals("threeFold")){
+            return this.threeFoldDrawAvailable;
+        }
+        else {
+            System.out.println("getClaimableDraw(): Invalid label provided");
+            return false;
+        }
+    }
+    
+    public boolean getWhitesTurn(){
+        return this.whitesTurn;
+    }
+
+    public int getHalfClock(){
+        return this.halfClock;
+    }
+
+    public int getNumPlayedMoves(){
+        return this.playedMoves.size();
+    }
+
+    public int getNumZobristHistory(){
+        return this.zobristHistory.size();
+    }
+    
+    
     // TEST FUNCTION REMOVE AFTER
     public void setBoard(int[][] newBoard){
         this.boardState = newBoard;
@@ -2074,6 +2115,7 @@ public class Board {
 
     //#region Game loop methods
     // Strictly plays the moves and modifies board state, no move validity checking here
+    // Additionally updates the occupancy mask to reflect the board after move is played
     public void playMove(Move mv){
         MOVE_TYPE mvType = mv.getType();
         int origin = mv.getOriginBit();
@@ -2086,53 +2128,64 @@ public class Board {
 
         int[][] lastBoard = deepCloneBoard(this.boardState);
 
-        // Unique behaviour for Castling, en passent
-        // Move/Attack same behaviour
-        //  - Promotion unique behaviour
+        // PLAY the move
+        // Move the piece first, which occurs with all types of moves
+        this.boardState[originRank][originFile] = 0;
+        this.boardState[destRank][destFile] = piece;
+
+        // Update occupancy mask accordingly
+        setOccBit(0, origin);
+        setOccBit(1, dest);
 
         if (mvType == MOVE_TYPE.CASTLE_LONG){
-            this.boardState[originRank][originFile] = 0;
-            this.boardState[destRank][destFile] = piece;
-
             if (piece > 0){
+                // Set previous rook square to 0, set rook destination according to type of castling
                 this.boardState[0][0] = 0;
                 this.boardState[destRank][destFile + 1] = 4;
+
+                // Update occupancy mask accordingly
+                setOccBit(0, 0);
+                setOccBit(1, (destRank * 8) + (destFile + 1));
             }
             else{
                 this.boardState[7][0] = 0;
                 this.boardState[destRank][destFile + 1] = -4;
+
+                setOccBit(0, 56);
+                setOccBit(1, (destRank * 8) + (destFile + 1));
             }
         }
         else if (mvType == MOVE_TYPE.CASTLE_SHORT){
+            // Move rooks to proper squares
             if (piece > 0){
                 this.boardState[0][7] = 0;
                 this.boardState[destRank][destFile - 1] = 4;
+
+                setOccBit(0, 7);
+                setOccBit(1, (destRank * 8) + (destFile - 1));
             }
             else{
                 this.boardState[7][7] = 0;
                 this.boardState[destRank][destFile - 1] = -4;
+
+                setOccBit(0, 63);
+                setOccBit(1, (destRank * 8) + (destFile - 1));
             }
         }
         else if (mvType == MOVE_TYPE.EN_PASSENT){
-            this.boardState[originRank][originFile] = 0;
-            this.boardState[destRank][destFile] = piece;
-
+            // Depending on player, remove the piece above(black) or below (white) the en passent destination square
             if (piece > 0){
                 this.boardState[destRank - 1][destFile] = 0;
+                setOccBit(0, ((destRank - 1) * 8) + destFile);
             }
             else {
                 this.boardState[destRank + 1][destFile] = 0;
+                setOccBit(0, ((destRank + 1) * 8) + destFile);
             }
         }
         //Promotions
         else if ((mvType == MOVE_TYPE.PROMOTE_ATTACK) || (mvType == MOVE_TYPE.PROMOTE_MOVE)) {
-            this.boardState[originRank][originFile] = 0;
-            this.boardState[destRank][destFile] = getUserPromotion(piece);
-        }
-        // Behaviour for valid attacks/moves is the same
-        else{
-            this.boardState[originRank][originFile] = 0;
-            this.boardState[destRank][destFile] = piece;
+            this.boardState[destRank][destFile] = getUserPromotion(piece); // Overwrite previous piece with selected promotion piece
         }
 
         // Add move to playedMoves
@@ -2149,7 +2202,6 @@ public class Board {
         int longRookSquare = (lastPlayerSign > 0) ? 0 : 56;  
 
         // Check/Checkmate
-        // Determine if last move but opponent in check
         if (getOpponentChecks(lastPlayerSign * -1).size() > 0){
             setState(BOARD_STATE.CHECK);
         }
@@ -2238,4 +2290,30 @@ public class Board {
 
     //#endregion
 
+    //#region Object method overrides
+    @Override
+    public String toString(){
+        StringBuilder sbInner = new StringBuilder();
+        StringBuilder sbOuter = new StringBuilder();
+
+
+        for (int i = 0; i < 8; i++){
+            sbInner.setLength(0);
+            sbInner.append((i + 1) + " ");
+            for (int j = 0; j < 8; j++){
+                sbInner.append("[" + CHESS_EMOJI.get(boardState[i][j]) + " ]");
+            }
+            sbInner.append("\n");
+            sbOuter.insert(0, sbInner.toString());
+        }
+        sbOuter.append("   A   B   C   D   E   F   G   H");
+        sbOuter.insert(0, '\n');
+        sbOuter.append('\n');
+        return sbOuter.toString();
+        
+    }
+
+
+
+    //#endregion
 }

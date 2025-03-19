@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.regex.*;
 
+
 import db.Database;
 import db.GameData;
 import engine.Board;
@@ -51,6 +52,21 @@ public class test {
         put(5, "\u265B");
         put(6, "\u265A");
     }};
+
+    public static Move[] foolsOnWhite = new Move[]{
+        new Move(1, 13, 21, MOVE_TYPE.MOVE),
+        new Move(-1 , 52, 36, MOVE_TYPE.MOVE),
+        new Move(1, 14, 30, MOVE_TYPE.MOVE),
+        new Move(-5, 59, 31, MOVE_TYPE.MOVE)
+    };
+
+    public static Move[] foolsOnBlack = new Move[]{
+        new Move(1, 12, 20, MOVE_TYPE.MOVE),
+        new Move(-1, 53, 45, MOVE_TYPE.MOVE),
+        new Move(1, 13, 29, MOVE_TYPE.MOVE),
+        new Move(-1, 54, 38, MOVE_TYPE.MOVE),
+        new Move(5, 3, 39, MOVE_TYPE.MOVE)
+    };
 
     public static void test1 (){
         String filepath = "test_games.pgn";
@@ -1728,34 +1744,28 @@ public class test {
         // Play
         try(Scanner scanner = new Scanner(System.in)){
             int turn = 1;
+            int count = 0;
             String turnString;
-            for (Move mv : foolsMate){
-                turnString = (turn > 0) ? "White" : "Black";
-                System.out.println("Turn " + turn);
-                ArrayList<int[]> validMoves = board.generateValidMoves(turn);
-                System.out.println(turnString + " has " + validMoves.size() + " valid moves");
-                for (int[] i : validMoves){
-                    System.out.println(Arrays.toString(i));
-                }
-                Board.boardVisualize(board.getBoard());
-                scanner.nextLine();
-                board.playMove(mv);
-                board.updateState(turn);
-                board.evaluateGameEndConditions(validMoves);
-                turn *= -1;
-            }
-            
-            turnString = (turn > 0) ? "White" : "Black";
-            System.out.println("Turn " + turn);
+            System.out.println("Game started, white to play:");
+            System.out.println("Turn " + count);
             ArrayList<int[]> validMoves = board.generateValidMoves(turn);
-            System.out.println(turnString + " has " + validMoves.size() + " valid moves");
-            for (int[] i : validMoves){
-                System.out.println(Arrays.toString(i));
-            }
-            Board.boardVisualize(board.getBoard());
-            Board.boardVisualize(board.getBoard());
-            System.out.println("Game ended");
+            System.out.println("White has " + validMoves.size() + " valid moves");
+            System.out.println(board);
             scanner.nextLine();
+            count++;
+            
+            for (Move mv : foolsMate){
+                board.playMove(mv);
+                turn *= -1;
+                turnString = (turn > 0) ? "White" : "Black";
+                board.updateState(board.peekMove().getPiece());
+                validMoves = board.generateValidMoves(turn);
+                board.evaluateGameEndConditions(validMoves);
+                System.out.println(turnString + "s turn: " + validMoves.size() + " possible moves");
+                System.out.println(board);
+                scanner.nextLine();
+                count++;
+            }
         }
         catch (Exception e){
             System.out.println("foolsMateTest(): Error initializing scanner");
@@ -1763,4 +1773,72 @@ public class test {
         
         
     }
+
+    public static void playTest(Move[] moves, String label, int verbosity){
+        System.out.println("Play test for " + label + ":");
+        try{
+            Scanner scanner = new Scanner(System.in);   
+            Board board = new Board();
+            int turn = 1;
+            ArrayList<int[]> validMoves;
+            for (int i = 0; i < moves.length; i++){
+                String turnString = (turn > 0) ? "White" : "Black";
+                validMoves = board.generateValidMoves(turn);
+                System.out.println(i + ". " + turnString + " to move, " + validMoves.size() + " valid moves");
+                System.out.println(board);
+                if (verbosity >= 1){
+                    System.out.println(String.format("Board state: %s\nwhites turn: %b\nwhiteLong:%b\nwhiteShort: %b\nblackLong: %b\nblackShort: %b\nthreeFold: %b\nfiftyMove: %b\nhalfClock: %d\nnumPlayedMoves: %d\nnumZobristHistory: %d\n",
+                    board.getState(),
+                    board.getWhitesTurn(), 
+                    board.getCastlingRights("whiteLong"), 
+                    board.getCastlingRights("whiteShort"), 
+                    board.getCastlingRights("blackLong"), 
+                    board.getCastlingRights("blackShort"), 
+                    board.getClaimableDraw("threeFold"), 
+                    board.getClaimableDraw("fiftyMove"), 
+                    board.getHalfClock(), 
+                    board.getNumPlayedMoves(), 
+                    board.getNumZobristHistory()));
+
+                    if (verbosity >= 2){
+                        for (int[] mv : validMoves){
+                            System.out.println(Arrays.toString(mv));
+                        }
+                    }
+                }
+                scanner.nextLine();
+                board.playMove(moves[i]);
+                board.updateState(board.peekMove().getPiece());
+                turn *= -1;
+                validMoves = board.generateValidMoves(turn);
+                board.evaluateGameEndConditions(validMoves);
+            }
+            System.out.println(board);
+            if (verbosity >= 1){
+                System.out.println(String.format("Board state: %s\nwhites turn: %b\nwhiteLong:%b\nwhiteShort: %b\nblackLong: %b\nblackShort%b\nthreeFold: %b\nfiftyMove: %b\nhalfClock: %d\nnumPlayedMoves: %d\nnumZobristHistory: %d\n",
+                board.getState(),
+                board.getWhitesTurn(), 
+                board.getCastlingRights("whiteLong"), 
+                board.getCastlingRights("whiteShort"), 
+                board.getCastlingRights("blackLong"), 
+                board.getCastlingRights("blackShort"), 
+                board.getClaimableDraw("threeFold"), 
+                board.getClaimableDraw("fiftyMove"), 
+                board.getHalfClock(), 
+                board.getNumPlayedMoves(), 
+                board.getNumZobristHistory()));
+            }
+            scanner.nextLine();
+
+
+        }
+        catch (Exception e){
+            System.out.println("playTest(): Error initializing scanner: ");
+            e.printStackTrace();
+        }
+        
+        System.out.println("Finished play testing " + label);
+    }
+
+
 }

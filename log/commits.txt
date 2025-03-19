@@ -61,3 +61,11 @@ Fifty/Seventy five halfclock draw:
     - Added checkNMoveDraw(int n) to check for 50/75 move draw, implemented in updateState and evaluateGameEndConditions
     - Added checkNFoldRepeat(int n) to check for 3/5 fold repeat draw, implemented in updateState and evaluateGameEndConditions
     
+
+---------------------------------------
+
+Added toString to board to print the board representation
+
+Forgot to update the bitboard occupancy for each played move - 
+
+remove turn parameter from updateState(int lastPlayerSign), read it from the playedMoves deque

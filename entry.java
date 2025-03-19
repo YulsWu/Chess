@@ -50,12 +50,15 @@ public class entry{
         // test.generateEnPassentMaskTest();
         // test.generateValidMovesTest();
         // test.generateValidCastlingMovesTest();
+
+
         // test.createMoveTest();
         //BoardMaker.launch(BoardMaker.class, args);
         // Board.bitboardVisualize(0b000000000000000000000000000000000000000000000100000000000000000L);
         // System.out.println();
         // Board.boardVisualize(new int[][] {{4, 2, 3, 5, 6, 0, 0, 4}, {1, 1, 1, 0, 0, 1, 1, 1}, {0, 0, 0, 1, 0, 2, 0, 0}, {0, 0, 0, 0, 1, 0, 0, 0}, {0, 3, -3, -1, -1, 0, 0, 0}, {0, 0, -2, 0, 0, -3, 0, 0}, {-1, -1, -1, 0, -2, -1, -1, -1}, {-4, 0, 0, -5, -6, 0, 0, -4}});
-        test.foolsMateTest();
+        test.playTest(test.foolsOnWhite, "Fools mate on white", 0);
+        test.playTest(test.foolsOnBlack, "Fools mate on black", 0);
 
 
     }
