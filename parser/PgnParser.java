@@ -1,8 +1,12 @@
+package parser;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+
+import db.GameData;
+
 import java.util.Map;
 import java.util.HashMap;
 

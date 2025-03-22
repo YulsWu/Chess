@@ -1,0 +1,93 @@
+package engine;
+public class Move {
+    public enum MOVE_TYPE {
+        MOVE, ATTACK, CASTLE_LONG, CASTLE_SHORT, EN_PASSENT, PROMOTE_MOVE, PROMOTE_ATTACK
+    }
+    private int piece;
+    private MOVE_TYPE type;
+    private int originBit;
+    private int destBit;
+    
+    private int originRank;
+    private int originFile;
+    private int destRank;
+    private int destFile;
+
+    public Move(int pieceValue, int originBitIndex, int destinationBitIndex, MOVE_TYPE type){
+        originRank = originBitIndex / 8;
+        originFile = originBitIndex % 8;
+        destRank = destinationBitIndex / 8;
+        destFile = destinationBitIndex % 8;
+
+        originBit = originBitIndex;
+        destBit = destinationBitIndex;
+
+        piece = pieceValue; 
+
+        this.type = type;
+    };
+
+    public int getOriginRank(){
+        return this.originRank;
+    }
+
+    public int getOriginFile(){
+        return this.originFile;
+    }
+
+    public int getDestinationRank(){
+        return this.destRank;
+    }
+
+    public int getDestinationFile(){
+        return this.destFile;
+    }
+
+    public int getOriginBit(){
+        return this.originBit;
+    }
+
+    public int getDestBit(){
+        return this.destBit;
+    }
+
+    public int getPiece(){
+        return this.piece;
+    }
+
+    public MOVE_TYPE getType(){
+        return this.type;
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        Move temp;
+        if (obj instanceof Move){
+            temp = (Move)obj;
+            if (
+                (this.piece == temp.getPiece()) &&
+                (this.originBit == temp.getOriginBit()) &&
+                (this.destBit == temp.getDestBit()) &&
+                (this.type == temp.getType())
+            ){
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return false;
+        }
+    }
+
+    @Override
+    public String toString(){
+        return "Piece: " + piece + "\nOrigin: " + originBit + "\nDestination: " + destBit + "\nType: " + type;
+    }
+
+    @Override
+    public Move clone(){
+        return new Move(this.piece, this.originBit, this.destBit, this.type);
+    }
+}

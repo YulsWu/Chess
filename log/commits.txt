@@ -1,0 +1,135 @@
+Created updateState()
+    - Need to implement zobrist hashing so I can check it in "Update state"
+        - randomly generated piece-square zobrist hash table
+        - randomly generated board state variables for:
+            - 4 for castling
+            - 2 for en EN_PASSENT
+            - 2 for turntomove
+        - updateZobrist()
+        - Method to check for 3 and 5
+
+Created generateZobristTable()
+How to update zobrist?
+- Square by square: Avoids move logic considerations (en passent, castling) by looking at current vs previous board state
+- Move-informed: Use last Move information to only 'touch' the squares that have changed. More work upfront, faster execution?
+
+Move-informed:
+- MOVE:
+    - ORIGIN: newPiece(origin)
+    - DESTINATION: newPiece(dest)
+- ATTACK:
+    - ORIGIN: newPiece(origin)
+    - DESTINATION oldPiece(dest), then newPiece(dest)
+- EN_PASSENT:
+    - ORIGIN newPiece(origin)
+    - DESTINATION newPiece(destination)
+    - EP_SQUARE oldPiece([destRank][destFile + 1 (-1 depending on turn)])
+- CASTLE_LONG:
+    - ORIGIN newPiece(origin)
+    - DESTINATION newPiece(destination)
+    - LONG ROOK SQUARE Rook(destination - 2)
+    - NEW ROOK SQURE Rook(destination + 1);
+- CASTLE_SHORT:
+    - ORIGIN newPiece(origin)
+    - DESTINATION newPiece(destination)
+    - SHORT ROOK SQUARE Rook(destination + 1)
+    - NEW ROOK SQURE Rook(destination - 1)
+- PROMOTE_ATTACK:
+    - ORIGIN newPiece(origin)
+    - DESTINATION oldPiece(destination), promotedPiece(destination)
+- PROMOTE_MOVE:
+    - ORIGIN newPiece(origin)
+    - DESTINATION promotedPiece(destination)
+
+Finished board state zobrist updating
+What about castling? Update zobrist through 'setters' for castling rights
+
+Modified En Passent zobrist encoding to record different hashes for each possible EP square
+- Added another final hashMap epHashTable to store hashes corresponding to all possible EP squares (only 16, 2 ranks)
+
+Creating game-end method to detect and execute different game ending conditions.
+- Submethod for Insufficient material
+- Submethod for 50/75 halfclock draw
+- Submethod for 3/5 fold repetition
+- Not currently concerned about time controls
+- Checkmate/Stalemate? Valid moves are generated before calling this function, then provided to this function so it can check length for checkmate/stalemate
+
+Fifty/Seventy five halfclock draw:
+- Implement halfclock
+    - primitive int class attribute halfClock = 0;
+    - Added updateHalfClock(), implemented in updateState()
+    - Added checkNMoveDraw(int n) to check for 50/75 move draw, implemented in updateState and evaluateGameEndConditions
+    - Added checkNFoldRepeat(int n) to check for 3/5 fold repeat draw, implemented in updateState and evaluateGameEndConditions
+    
+
+---------------------------------------
+
+Added toString to board to print the board representation
+
+Forgot to update the bitboard occupancy for each played move - 
+
+remove turn parameter from updateState(int lastPlayerSign), read it from the playedMoves deque
+
+Separate and parse moves
+([KQRBN])?([a-hA-H])?([1-8])?(x)?([a-hA-H])([1-8])(=[KQRBN])?([+#])?|(O-O)|(O-O-O)
+
+Separate games in pgn
+(?s)(.*?[ ]+[01][.\/]?\d?-[01][.\/]?\d?)
+
+Get moveset from 'game'
+(?s)\n1\..*?[ ]+[01][.\/]?\d?-[01][.\/]?\d? // With newlines
+(?s)] ?1\..*?[ ]+[01][.\/]?\d?-[01][.\/]?\d? // Without newlines
+
+Separate metadata from game
+((?:\n?\[.*\]\n)+)
+
+Separate each of 7 mandatory meta fields:
+\n?\[Event "(.*?)"\]\n|\n?\[Site "(.*?)"\]\n|\n?\[Date "(.*?)"\]\n|\n?\[Round "(.*?)"\]\n|\n?\[White "(.*?)"\]\n|\n?\[Black "(.*?)"\]\n|\n?\[Result "(.*?)"\]\n
+
+I can't really create a "Move" without seeing the board, Specifically due to En passent pawn moves as either its an invalid capture or 
+a valid en passent depending on the board occupancy state.
+
+Move validator from PGN info:
+1. Determine moving piece
+2. Determine destination square
+3. Origin square:
+    - No disambiguation rank or file:
+        - generateValidMoves() for the current board state
+        - Ensure only ONE move matches the piece and destination
+        - If multiple moves satisfy, then invalid move/pgn
+    - Disambiguation provided
+        - generateValidMoves() for current board state
+        - Use disambiguation to filter moves
+        - If both disambiguations are provided just search for the specific origin square
+4. Move type
+    - Move/Attack are distinguised by the presence of group 4 (group4 != null)
+    - Promotion move/attack are distinguised by the presence of group 7 + group 4
+    - En passent must be validated by looking at the presence of a pawn one rank 'behind' the moved pawn, that just moved two spaces
+
+Order:
+1. DETERMINE CASTLING, search for validity, add move
+2. Otherwise determine piece, destination, search for validity with or without disambig.
+3. Once move is validated, determine if en passent or other type, add move.
+4. "Play move" on board and update state for next move validity checking.
+
+// File disambiguation
+[2, 1, 12]  // Knight from b1 → e2  
+[2, 6, 12]  // Knight from g1 → e2  
+
+// Rank disambig
+[4, 0, 16]  // Rook from a1 → a3  
+[4, 24, 16] // Rook from a4 → a3  
+
+// Rank and file disambig
+[5, 3, 12]  // Queen from d1 → e2  
+[5, 39, 12] // Queen from h5 → e2  
+
+Added helper functions to find moves in an ArrayList<int[piece, origin, destination]> using the information from a PGN move
+- public static boolean moveInMoveset(int[] move, ArrayList<int[]> moveset);
+- public static int[] getMoveInMoveset(int piece, int dest, ArrayList<int[]> moveset);
+- public static int[] getMoveInMoveset(int piece, int dest, ArrayList<int[]> moveset, int dsRank, int dsFile) 
+    -(Method pararmeter overload for optional origin square disambiguation)
+
+Tested these two functions and overloaded functions in test.findInMovesetTest()
+
+Preliminary moveValidator test passed, test with larger games with more varied pgn notation

@@ -167,3 +167,6 @@ MOVE PUTTING PLAYER IN CHECK
 Leaving off:
 I THINK I've finished genereateCheckEvasionMoves, needs extensive testing.
 Perhaps create something to help with test board generation and such
+
+BoardMaker for testing:
+- Done button handlers, switching back to piece board doesn't change labels properly, but to bitboard it is saved

@@ -1,8 +1,33 @@
 
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
-public class entry {
+import engine.Board;
+import javafx.application.Application;
+import javafx.BoardMaker;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.Arrays;
+import java.util.regex.*;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.StringTokenizer;
+
+import engine.Move;
+
+
+public class entry{
     public static void main(String[] args){
+        // try(PrintStream out = new PrintStream(System.out, true, StandardCharsets.UTF_8.name())){
+        //     System.setOut(out);
+        // }
+        // catch (Exception e){
+        //     System.out.println("Exception occurred setting system OUT encoding: " + e);
+        // }
+        // chcp 65001
         int batch_size = 100;
 
         String mysqlServer = "jdbc:mysql://localhost:3306";
@@ -27,73 +52,62 @@ public class entry {
         Long horzMask = 0b0000000000000000000000001111111100000000000000000000000000000000L;
         Long occMask = Board.boardToBitboard(Board.generateFreshBoard());
         Long pieceMask = (1L << 63 - 27);
-
-        System.out.println();
-
-        Board testBoard = new Board();
-        int[][] newBoard = new int[8][8];
-
-        //newBoard[2][3] = 2;
-        newBoard[1][5] = 3;
-        newBoard[5][2] = -5;
-        newBoard[6][3] = -1;
         
-        // for (int i = 0; i < 8; i++){
-        //     newboard[1][i] = 0;
-        //     newboard[6][i] = 0;
+        // test.generateCheckEvasionTest(0);
+        // test.generateEnPassentMaskTest();
+        // test.generateValidMovesTest();
+        // test.generateValidCastlingMovesTest();
+
+
+        // test.createMoveTest();
+        //BoardMaker.launch(BoardMaker.class, args);
+        // Board.bitboardVisualize(0b000000000000000000000000000000000000000000000100000000000000000L);
+        // System.out.println();
+        // Board.boardVisualize(new int[][] {{4, 2, 3, 5, 6, 0, 0, 4}, {1, 1, 1, 0, 0, 1, 1, 1}, {0, 0, 0, 1, 0, 2, 0, 0}, {0, 0, 0, 0, 1, 0, 0, 0}, {0, 3, -3, -1, -1, 0, 0, 0}, {0, 0, -2, 0, 0, -3, 0, 0}, {-1, -1, -1, 0, -2, -1, -1, -1}, {-4, 0, 0, -5, -6, 0, 0, -4}});
+        // test.playTest(test.foolsOnWhite, "Fools mate on white", 0);
+        // test.playTest(test.foolsOnBlack, "Fools mate on black", 0);
+
+        // ArrayList<Move> validMoves;
+        // ArrayList<String[]> dataArray = new ArrayList<>();
+        // try(BufferedReader bf = new BufferedReader(new FileReader("pgn/test.pgn"))){
+        //     StringBuilder sb = new StringBuilder();
+        //     while (bf.ready()){
+        //         sb.append(bf.readLine());
+        //     }
+        //     String game = sb.toString();
+        //     String regex1 = "(?s)\\]1\\..*?[ ]+[01][.\\/]?\\d?-[01][.\\/]?\\d?";
+        //     Pattern pattern = Pattern.compile(regex1);
+        //     Matcher matcher = pattern.matcher(game);
+
+        //     matcher.find();
+        //     String moveSet = matcher.group();
+        //     String regex2 = "([KQRBN])?([a-hA-H])?([1-8])?(x)?([a-hA-H])([1-8])(=[KQRBN])?([+#])?|(O-O)|(O-O-O)";
+        //     pattern = Pattern.compile(regex2);
+        //     matcher = pattern.matcher(moveSet);
+
+        //     while (matcher.find()){
+        //         String[] temp = new String[11];
+        //         for (int i = 0; i < 11; i++){
+        //             temp[i] = matcher.group(i);
+        //         }
+        //         dataArray.add(temp);
+        //     }        
+        // }
+        // catch(Exception e){
+        //     e.printStackTrace();
+        // }
+        
+        // validMoves = test.moveValidator(dataArray);
+
+        // for (Move m : validMoves){
+        //     System.out.println("-------------------------------------------------------------------------------------");
+        //     System.out.println(m);
         // }
 
-        // testBoard.setBoard(newBoard);
-        // testBoard.setOcc(Board.boardToBitboard(newBoard));
-        // // test.bitboardVisualize(testBoard.boardToBitboard(newboard));
-        // test.boardVisualize(newBoard);
-
-        // test.bitboardVisualize(testBoard.generatePieceVision(-1));
-        // test.bitboardVisualize(testBoard.generatePieceVision(1));
-
-        int from = 32;
-        int to = 36;
-        long fromMask = (1L << (63 - from));
-        long toMask = (1L << (63 - to));
-        System.out.println("FROM:");
-        test.bitboardVisualize(fromMask);
-        System.out.println("TO");
-        test.bitboardVisualize(toMask);
-
-        
-
-        // // Get occupancy along the vertical
-        // Long rayOcc = occMask & vertMask;
-
-        // // Transpose and calculate vertical rays
-        // Long validVerticalPaths = test.hyperbolicQuintessence(test.transposeBitboard(rayOcc), test.transposeBitboard(vertMask), test.transposeBitboard(pieceMask));
-        // validVerticalPaths = test.transposeBitboard(validVerticalPaths);
-        // System.out.println("Valid vertical moves:");
-        // test.bitboardVisualize(validVerticalPaths);
-
-        // // Get occupancy along the horizontal ray
-        // rayOcc = occMask & horzMask;
-
-        // // Transpose and calculate horizontal rays
-        // Long validHorizontalPaths = test.hyperbolicQuintessence(test.transposeBitboard(rayOcc), test.transposeBitboard(horzMask), test.transposeBitboard(pieceMask));
-        // validHorizontalPaths = test.transposeBitboard(validHorizontalPaths);
-        // System.out.println("Valid horizontal moves:");
-        // test.bitboardVisualize(validHorizontalPaths);
-        //======================================================================================================================================================================
-        // // Occmask in custom order (reverse LERF)
-        // System.out.println(test.longToString(occMask));
-
-        // // Occmask in LittleEndianRankFile
-        // System.out.println(test.longToString(Long.reverse(occMask)));
-
-        // System.out.println(test.longToString(test.transposeBitboard(Long.reverse(occMask))));
-        // System.out.println(test.longToString(test.transposeBitboard(test.transposeBitboard(Long.reverse(occMask)))));
-
-        // System.out.println(test.longToString(test.transpose(Long.reverse(occMask))));
-        // System.out.println(test.longToString(test.transpose(test.transpose(Long.reverse(occMask)))));
-
-        
-    
+        ArrayList<String[]> temp = test.extractPGN("pgn/Ding.pgn");
+        ArrayList<Move> tempMove = test.moveValidator(temp.get(0)[1]);
 
     }
+
 }
+
