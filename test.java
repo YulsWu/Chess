@@ -68,6 +68,35 @@ public class test {
         new Move(5, 3, 39, MOVE_TYPE.MOVE)
     };
 
+    public static ArrayList<int[]> primFoolsOnBlack = new ArrayList<>();
+    public static ArrayList<int[]> primFoolsOnWhite = new ArrayList<>();
+
+
+    static {
+        primFoolsOnBlack.add(new int[]{2, 52, 36});
+        primFoolsOnBlack.add(new int[]{2, 52, 36}); // 2: Pawn, 52: e7, 36: e5
+    
+        // White moves pawn from f2 to f3
+        primFoolsOnBlack.add(new int[]{1, 53, 45}); // 1: Pawn, 53: f2, 45: f3
+    
+        // Black moves queen from d8 to h4 (checkmate)
+        primFoolsOnBlack.add(new int[]{5, 4, 60}); // 5: Queen, 4: d8, 60: h4
+
+        // White moves pawn from f2 to f3
+        primFoolsOnWhite.add(new int[]{1, 53, 45}); // 1: Pawn, 53: f2, 45: f3
+
+        // Black moves pawn from e7 to e5
+        primFoolsOnWhite.add(new int[]{2, 52, 36}); // 2: Pawn, 52: e7, 36: e5
+
+        // White moves pawn from g2 to g4
+        primFoolsOnWhite.add(new int[]{1, 54, 38}); // 1: Pawn, 54: g2, 38: g4
+
+        // Black moves queen from d8 to h4 (checkmate)
+        primFoolsOnWhite.add(new int[]{5, 4, 60}); // 5: Queen, 4: d8, 60: h4
+
+    }
+
+
     public static void test1 (){
         String filepath = "test_games.pgn";
         StringBuilder sb = new StringBuilder();
@@ -1840,5 +1869,434 @@ public class test {
         System.out.println("Finished play testing " + label);
     }
 
+    public static ArrayList<String[]> parseMoveTest(String input){
+        // String input = "\r\n" + //
+        //                 "1.d4 Nf6 2.Nf3 g6 3.c4 c5 4.d5 b5 5.cxb5 a6 6.bxa6 Bg7 7.Nc3 Bxa6 8.e4 Bxf1\r\n" + //
+        //                 "9.Kxf1 d6 10.g3 O-O 11.Kg2 Nbd7 12.Re1 Qb6 13.Re2 Rfb8 14.Bf4 Ng4 15.Rc1 Nde5\r\n" + //
+        //                 "16.Nxe5 Nxe5 17.b3 Qa6 18.Bxe5 Bxe5 19.Nb1 Rb4 20.Rec2 c4 21.bxc4 Rxc4 22.Qd3 Rxc2\r\n" + //
+        //                 "23.Qxa6 Rxa6 24.Rxc2 f5 25.f3 Kf7 26.Kf2 h5 27.Ke3 h4 28.gxh4 fxe4 29.fxe4 Bf6\r\n" + //
+        //                 "30.Kf4 Bxh4 31.Nd2 Ra4 32.Nc4 Bf6 33.Ke3 Ra8 34.Kd3 Rh8 35.Ke3 Bg5+ 36.Kf3 Ra8\r\n" + //
+        //                 "37.a3 Ra4 38.Ke2 Bf4 39.h3 Ra8 40.Rc3 Kf6 41.Rf3 g5 42.Kd3 Ra6 43.Kc2 e6\r\n" + //
+        //                 "44.Rd3 exd5 45.Rxd5 Ke6 46.Kb3 Kd7 47.e5 Bxe5 48.Nxe5+ Ke6 49.Nd3 Rxa3+ 50.Kxa3 Kxd5\r\n" +
+        //                 "51.Nb4+ Ke4 52.Nc6 Kf4 53.Nd4 Kg3  1/2-1/2";
 
+        Map<Integer, String> GROUP_NAMES = Map.ofEntries(
+            Map.entry(0, "Full"),
+            Map.entry(1, "Piece"),
+            Map.entry(2, "dsRank"),
+            Map.entry(3, "dsFile"),
+            Map.entry(4, "Capture"),
+            Map.entry(5, "destRank"),
+            Map.entry(6, "destFile"),
+            Map.entry(7, "Promotion"),
+            Map.entry(8, "Chk/Mt"),
+            Map.entry(9, "ShortCastle"),
+            Map.entry(10, "LongCastle")
+        );
+        
+        ArrayList<String[]> retArray = new ArrayList<>();
+
+        // Group 0: Full move
+        // Group 1: Piece identifier, if null then pawn
+        // Group 2: Optional rank disambig.
+        // Group 3: Optional file disambig.
+        // Group 4: Optional capture
+        // Group 5: Destination rank
+        // Group 6: Destination file
+        // Group 7: Optional promotion indicator
+        // Group 8: Optional Check or Mate
+        // Group 9: Short/Kingside castle
+        // Group 10: Long/Queenside castle
+        String regex = "([KQRBN])?([a-hA-H])?([1-8])?(x)?([a-hA-H])([1-8])(=[KQRBN])?([+#])?|(O-O)|(O-O-O)";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(input);
+        //StringBuilder sb = new StringBuilder();
+
+        while(matcher.find()){
+            String[] temp = new String[11];
+
+            for (int i = 0; i < 11; i++){
+                temp[i] = matcher.group(i);
+            }
+
+            retArray.add(temp);
+        }
+
+        return retArray;
+    }
+
+    public static ArrayList<Move> moveValidator(ArrayList<String[]> matcherGroups){
+        Map<String, Integer> PIECE_ID = new HashMap<>();
+        PIECE_ID.put(null, 1);
+        PIECE_ID.put("N", 2);
+        PIECE_ID.put("B", 3);
+        PIECE_ID.put("R", 4);
+        PIECE_ID.put("Q", 5);
+        PIECE_ID.put("K", 6);
+
+        Map<String, Integer> FILE_INDEX = new HashMap<>();
+        FILE_INDEX.put("a", 0);
+        FILE_INDEX.put("b", 1);
+        FILE_INDEX.put("c", 2);
+        FILE_INDEX.put("d", 3);
+        FILE_INDEX.put("e", 4);
+        FILE_INDEX.put("f", 5);
+        FILE_INDEX.put("g", 6);
+        FILE_INDEX.put("h", 7);
+
+
+        ArrayList<Move> retArray = new ArrayList<>();
+        String pieceStr;
+
+        Board board = new Board();
+        ArrayList<int[]> validMoves = board.generateValidMoves(1);
+
+        for (int i = 0; i < matcherGroups.size(); i++){
+            String[] current = matcherGroups.get(i);
+            boolean whitesTurn = (i % 2 == 0) ? true : false;
+            int turnInt = whitesTurn ? 1 : -1;
+            int piece;
+            int origin;
+            int destination;
+            MOVE_TYPE moveType;
+            
+            // Castling detection
+            if (current[0].equals("O-O")){
+                if (whitesTurn){
+                    piece = 6;
+                    origin = 4;
+                    destination = 6;
+                }
+                else {
+                    piece = -6;
+                    origin = 60;
+                    destination = 62;
+                }
+
+                int[] temp = new int[]{piece, origin, destination};
+
+                if (moveInMoveset(temp, validMoves)){
+                    retArray.add(new Move(piece, origin, destination, MOVE_TYPE.CASTLE_SHORT));
+                }
+                else {
+                    System.out.println("moveValidator(): Invalid move detected for index " + i + ", returning all valid moves until this point.");
+                    return retArray;
+                }
+                continue;
+            }
+            else if (current[0].equals("O-O-O")){
+            
+                if (whitesTurn){
+                    piece = 6;
+                    origin = 4;
+                    destination = 2;
+                }
+                else {
+                    piece = -6;
+                    origin = 60;
+                    destination = 58;
+                }
+
+                int[] temp = new int[]{piece, origin, destination};
+
+                if (moveInMoveset(temp, validMoves)){
+                    retArray.add(new Move(piece, origin, destination, MOVE_TYPE.CASTLE_LONG));
+                }
+                else {
+                    System.out.println("moveValidator(): Invalid move detected for index " + i + ", returning all valid moves until this point.");
+                    return retArray;
+                }
+                continue;
+            }
+
+            pieceStr = current[1];
+
+            try{
+                piece = PIECE_ID.get(pieceStr);
+            }
+            catch (NullPointerException e){
+                System.out.println("moveValidator(): Invalid piece identifier detected for index " + i + ", returning validated moves");
+                return retArray;
+            }
+            // Consider turn for piece
+            if (!whitesTurn){
+                piece *= -1;
+            }
+
+            // Get destination
+            destination = ((Integer.valueOf(current[6]) - 1) * 8) + FILE_INDEX.get(current[5]); // Subtract 1 as file index = file lablel - 1
+
+            // Determine move type
+            // Promotion?
+            if (current[7] != null){
+                //Capture?
+                if (current[4] != null){
+                    moveType = MOVE_TYPE.PROMOTE_ATTACK;
+                }
+                else {
+                    moveType = MOVE_TYPE.PROMOTE_MOVE;
+                }
+            }
+            // Not promotion, but capture?
+            else if (current[4] != null){
+                // If Pawn capture on an empty square
+                if ((Math.abs(piece) == 1) && (board.getBoard()[destination/8][destination % 8] == 0)){
+                    moveType = MOVE_TYPE.EN_PASSENT;
+                }
+                else {
+                    moveType = MOVE_TYPE.ATTACK;
+                }
+            }
+            else {
+                moveType = MOVE_TYPE.MOVE;
+            }
+
+            // FIND MOVE IN VALID MOVES AND ADD
+            // No disambig
+            if (current[2] == null && current[3] == null){
+                int[] temp = getMoveInMoveset(piece, destination, validMoves);
+
+                if (temp.length > 0){
+                    retArray.add(new Move(temp[0],temp[1], temp[2], moveType));
+                }
+                else {
+                    System.out.println("moveValidator(): No valid move match found for index " + i);
+                    return retArray;
+                }
+            }
+            // Rank disambig
+            else if (current[3] != null){
+                int[] temp = getMoveInMoveset(piece, destination, validMoves, Integer.valueOf(current[3]) - 1, -1); // No relationship between the sole -1 flag vs current[2] - 1
+
+                if (temp.length > 1){
+                    retArray.add(new Move(temp[0], temp[1], temp[2], moveType));
+                }
+                else {
+                    System.out.println("moveValidator(): No valid move match found for index " + i);
+                    return retArray;
+                }
+            }
+            // File disambig
+            else if (current[2] != null){
+                int[] temp = getMoveInMoveset(piece, destination, validMoves, -1, FILE_INDEX.get(current[2]));
+
+                if (temp.length > 0){
+                    retArray.add(new Move(temp[0], temp[1], temp[2], moveType));
+                }
+                else {
+                    System.out.println("moveValidator(): No valid move match found for index " + i);
+                    return retArray;
+                }
+            }
+            // Rank and File disambig
+            else {
+                int [] temp = getMoveInMoveset(piece, destination, validMoves, Integer.valueOf(current[3]) - 1, Integer.valueOf(current[2]));
+                
+                if (temp.length > 0){
+                    retArray.add(new Move(temp[0], temp[1], temp[2], moveType));
+                }
+                else {
+                    System.out.println("moveValidator(): No valid move match found for index " + i);
+                    return retArray;
+                }
+            }
+
+            // At this point a valid move should have been found and added to the retArray
+            Move lastMove = retArray.get(retArray.size() - 1);
+            board.playMove(lastMove);
+            board.updateState(turnInt);
+            validMoves = board.generateValidMoves(turnInt * -1);
+
+            if (validMoves.size() == 0){
+                System.out.println("moveValidator(): No more valid moves left");
+                return retArray;
+            }
+        }
+        System.out.println("moveValidator(): All moves validated!");
+        return retArray;
+    }
+
+    public static boolean moveInMoveset(int[] move, ArrayList<int[]> moveset){
+        for (int[] mv : moveset){
+            if (Arrays.equals(move, mv)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static int[] getMoveInMoveset(int piece, int dest, ArrayList<int[]> moveset){
+        int count = 0;
+        int[] targetMove = new int[]{};
+        for (int [] mv : moveset){
+            if (piece == mv[0] && dest == mv[2]){
+                targetMove = mv;
+                count++;
+            }
+        }
+
+        if (count == 1){
+            return targetMove;
+        }
+        else {
+            System.out.println("getMoveInMoveset(): Multiple moves detected, returning empty array");
+            return new int[]{};
+        }
+    }
+
+    public static int[] getMoveInMoveset(int piece, int dest, ArrayList<int[]> moveset, int dsRank, int dsFile){
+        // boardState checking required for EP moves, in addition to basic validity
+        // Files (columns)
+        int[] fileA = {0, 8, 16, 24, 32, 40, 48, 56};
+        int[] fileB = {1, 9, 17, 25, 33, 41, 49, 57};
+        int[] fileC = {2, 10, 18, 26, 34, 42, 50, 58};
+        int[] fileD = {3, 11, 19, 27, 35, 43, 51, 59};
+        int[] fileE = {4, 12, 20, 28, 36, 44, 52, 60};
+        int[] fileF = {5, 13, 21, 29, 37, 45, 53, 61};
+        int[] fileG = {6, 14, 22, 30, 38, 46, 54, 62};
+        int[] fileH = {7, 15, 23, 31, 39, 47, 55, 63};
+
+        int[][] files = new int[][] {
+            fileA, fileB, fileC, fileD, fileE, fileF, fileG, fileH
+        };
+
+        // Ranks (rows)
+        int[] rank1 = {0, 1, 2, 3, 4, 5, 6, 7};
+        int[] rank2 = {8, 9, 10, 11, 12, 13, 14, 15};
+        int[] rank3 = {16, 17, 18, 19, 20, 21, 22, 23};
+        int[] rank4 = {24, 25, 26, 27, 28, 29, 30, 31};
+        int[] rank5 = {32, 33, 34, 35, 36, 37, 38, 39};
+        int[] rank6 = {40, 41, 42, 43, 44, 45, 46, 47};
+        int[] rank7 = {48, 49, 50, 51, 52, 53, 54, 55};
+        int[] rank8 = {56, 57, 58, 59, 60, 61, 62, 63};
+
+        int[][] ranks = new int[][]{
+            rank1, rank2, rank3, rank4, rank5, rank6, rank7, rank8
+        };
+        
+        int[] emptyMove = new int[]{};
+
+        if (dsRank >= 0 && dsFile >= 0){
+            int origin = (dsRank * 8) + dsFile;
+            int[] temp = new int[]{piece, origin, dest};
+
+            for (int[] mv : moveset){
+                if (Arrays.equals(temp, mv)){
+                    return mv;
+                }
+            }
+            return emptyMove;
+        }
+        else if (dsRank >= 0){
+            for (int rankInd : ranks[dsRank]){
+                for (int[] mv : moveset){
+                    if ((piece == mv[0]) && (rankInd == mv[1]) && (dest == mv[2])){
+                        return mv;
+                    }
+                }
+            }
+            return emptyMove;
+        }
+        else if (dsFile >= 0){
+            for (int fileInd : files[dsFile]){
+                for (int[] mv : moveset){
+                    if ((piece == mv[0]) && (fileInd == mv[1]) && (dest == mv[2])){
+                        return mv;
+                    }
+                }
+            }
+            return emptyMove;
+        }
+
+        return emptyMove;
+    }
+
+    public static void findInMovesetTest(){
+        
+        ArrayList<int[]> moveset = new ArrayList<int[]>();
+        moveset.add(new int[]{2, 1, 12});    // Knight b1 to e2
+        moveset.add(new int[]{2, 6, 12});    // Knight g1 to e2
+        moveset.add(new int[]{-2, 29, 12});  // Black knight to e2
+        moveset.add(new int[]{6, 4, 12});    // King to e2
+        moveset.add(new int[]{4, 0, 16});    // Rook a1 to a3
+        moveset.add(new int[]{4, 24, 16});   // Rook a4 to a3
+        moveset.add(new int[]{-4, 19, 16});  // BRook to a3
+        moveset.add(new int[]{5, 3, 12});    // Queen d1 to e2
+        moveset.add(new int[]{5, 39, 12});   // Queen h5 to e2
+        moveset.add(new int[]{-5, 28, 12});  // BQueen to e2
+
+        boolean test1 = Arrays.equals(getMoveInMoveset(2, 12, moveset), new int[]{});
+        boolean test2 = Arrays.equals(getMoveInMoveset(2, 12, moveset, -1, 6), new int[]{2, 6, 12}); // Knight move with FILE disamb.
+        boolean test3 = Arrays.equals(getMoveInMoveset(-5, 12, moveset), new int[]{-5, 28, 12}); // Get black queen without disambig.
+        boolean test4 = Arrays.equals(getMoveInMoveset(5, 12, moveset), new int[]{}); // White queen without disamb.
+        boolean test5 = Arrays.equals(getMoveInMoveset(5, 12, moveset, 4, 7), new int[]{5, 39, 12}); // White queen with disamb.
+        boolean test6 = Arrays.equals(getMoveInMoveset(4, 16, moveset, 0, -1), new int[]{4, 0, 16}); // Rook with RANK disamb.
+
+        // Test moveInMoveset
+        boolean test7 = moveInMoveset(new int[]{1, 8, 16}, moveset) == false;
+        boolean test8 = moveInMoveset(new int[]{-4, 19, 59}, moveset) == false;
+        boolean test9 = moveInMoveset(new int[]{4, 0, 16}, moveset) == true;
+        boolean test10 = moveInMoveset(new int[]{-2, 29, 12}, moveset) == true;
+
+
+
+        boolean[] tests = new boolean[]{test1, test2, test3, test4, test5, test6, test7, test8, test9, test10};
+
+        int count = 1;
+        for (boolean t : tests){
+            String msg = t ? "Test " + count + " passed." : "Test " + count + " FAILED...";
+            System.out.println(msg);
+            count++;
+        }
+
+    }
+
+    // Returns an arraylist containing 2-length string[] entries, which contain the metadata and moves of each game.
+    public static ArrayList<String[]> extractPGN(String filepath){
+        ArrayList<String[]> retArray = new ArrayList<>();
+        ArrayList<String> metaArray = new ArrayList<>();
+        ArrayList<String> movesArray = new ArrayList<>();
+
+        String pgnString;
+        StringBuilder sb = new StringBuilder();
+
+        try(BufferedReader bf = new BufferedReader(new FileReader(filepath))){
+
+            while (bf.ready()){
+                sb.append(bf.readLine() + "\n");
+            }
+
+        }
+        catch (Exception e){
+            System.out.println("extractMetaPGN(): Error reading file");
+        }
+
+        pgnString = sb.toString();
+
+        String metaRegex = "((?:\\n?\\[.*\\]\\n)+)";
+        String movesRegex = "(?s)\\n1\\..*?[ ]+[01][.\\/]?\\d?-[01][.\\/]?\\d?";
+        Pattern metaPattern = Pattern.compile(metaRegex);
+        Pattern movesPattern = Pattern.compile(movesRegex);
+        Matcher metaMatcher = metaPattern.matcher(pgnString);
+        Matcher movesMatcher = movesPattern.matcher(pgnString);
+
+        while (metaMatcher.find()){
+            metaArray.add(metaMatcher.group());
+        }
+
+        while (movesMatcher.find()){
+            movesArray.add(movesMatcher.group());
+        }
+
+        if (metaArray.size() != movesArray.size()){
+            System.out.println("extractPGN() Error: Number of metadata and moves blocks do not match, returning empty array");
+            return retArray;
+        }
+
+        for (int i = 0; i < metaArray.size(); i++){
+            retArray.add(new String[]{metaArray.get(i), movesArray.get(i)});
+        }
+
+        return retArray;
+    }
 }

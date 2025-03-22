@@ -10,6 +10,13 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Arrays;
+import java.util.regex.*;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.StringTokenizer;
+
+import engine.Move;
 
 
 public class entry{
@@ -57,10 +64,50 @@ public class entry{
         // Board.bitboardVisualize(0b000000000000000000000000000000000000000000000100000000000000000L);
         // System.out.println();
         // Board.boardVisualize(new int[][] {{4, 2, 3, 5, 6, 0, 0, 4}, {1, 1, 1, 0, 0, 1, 1, 1}, {0, 0, 0, 1, 0, 2, 0, 0}, {0, 0, 0, 0, 1, 0, 0, 0}, {0, 3, -3, -1, -1, 0, 0, 0}, {0, 0, -2, 0, 0, -3, 0, 0}, {-1, -1, -1, 0, -2, -1, -1, -1}, {-4, 0, 0, -5, -6, 0, 0, -4}});
-        test.playTest(test.foolsOnWhite, "Fools mate on white", 0);
-        test.playTest(test.foolsOnBlack, "Fools mate on black", 0);
+        // test.playTest(test.foolsOnWhite, "Fools mate on white", 0);
+        // test.playTest(test.foolsOnBlack, "Fools mate on black", 0);
 
+        // ArrayList<Move> validMoves;
+        // ArrayList<String[]> dataArray = new ArrayList<>();
+        // try(BufferedReader bf = new BufferedReader(new FileReader("pgn/test.pgn"))){
+        //     StringBuilder sb = new StringBuilder();
+        //     while (bf.ready()){
+        //         sb.append(bf.readLine());
+        //     }
+        //     String game = sb.toString();
+        //     String regex1 = "(?s)\\]1\\..*?[ ]+[01][.\\/]?\\d?-[01][.\\/]?\\d?";
+        //     Pattern pattern = Pattern.compile(regex1);
+        //     Matcher matcher = pattern.matcher(game);
+
+        //     matcher.find();
+        //     String moveSet = matcher.group();
+        //     String regex2 = "([KQRBN])?([a-hA-H])?([1-8])?(x)?([a-hA-H])([1-8])(=[KQRBN])?([+#])?|(O-O)|(O-O-O)";
+        //     pattern = Pattern.compile(regex2);
+        //     matcher = pattern.matcher(moveSet);
+
+        //     while (matcher.find()){
+        //         String[] temp = new String[11];
+        //         for (int i = 0; i < 11; i++){
+        //             temp[i] = matcher.group(i);
+        //         }
+        //         dataArray.add(temp);
+        //     }        
+        // }
+        // catch(Exception e){
+        //     e.printStackTrace();
+        // }
+        
+        // validMoves = test.moveValidator(dataArray);
+
+        // for (Move m : validMoves){
+        //     System.out.println("-------------------------------------------------------------------------------------");
+        //     System.out.println(m);
+        // }
+
+        ArrayList<String[]> temp = test.extractPGN("pgn/Ding.pgn");
+        ArrayList<Move> tempMove = test.moveValidator(temp.get(0)[1]);
 
     }
+
 }
 
