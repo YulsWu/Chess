@@ -1,7 +1,15 @@
 {
+<<<<<<< HEAD
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "lib/*.jar"
+    ]
+}
+=======
     // Referenced libraries used for code completion
     "java.project.referencedLibraries": [
       "lib/javafx-sdk-23.0.2/lib/*.jar",
       "lib/mysql-connector-j-9.1.0.jar"
     ]
   }
+>>>>>>> 1fe44a71f61078c30834d5891a6eeec711ad199b
