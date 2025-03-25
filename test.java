@@ -1979,6 +1979,7 @@ public class test {
             int origin;
             int destination;
             MOVE_TYPE moveType;
+            int promotionPiece = 0;
             
             // Short castle
             String debugMatch = matcher.group(0);
@@ -2058,6 +2059,7 @@ public class test {
                     else {
                         moveType = MOVE_TYPE.PROMOTE_MOVE;
                     }
+                    promotionPiece = PIECE_ID.get(String.valueOf(matcher.group(4).charAt(1))) * turnInt;
                 }
                 // Not promotion, but capture?
                 else if (matcher.group(4) != null){
@@ -2126,9 +2128,14 @@ public class test {
                 //#endregion
             }
 
-            //#region Update validator board
-            // At this point a valid move should have been found and added to the retArray
+            // Add promotion piece if the move is a promotion, promotion piece is not a factor for the move validity
             Move lastMove = retArray.get(retArray.size() - 1);
+            if (lastMove.getType() == MOVE_TYPE.PROMOTE_ATTACK || lastMove.getType() == MOVE_TYPE.PROMOTE_MOVE){
+                lastMove.setPromotionPiece(promotionPiece);
+            }
+
+            //#region Update validator board
+            // Play the last move and update state
             board.playMove(lastMove);
             board.updateState(turnInt);
             validMoves = board.generateValidMoves(turnInt * -1);

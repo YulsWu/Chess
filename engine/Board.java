@@ -2185,7 +2185,7 @@ public class Board {
         }
         //Promotions
         else if ((mvType == MOVE_TYPE.PROMOTE_ATTACK) || (mvType == MOVE_TYPE.PROMOTE_MOVE)) {
-            this.boardState[destRank][destFile] = getUserPromotion(piece); // Overwrite previous piece with selected promotion piece
+            this.boardState[destRank][destFile] = mv.getPromotionPiece(); // Overwrite previous piece with selected promotion piece
         }
 
         // Add move to playedMoves

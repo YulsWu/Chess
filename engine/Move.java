@@ -4,6 +4,7 @@ public class Move {
         MOVE, ATTACK, CASTLE_LONG, CASTLE_SHORT, EN_PASSENT, PROMOTE_MOVE, PROMOTE_ATTACK
     }
     private int piece;
+    private int promotionPiece;
     private MOVE_TYPE type;
     private int originBit;
     private int destBit;
@@ -12,6 +13,7 @@ public class Move {
     private int originFile;
     private int destRank;
     private int destFile;
+
 
     public Move(int pieceValue, int originBitIndex, int destinationBitIndex, MOVE_TYPE type){
         originRank = originBitIndex / 8;
@@ -26,6 +28,22 @@ public class Move {
 
         this.type = type;
     };
+
+    public Move(int pieceValue, int originBitIndex, int destinationBitIndex, MOVE_TYPE type, int promotionPiece){
+        originRank = originBitIndex / 8;
+        originFile = originBitIndex % 8;
+        destRank = destinationBitIndex / 8;
+        destFile = destinationBitIndex % 8;
+
+        originBit = originBitIndex;
+        destBit = destinationBitIndex;
+
+        piece = pieceValue; 
+
+        this.type = type;
+
+        this.promotionPiece = promotionPiece;
+    }
 
     public int getOriginRank(){
         return this.originRank;
@@ -57,6 +75,26 @@ public class Move {
 
     public MOVE_TYPE getType(){
         return this.type;
+    }
+
+    public int getPromotionPiece(){
+        if (this.promotionPiece == 0){
+            System.out.println("getPromotionPiece() invoked for a non-initialized promotion piece");
+        }
+        
+        if (!(this.type == MOVE_TYPE.PROMOTE_ATTACK || this.type == MOVE_TYPE.PROMOTE_MOVE)){
+            System.out.println("getPromotionPiece() invoked for a non-promotion type move");
+        }
+        return this.promotionPiece;
+    }
+
+    public void setPromotionPiece(int promotionPiece){
+        if (promotionPiece > 6 || promotionPiece < -6){
+            System.out.println("setPromotionPiece(): Invalid piece identifier provided");
+        }
+        else {
+            this.promotionPiece = promotionPiece;
+        }
     }
 
     @Override

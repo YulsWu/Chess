@@ -46,9 +46,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 
-<<<<<<< HEAD
-public class boardMaker extends Application{
-=======
 public class BoardMaker extends Application{
     ArrayList<int[][]> returnPieceboards = new ArrayList<>();
     ArrayList<Long> returnBitboards = new ArrayList<>();
@@ -107,7 +104,6 @@ public class BoardMaker extends Application{
     public BoardMaker(){
         boardButtons = new ArrayList<Button>();
     }
->>>>>>> 1fe44a71f61078c30834d5891a6eeec711ad199b
     
     @Override
     public void start(Stage primaryStage){
