@@ -67,45 +67,24 @@ public class entry{
         // test.playTest(test.foolsOnWhite, "Fools mate on white", 0);
         // test.playTest(test.foolsOnBlack, "Fools mate on black", 0);
 
-        // ArrayList<Move> validMoves;
-        // ArrayList<String[]> dataArray = new ArrayList<>();
-        // try(BufferedReader bf = new BufferedReader(new FileReader("pgn/test.pgn"))){
-        //     StringBuilder sb = new StringBuilder();
-        //     while (bf.ready()){
-        //         sb.append(bf.readLine());
-        //     }
-        //     String game = sb.toString();
-        //     String regex1 = "(?s)\\]1\\..*?[ ]+[01][.\\/]?\\d?-[01][.\\/]?\\d?";
-        //     Pattern pattern = Pattern.compile(regex1);
-        //     Matcher matcher = pattern.matcher(game);
+        ArrayList<String[]> temp = test.extractPGN("pgn/sample.pgn");
+        int count = 0;
+        for (String[] tmv : temp){
+            System.out.println("Count " + count);
+            ArrayList<Move> tempMove = test.moveValidator(tmv[1]);
+            System.out.println(tempMove.size() + " moves present");
+            count ++;
+        }
 
-        //     matcher.find();
-        //     String moveSet = matcher.group();
-        //     String regex2 = "([KQRBN])?([a-hA-H])?([1-8])?(x)?([a-hA-H])([1-8])(=[KQRBN])?([+#])?|(O-O)|(O-O-O)";
-        //     pattern = Pattern.compile(regex2);
-        //     matcher = pattern.matcher(moveSet);
 
-        //     while (matcher.find()){
-        //         String[] temp = new String[11];
-        //         for (int i = 0; i < 11; i++){
-        //             temp[i] = matcher.group(i);
-        //         }
-        //         dataArray.add(temp);
-        //     }        
-        // }
-        // catch(Exception e){
-        //     e.printStackTrace();
-        // }
-        
-        // validMoves = test.moveValidator(dataArray);
+        //ArrayList<Move> tempMove = test.moveValidator(temp.get(1)[1]);
+        //System.out.println(temp.get(1)[1]);
 
-        // for (Move m : validMoves){
-        //     System.out.println("-------------------------------------------------------------------------------------");
-        //     System.out.println(m);
-        // }
+        // Errors:
+        // Count 800, index 50
+        // Count 867, index 40
 
-        ArrayList<String[]> temp = test.extractPGN("pgn/Ding.pgn");
-        ArrayList<Move> tempMove = test.moveValidator(temp.get(0)[1]);
+        //Board.bitboardVisualize(0b1001110000100100000100011100010000000010000010001110110001010010L);
 
     }
 

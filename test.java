@@ -1925,7 +1925,8 @@ public class test {
         return retArray;
     }
 
-    public static ArrayList<Move> moveValidator(ArrayList<String[]> matcherGroups){
+    public static ArrayList<Move> moveValidator(String movesString){
+        //#region Map initialization
         Map<String, Integer> PIECE_ID = new HashMap<>();
         PIECE_ID.put(null, 1);
         PIECE_ID.put("N", 2);
@@ -1943,25 +1944,45 @@ public class test {
         FILE_INDEX.put("f", 5);
         FILE_INDEX.put("g", 6);
         FILE_INDEX.put("h", 7);
-
+        //#endregion
 
         ArrayList<Move> retArray = new ArrayList<>();
-        String pieceStr;
 
+        //#region Regex initialization
+        // Group 0: Full move
+        // Group 1: Piece identifier, if null then pawn
+        // Group 2: Optional rank disambig.
+        // Group 3: Optional file disambig.
+        // Group 4: Optional capture
+        // Group 5: Destination rank
+        // Group 6: Destination file
+        // Group 7: Optional promotion indicator
+        // Group 8: Optional Check or Mate
+        // Group 9: Short/Kingside castle
+        // Group 10: Long/Queenside castle
+
+        String regex = "([KQRBN])?([a-hA-H])?([1-8])?(x)?([a-hA-H])([1-8])(=[KQRBN])?([+#])?|(O-O-O)|(O-O)";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(movesString);
+        //#endregion
+
+        // Initial board state
         Board board = new Board();
         ArrayList<int[]> validMoves = board.generateValidMoves(1);
 
-        for (int i = 0; i < matcherGroups.size(); i++){
-            String[] current = matcherGroups.get(i);
-            boolean whitesTurn = (i % 2 == 0) ? true : false;
+        //#region Move Inference
+        int count = 0;
+        while(matcher.find()){
+            boolean whitesTurn = (count % 2 == 0) ? true : false;
             int turnInt = whitesTurn ? 1 : -1;
             int piece;
             int origin;
             int destination;
             MOVE_TYPE moveType;
             
-            // Castling detection
-            if (current[0].equals("O-O")){
+            // Short castle
+            String debugMatch = matcher.group(0);
+            if (matcher.group(0).equals("O-O")){
                 if (whitesTurn){
                     piece = 6;
                     origin = 4;
@@ -1979,12 +2000,12 @@ public class test {
                     retArray.add(new Move(piece, origin, destination, MOVE_TYPE.CASTLE_SHORT));
                 }
                 else {
-                    System.out.println("moveValidator(): Invalid move detected for index " + i + ", returning all valid moves until this point.");
+                    System.out.println("moveValidator(): Invalid move detected for index " + count + ", returning all valid moves until this point.");
                     return retArray;
                 }
-                continue;
             }
-            else if (current[0].equals("O-O-O")){
+            // Long castle
+            else if (matcher.group(0).equals("O-O-O")){
             
                 if (whitesTurn){
                     piece = 6;
@@ -2003,104 +2024,109 @@ public class test {
                     retArray.add(new Move(piece, origin, destination, MOVE_TYPE.CASTLE_LONG));
                 }
                 else {
-                    System.out.println("moveValidator(): Invalid move detected for index " + i + ", returning all valid moves until this point.");
-                    return retArray;
-                }
-                continue;
-            }
-
-            pieceStr = current[1];
-
-            try{
-                piece = PIECE_ID.get(pieceStr);
-            }
-            catch (NullPointerException e){
-                System.out.println("moveValidator(): Invalid piece identifier detected for index " + i + ", returning validated moves");
-                return retArray;
-            }
-            // Consider turn for piece
-            if (!whitesTurn){
-                piece *= -1;
-            }
-
-            // Get destination
-            destination = ((Integer.valueOf(current[6]) - 1) * 8) + FILE_INDEX.get(current[5]); // Subtract 1 as file index = file lablel - 1
-
-            // Determine move type
-            // Promotion?
-            if (current[7] != null){
-                //Capture?
-                if (current[4] != null){
-                    moveType = MOVE_TYPE.PROMOTE_ATTACK;
-                }
-                else {
-                    moveType = MOVE_TYPE.PROMOTE_MOVE;
-                }
-            }
-            // Not promotion, but capture?
-            else if (current[4] != null){
-                // If Pawn capture on an empty square
-                if ((Math.abs(piece) == 1) && (board.getBoard()[destination/8][destination % 8] == 0)){
-                    moveType = MOVE_TYPE.EN_PASSENT;
-                }
-                else {
-                    moveType = MOVE_TYPE.ATTACK;
-                }
-            }
-            else {
-                moveType = MOVE_TYPE.MOVE;
-            }
-
-            // FIND MOVE IN VALID MOVES AND ADD
-            // No disambig
-            if (current[2] == null && current[3] == null){
-                int[] temp = getMoveInMoveset(piece, destination, validMoves);
-
-                if (temp.length > 0){
-                    retArray.add(new Move(temp[0],temp[1], temp[2], moveType));
-                }
-                else {
-                    System.out.println("moveValidator(): No valid move match found for index " + i);
+                    System.out.println("moveValidator(): Invalid move detected for index " + count + ", returning all valid moves until this point.");
                     return retArray;
                 }
             }
-            // Rank disambig
-            else if (current[3] != null){
-                int[] temp = getMoveInMoveset(piece, destination, validMoves, Integer.valueOf(current[3]) - 1, -1); // No relationship between the sole -1 flag vs current[2] - 1
-
-                if (temp.length > 1){
-                    retArray.add(new Move(temp[0], temp[1], temp[2], moveType));
+            // All other moves
+            else{
+                //#region PieceID, Destination square, Move Type detection
+                // Determine piece ID from string identifier
+                // Throws exception if identifier is not found as primitive int cannot be Null
+                try{
+                    piece = PIECE_ID.get(matcher.group(1));
                 }
-                else {
-                    System.out.println("moveValidator(): No valid move match found for index " + i);
+                catch (NullPointerException e){
+                    System.out.println("moveValidator(): Invalid piece identifier detected for index " + count + ", returning validated moves");
                     return retArray;
                 }
-            }
-            // File disambig
-            else if (current[2] != null){
-                int[] temp = getMoveInMoveset(piece, destination, validMoves, -1, FILE_INDEX.get(current[2]));
+                // Consider turn for piece
+                if (!whitesTurn){
+                    piece *= -1;
+                }
 
-                if (temp.length > 0){
-                    retArray.add(new Move(temp[0], temp[1], temp[2], moveType));
+                // Get destination
+                destination = ((Integer.valueOf(matcher.group(6)) - 1) * 8) + FILE_INDEX.get(matcher.group(5)); // Subtract 1 as file index = file lablel - 1
+
+                // Determine move type
+                // Promotion?
+                if (matcher.group(7) != null){
+                    //Capture?
+                    if (matcher.group(4) != null){
+                        moveType = MOVE_TYPE.PROMOTE_ATTACK;
+                    }
+                    else {
+                        moveType = MOVE_TYPE.PROMOTE_MOVE;
+                    }
+                }
+                // Not promotion, but capture?
+                else if (matcher.group(4) != null){
+                    // If Pawn capture on an empty square
+                    if ((Math.abs(piece) == 1) && (board.getBoard()[destination/8][destination % 8] == 0)){
+                        moveType = MOVE_TYPE.EN_PASSENT;
+                    }
+                    else {
+                        moveType = MOVE_TYPE.ATTACK;
+                    }
                 }
                 else {
-                    System.out.println("moveValidator(): No valid move match found for index " + i);
-                    return retArray;
+                    moveType = MOVE_TYPE.MOVE;
                 }
-            }
-            // Rank and File disambig
-            else {
-                int [] temp = getMoveInMoveset(piece, destination, validMoves, Integer.valueOf(current[3]) - 1, Integer.valueOf(current[2]));
-                
-                if (temp.length > 0){
-                    retArray.add(new Move(temp[0], temp[1], temp[2], moveType));
+                //#endregion
+
+                //#region Move validation
+                // No disambig
+                if (matcher.group(2) == null && matcher.group(3) == null){
+                    int[] temp = getMoveInMoveset(piece, destination, validMoves);
+
+                    if (temp.length > 0){
+                        retArray.add(new Move(temp[0],temp[1], temp[2], moveType));
+                    }
+                    else {
+                        System.out.println("moveValidator(): No valid move match found for index " + count);
+                        return retArray;
+                    }
                 }
+                // Rank disambig
+                else if (matcher.group(3) != null){
+                    int[] temp = getMoveInMoveset(piece, destination, validMoves, Integer.valueOf(matcher.group(3)) - 1, -1); // No relationship between the sole -1 flag vs current[2] - 1
+
+                    if (temp.length > 1){
+                        retArray.add(new Move(temp[0], temp[1], temp[2], moveType));
+                    }
+                    else {
+                        System.out.println("moveValidator(): No valid move match found for index " + count);
+                        return retArray;
+                    }
+                }
+                // File disambig
+                else if (matcher.group(2) != null){
+                    int[] temp = getMoveInMoveset(piece, destination, validMoves, -1, FILE_INDEX.get(matcher.group(2)));
+
+                    if (temp.length > 0){
+                        retArray.add(new Move(temp[0], temp[1], temp[2], moveType));
+                    }
+                    else {
+                        System.out.println("moveValidator(): No valid move match found for index " + count);
+                        return retArray;
+                    }
+                }
+                // Rank and File disambig
                 else {
-                    System.out.println("moveValidator(): No valid move match found for index " + i);
-                    return retArray;
+                    int [] temp = getMoveInMoveset(piece, destination, validMoves, Integer.valueOf(matcher.group(3)) - 1, Integer.valueOf(matcher.group(2)));
+                    
+                    if (temp.length > 0){
+                        retArray.add(new Move(temp[0], temp[1], temp[2], moveType));
+                    }
+                    else {
+                        System.out.println("moveValidator(): No valid move match found for index " + count);
+                        return retArray;
+                    }
                 }
+                //#endregion
             }
 
+            //#region Update validator board
             // At this point a valid move should have been found and added to the retArray
             Move lastMove = retArray.get(retArray.size() - 1);
             board.playMove(lastMove);
@@ -2111,7 +2137,12 @@ public class test {
                 System.out.println("moveValidator(): No more valid moves left");
                 return retArray;
             }
+            //#endregion
+
+            count++;
         }
+        //#endregion
+
         System.out.println("moveValidator(): All moves validated!");
         return retArray;
     }

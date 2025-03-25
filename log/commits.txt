@@ -71,7 +71,7 @@ Forgot to update the bitboard occupancy for each played move -
 remove turn parameter from updateState(int lastPlayerSign), read it from the playedMoves deque
 
 Separate and parse moves
-([KQRBN])?([a-hA-H])?([1-8])?(x)?([a-hA-H])([1-8])(=[KQRBN])?([+#])?|(O-O)|(O-O-O)
+([KQRBN])?([a-hA-H])?([1-8])?(x)?([a-hA-H])([1-8])(=[KQRBN])?([+#])?|(O-O-O)|(O-O)
 
 Separate games in pgn
 (?s)(.*?[ ]+[01][.\/]?\d?-[01][.\/]?\d?)
@@ -133,3 +133,12 @@ Added helper functions to find moves in an ArrayList<int[piece, origin, destinat
 Tested these two functions and overloaded functions in test.findInMovesetTest()
 
 Preliminary moveValidator test passed, test with larger games with more varied pgn notation
+Testing well with larger games, going to use a brute-force method to find all possible bugs in the code,
+just feed as many games through as possible and detect errors
+
+Known bugs: 
+- Using mask > 0 to detect the presence of any flagged bits
+    - Bad as the numeric representation could be negative!
+    - Change to mask != 0 instead
+
+- Fixed generateKnightMoveMask() for origin 14 specifically, wasn't giving possible 14-->31 movement (ForwardRight)

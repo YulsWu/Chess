@@ -450,7 +450,7 @@ public class Board {
                 }
                 else if (file == 6){
                     // only leftback, leftForward, forwardleft, forwardRight
-                    board |= ((1L << leftBack) | (1L << leftForward) | (1L << leftForward) | (1L << forwardLeft));
+                    board |= ((1L << leftBack) | (1L << leftForward) | (1L << forwardRight) | (1L << forwardLeft));
 
                 }
                 else {
@@ -1185,7 +1185,7 @@ public class Board {
                         else {
                             combinedMask = generatePieceAttackMask(evasionPiece, square) & evasionMask;
                         }
-                        if (combinedMask > 0){
+                        if (combinedMask != 0){
                             for (int pos : getSetBitPositions(combinedMask)){
                                 retArray.add(new int[] {evasionPiece, square, pos});
                             }
@@ -1302,7 +1302,7 @@ public class Board {
         // If the player whose turn it is can't castle, return an empty array (should not get here anyway)
         if (
             ((playerSign > 0) && !(whiteLong) && !(whiteShort)) || 
-            ((playerSign < 0) && !(blackLong) && (blackShort))){
+            ((playerSign < 0) && !(blackLong) && !(blackShort))){
             return retArray;
         }
 
