@@ -142,3 +142,4 @@ Known bugs:
     - Change to mask != 0 instead
 
 - Fixed generateKnightMoveMask() for origin 14 specifically, wasn't giving possible 14-->31 movement (ForwardRight)
+- Need to incorporate promotion piece, currently I invoke a method to "ask" for what promotion piece, but if reading from PGN I need to extract the promotion piece

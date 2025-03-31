@@ -67,15 +67,7 @@ public class entry{
         // test.playTest(test.foolsOnWhite, "Fools mate on white", 0);
         // test.playTest(test.foolsOnBlack, "Fools mate on black", 0);
 
-        ArrayList<String[]> temp = test.extractPGN("pgn/sample.pgn");
-        int count = 0;
-        for (String[] tmv : temp){
-            System.out.println("Count " + count);
-            ArrayList<Move> tempMove = test.moveValidator(tmv[1]);
-            System.out.println(tempMove.size() + " moves present");
-            count ++;
-        }
-
+        test.moveValidatorLogger("pgn/aronian.pgn", "log/moveValidatorLog_Aronian.txt");
 
         //ArrayList<Move> tempMove = test.moveValidator(temp.get(1)[1]);
         //System.out.println(temp.get(1)[1]);
@@ -85,6 +77,32 @@ public class entry{
         // Count 867, index 40
 
         //Board.bitboardVisualize(0b1001110000100100000100011100010000000010000010001110110001010010L);
+
+        // StringBuilder sb = new StringBuilder();
+        // try (BufferedReader bf = new BufferedReader(new FileReader("pgn/polgarj.pgn"))){
+        //     while (bf.ready()){
+        //         sb.append(bf.readLine() + "\n");
+        //     }
+        // }
+        // catch (Exception e){
+        //     e.printStackTrace();
+        // }
+        // String pgnString = sb.toString();
+        // String regex = "(?s)(.*?[ ]+[01][.\\/]?\\d?-[01][.\\/]?\\d?)";
+        // Pattern pattern = Pattern.compile(regex);
+        // Matcher matcher = pattern.matcher(pgnString);
+        // int lastEnd = 0;
+
+        // while (matcher.find()){
+        //     if (matcher.start() > lastEnd){
+        //         System.out.println("Non-matching region" + pgnString.substring(lastEnd, matcher.start()));
+        //     }
+        //     lastEnd = matcher.end();
+        // }
+
+        // if (lastEnd < pgnString.length()){
+        //     System.out.println("Non-matching region: " + pgnString.substring(lastEnd));
+        // }
 
     }
 

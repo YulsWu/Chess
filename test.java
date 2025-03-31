@@ -17,6 +17,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.regex.*;
+import java.io.PrintStream;
+import java.io.FileOutputStream;
 
 
 import db.Database;
@@ -2059,7 +2061,7 @@ public class test {
                     else {
                         moveType = MOVE_TYPE.PROMOTE_MOVE;
                     }
-                    promotionPiece = PIECE_ID.get(String.valueOf(matcher.group(4).charAt(1))) * turnInt;
+                    promotionPiece = PIECE_ID.get(String.valueOf(matcher.group(7).charAt(1))) * turnInt;
                 }
                 // Not promotion, but capture?
                 else if (matcher.group(4) != null){
@@ -2140,10 +2142,10 @@ public class test {
             board.updateState(turnInt);
             validMoves = board.generateValidMoves(turnInt * -1);
 
-            if (validMoves.size() == 0){
-                System.out.println("moveValidator(): No more valid moves left");
-                return retArray;
-            }
+            // if (validMoves.size() == 0){
+            //     System.out.println("moveValidator(): No more valid moves left");
+            //     return retArray;
+            // }
             //#endregion
 
             count++;
@@ -2337,4 +2339,41 @@ public class test {
 
         return retArray;
     }
+
+    public static void moveValidatorLogger(String filePath, String logPath){
+        System.out.println("moveValidatorLogger(): Beginning logging...");
+        long startTime = System.currentTimeMillis();
+        PrintStream origOut = System.out;
+        int count = 0;
+
+        try (PrintStream fileOut = new PrintStream(new FileOutputStream(logPath))){
+            System.setOut(fileOut);
+
+            ArrayList<String[]> temp = test.extractPGN(filePath);
+
+            for (String[] tmv : temp){
+                System.out.println("Count " + count);
+                ArrayList<Move> tempMove = test.moveValidator(tmv[1]);
+                System.out.println(tempMove.size() + " moves present");
+                count ++;
+            }
+
+        }
+        catch (Exception e){
+            System.out.println("moveValidatorLogger() Error: " + e);
+        }
+        finally {
+            System.setOut(origOut);
+        }
+
+        long endTime = System.currentTimeMillis();
+        float difference = (endTime - startTime)/1000 ;
+
+        String duration = String.format("%.1f", difference);
+
+        System.out.println("moveValidatorLogger(): Logging done!");
+        System.out.println("Logged " + (count + 1) + " games in " + duration + " seconds.");
+    }
+
+
 }
