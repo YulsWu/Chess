@@ -16,6 +16,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.StringTokenizer;
 
+import parser.RegexParser;
 import engine.Move;
 
 
@@ -67,7 +68,7 @@ public class entry{
         // test.playTest(test.foolsOnWhite, "Fools mate on white", 0);
         // test.playTest(test.foolsOnBlack, "Fools mate on black", 0);
 
-        test.moveValidatorLogger("pgn/aronian.pgn", "log/moveValidatorLog_Aronian.txt");
+        RegexParser.moveValidatorLogger("pgn/carlsen.pgn", "log/moveValidatorLog_Carlsen.txt");
 
         //ArrayList<Move> tempMove = test.moveValidator(temp.get(1)[1]);
         //System.out.println(temp.get(1)[1]);
