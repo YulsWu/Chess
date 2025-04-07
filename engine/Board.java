@@ -1551,6 +1551,26 @@ public class Board {
         System.out.println();
     }
 
+    public void boardVisualize(){
+        StringBuilder sbInner = new StringBuilder();
+        StringBuilder sbOuter = new StringBuilder();
+
+
+        for (int i = 0; i < 8; i++){
+            sbInner.setLength(0);
+            sbInner.append((i + 1) + " ");
+            for (int j = 0; j < 8; j++){
+                sbInner.append("[" + CHESS_EMOJI.get(this.boardState[i][j]) + " ]");
+            }
+            sbInner.append("\n");
+            sbOuter.insert(0, sbInner.toString());
+        }
+        sbOuter.append("   A   B   C   D   E   F   G   H");
+        System.out.println();
+        System.out.print(sbOuter.toString());
+        System.out.println();
+    }
+
     public ArrayList<int[]> removeSelfCheckingMoves(int playerSign, ArrayList<int[]> movesArray){
         ArrayList<int[]> retArray = new ArrayList<>();
         Board futureBoard = new Board();
@@ -1886,6 +1906,11 @@ public class Board {
         }
     }
 
+    public boolean squareIsOccupied(int squareBit){
+        long occ = this.bitState & (1L << (63 - squareBit));
+
+        return occ != 0 ? true : false;
+    }
     //#endregion--------------------------------------------------------------------------------------------------------------------------------------
 
     //#region Bit utility
@@ -2096,7 +2121,22 @@ public class Board {
         return this.zobristHistory.size();
     }
     
-    
+    public int getTurnInt(){
+        return whitesTurn ? 1 : -1;
+    }
+   
+    public long getZobrist(){
+        return this.zobristHash;
+    }
+
+    public boolean getThreeFold(){
+        return this.threeFoldDrawAvailable;
+    }
+
+    public boolean getFiftyMove(){
+        return this.fiftyMoveDrawAvailable;
+    }
+
     // TEST FUNCTION REMOVE AFTER
     public void setBoard(int[][] newBoard){
         this.boardState = newBoard;
@@ -2255,28 +2295,34 @@ public class Board {
     
     // We can generate valid moves for the next player before this method runs
     // Since all the state is done changing by this time, now we're just evaluating the state + moves
-    public void evaluateGameEndConditions(ArrayList<int[]> validMoves){
+    public int evaluateGameEndConditions(ArrayList<int[]> validMoves){
         // Stalemate and Checkmate detection based on provided moves
         if (validMoves.size() == 0){
             if (this.state == BOARD_STATE.CHECK){
                 System.out.println("Checkmate!"); // Replace with proper game-ending code
+                return 1;
             }
             else {
                 System.out.println("Stalemate!");
+                return 2;
             }
         }
 
         // Check forced draw conditions
         if (checkInsufficientMaterial()){
             System.out.println("Insufficient materal!"); // Implement game-end method
+            return 2;
         }
         else if (this.fiftyMoveDrawAvailable && checkNMoveDraw(75)){
             System.out.println("75 move draw!");
+            return 2;
         }
         else if (this.threeFoldDrawAvailable && checkNFoldRepeat(5)){
             System.out.println("Five fold repeat draw!");
+            return 2;
         }
         // If function exits without ending the game, then we can give control to next player
+        return 0;
     }
 
     // Implement stalemate in loop -  generateValidMoves().size() == 0

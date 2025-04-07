@@ -71,7 +71,7 @@ Forgot to update the bitboard occupancy for each played move -
 remove turn parameter from updateState(int lastPlayerSign), read it from the playedMoves deque
 
 Separate and parse moves
-([KQRBN])?([a-hA-H])?([1-8])?(x)?([a-hA-H])([1-8])(=[KQRBN])?([+#])?|(O-O-O)|(O-O)
+([KQRBNkqrbn])?([a-hA-H])?([1-8])?(x)?([a-hA-H])([1-8])(=[QRBNqrbn])?([+#])?|(O-O-O)|(O-O)
 
 Separate games in pgn
 (?s)(.*?[ ]+[01][.\/]?\d?-[01][.\/]?\d?)
@@ -143,3 +143,22 @@ Known bugs:
 
 - Fixed generateKnightMoveMask() for origin 14 specifically, wasn't giving possible 14-->31 movement (ForwardRight)
 - Need to incorporate promotion piece, currently I invoke a method to "ask" for what promotion piece, but if reading from PGN I need to extract the promotion piece
+
+
+Created separate validateMove() to validate a single move in algebraic notation
+
+Terminal loop notes:
+- Differentiate between move vs capture, currently only checks friendly occupancyR
+
+Added regexes as static class variables for RegexParser
+
+Modified validateMove() to properly reject capture moves that aren't formatted as capture moves (no x, only move)
+
+Added non-static method overload boardVisualize() which visualizes the current pieceboard for the Board object, 
+rather than being supplied the board in the parameters.
+
+Updated validateMove() to reject invalid promotion pieces for promotion moves
+
+TODO:
+- Invalidate pawn moves to the 8th or 1st rank without a promotion! [Done] - Must be done in move validation (validateMove()), generateValidMoves() only concerns the movement itself
+- Fix weird pawn capture invalidation for 4th and 5th rank as black and white respectively DONE - issue with regex captitalization of files vs pieces

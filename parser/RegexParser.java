@@ -14,12 +14,18 @@ import java.util.regex.Pattern;
 import engine.Board;
 import engine.Move;
 import engine.Move.MOVE_TYPE;
+import exceptions.AlgebraicParseException;
 
 public class RegexParser {
-    
-    public static ArrayList<Move> moveValidator(String movesString){
-        //#region Map initialization
-        Map<String, Integer> PIECE_ID = new HashMap<>();
+    public static Map<String, Integer> PIECE_ID;
+    public static Map<String, Integer> FILE_INDEX;
+
+    public static String ALGEBRAIC_REGEX = "([KQRBN])?([a-h])?([1-8])?(x)?([a-h])([1-8])(=[QRBN])?([+#])?|(O-O-O)|(O-O)";
+    public static String META_BLOCK_REGEX = "((?:\\n?\\[.*\\]\\n)+)";
+    public static String MOVE_BLOCK_REGEX = "(?s)\\n1\\..*?[ ]+[01][.\\/]?\\d?-[01][.\\/]?\\d?";
+
+    static {
+        PIECE_ID = new HashMap<>();
         PIECE_ID.put(null, 1);
         PIECE_ID.put("N", 2);
         PIECE_ID.put("B", 3);
@@ -27,7 +33,8 @@ public class RegexParser {
         PIECE_ID.put("Q", 5);
         PIECE_ID.put("K", 6);
 
-        Map<String, Integer> FILE_INDEX = new HashMap<>();
+
+        FILE_INDEX = new HashMap<>();
         FILE_INDEX.put("a", 0);
         FILE_INDEX.put("b", 1);
         FILE_INDEX.put("c", 2);
@@ -36,6 +43,27 @@ public class RegexParser {
         FILE_INDEX.put("f", 5);
         FILE_INDEX.put("g", 6);
         FILE_INDEX.put("h", 7);
+    }
+    
+    public static ArrayList<Move> PGNMoveValidator(String movesString){
+        //#region Map initialization
+        // Map<String, Integer> PIECE_ID = new HashMap<>();
+        // PIECE_ID.put(null, 1);
+        // PIECE_ID.put("N", 2);
+        // PIECE_ID.put("B", 3);
+        // PIECE_ID.put("R", 4);
+        // PIECE_ID.put("Q", 5);
+        // PIECE_ID.put("K", 6);
+
+        // Map<String, Integer> FILE_INDEX = new HashMap<>();
+        // FILE_INDEX.put("a", 0);
+        // FILE_INDEX.put("b", 1);
+        // FILE_INDEX.put("c", 2);
+        // FILE_INDEX.put("d", 3);
+        // FILE_INDEX.put("e", 4);
+        // FILE_INDEX.put("f", 5);
+        // FILE_INDEX.put("g", 6);
+        // FILE_INDEX.put("h", 7);
         //#endregion
 
         ArrayList<Move> retArray = new ArrayList<>();
@@ -43,17 +71,17 @@ public class RegexParser {
         //#region Regex initialization
         // Group 0: Full move
         // Group 1: Piece identifier, if null then pawn
-        // Group 2: Optional rank disambig.
-        // Group 3: Optional file disambig.
+        // Group 2: Optional File disambig.
+        // Group 3: Optional Rank disambig.
         // Group 4: Optional capture
-        // Group 5: Destination rank
-        // Group 6: Destination file
+        // Group 5: Destination File
+        // Group 6: Destination Rank
         // Group 7: Optional promotion indicator
         // Group 8: Optional Check or Mate
         // Group 9: Short/Kingside castle
         // Group 10: Long/Queenside castle
 
-        String regex = "([KQRBN])?([a-hA-H])?([1-8])?(x)?([a-hA-H])([1-8])(=[KQRBN])?([+#])?|(O-O-O)|(O-O)";
+        String regex = RegexParser.ALGEBRAIC_REGEX;
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(movesString);
         //#endregion
@@ -362,8 +390,8 @@ public class RegexParser {
 
         pgnString = sb.toString();
 
-        String metaRegex = "((?:\\n?\\[.*\\]\\n)+)";
-        String movesRegex = "(?s)\\n1\\..*?[ ]+[01][.\\/]?\\d?-[01][.\\/]?\\d?";
+        String metaRegex = RegexParser.META_BLOCK_REGEX;
+        String movesRegex = RegexParser.MOVE_BLOCK_REGEX;
         Pattern metaPattern = Pattern.compile(metaRegex);
         Pattern movesPattern = Pattern.compile(movesRegex);
         Matcher metaMatcher = metaPattern.matcher(pgnString);
@@ -402,7 +430,7 @@ public class RegexParser {
 
             for (String[] tmv : temp){
                 System.out.println("Count " + count);
-                ArrayList<Move> tempMove = moveValidator(tmv[1]);
+                ArrayList<Move> tempMove = PGNMoveValidator(tmv[1]);
                 System.out.println(tempMove.size() + " moves present");
                 count ++;
             }
@@ -424,4 +452,166 @@ public class RegexParser {
         System.out.println("Logged " + (count + 1) + " games in " + duration + " seconds.");
     }
 
+    public static Move validateMove(String algebraicMove, Board board) throws AlgebraicParseException{
+        // Regex setup
+        String moveRegex = RegexParser.ALGEBRAIC_REGEX;
+        Pattern movePattern = Pattern.compile(moveRegex);
+        Matcher moveMatcher = movePattern.matcher(algebraicMove);
+
+        // Invalid input detection
+        if (algebraicMove.length() < 2 || algebraicMove.length() > 7){
+            throw new AlgebraicParseException("validateMove() Error: Invalid length move provided");
+        }
+        
+        if (moveMatcher.find()){
+            if (
+                !(moveMatcher.group().equals("O-O") || moveMatcher.group().equals("O-O-O")) && 
+                (moveMatcher.group(5) == null || moveMatcher.group(6) == null)
+                ){
+                throw new AlgebraicParseException("validateMove() Error: Destination square not found for match " + moveMatcher.group());
+            }
+            // If the whole move in algebraic notation doesn't match
+            else if (!moveMatcher.group().equals(algebraicMove)){
+                throw new AlgebraicParseException("validateMove() Error: Invalid algebraic format");
+            }
+        }
+        else {
+            throw new AlgebraicParseException("validateMove() Error: No move match found");
+        }
+
+        // If castling, we know all information, return valid MOVE
+
+        // If not castling, determine move:
+        int turnInt = board.getTurnInt();
+        int origin;
+        int piece;
+        Integer dsFile = null;
+        Integer dsRank = null;
+        Integer promotionPiece = null;
+        int destRank;
+        int destFile;
+        MOVE_TYPE moveType;
+        
+        if (moveMatcher.group().equals("O-O")){
+            if (turnInt > 0){
+                piece = 6;
+                destRank = 0;
+            }
+            else {
+                piece = -6;
+                destRank = 7;
+            }
+
+            destFile = 6;
+            moveType = MOVE_TYPE.CASTLE_SHORT;
+        }
+        else if (moveMatcher.group().equals("O-O-O")){
+            if (turnInt > 0){
+                piece = 6;
+                destRank = 0;
+            }
+            else {
+                piece = -6;
+                destRank = 7;
+            }
+            
+            destFile = 2;
+            moveType = MOVE_TYPE.CASTLE_LONG;
+        }
+        else {
+            // Determine Piece
+            piece = turnInt > 0 ? PIECE_ID.get(moveMatcher.group(1)) : PIECE_ID.get(moveMatcher.group(1)) * -1;
+    
+            // Destination rank and file
+            destRank = Integer.valueOf(moveMatcher.group(6)) - 1;
+            destFile = FILE_INDEX.get(moveMatcher.group(5));
+    
+            // Disambig
+            if (moveMatcher.group(3) != null){
+                dsRank = Integer.valueOf(moveMatcher.group(3)) - 1;
+            }
+            if (moveMatcher.group(2) != null){
+                dsFile = FILE_INDEX.get(moveMatcher.group(2));
+            }
+    
+            // Move type determination
+            // Group 4 captures the presence of 'x' ie exf4
+            if (moveMatcher.group(4) != null){
+                // If capturing an unoccupied square
+                if (!board.squareIsOccupied((destRank * 8) + destFile)){
+                    moveType = MOVE_TYPE.EN_PASSENT;
+                }
+                else if (moveMatcher.group(7) != null){
+                    moveType = MOVE_TYPE.PROMOTE_ATTACK;
+                    promotionPiece = PIECE_ID.get(String.valueOf(moveMatcher.group(7).charAt(1))) * turnInt;
+
+                    if (promotionPiece == null || Math.abs(promotionPiece) > 5){
+                        throw new AlgebraicParseException("validateMove() Error: Invalid promotion piece");
+                    }
+                }
+                else {
+                    moveType = MOVE_TYPE.ATTACK;
+                }
+            }
+            // If there is no 'x' capture identifier
+            else {
+                // Group 7 is "=[BNRQ]", move promotion of pawn
+                if (moveMatcher.group(7) != null && Math.abs(piece) == 1){
+                    moveType = MOVE_TYPE.PROMOTE_MOVE;
+                    promotionPiece = PIECE_ID.get(String.valueOf(moveMatcher.group(7).charAt(1))) * turnInt;
+
+                    if (promotionPiece == null || Math.abs(promotionPiece) > 5){
+                        throw new AlgebraicParseException("validateMove() Error: Invalid promotion piece");
+                    }
+                }
+                else {
+                    if (board.getBoard()[destRank][destFile] == 0){ // If destination square has no occupants
+                        moveType = MOVE_TYPE.MOVE;
+                    }
+                    else {
+                        throw new AlgebraicParseException("validateMove() Error: Move to occupied square");
+                    }
+                }
+            }
+        }
+
+        ArrayList<int[]> validMoves = board.generateValidMoves(turnInt);
+        // Now find the origin and appropriate moves by scanning through valid generated moves, then create and return move
+        int[] temp;
+        Move retMove;
+        if (dsRank != null && dsFile != null){
+            temp = getMoveInMoveset(piece, (destRank * 8) + destFile, validMoves, dsRank, dsFile);
+        }
+        else if (dsRank != null){
+            temp = getMoveInMoveset(piece, (destRank * 8) + destFile, validMoves, dsRank, -1);
+        }
+        else if (dsFile != null){
+            temp = getMoveInMoveset(piece, (destRank * 8) + destFile, validMoves, -1, dsFile);
+        }
+        else {
+            temp = getMoveInMoveset(piece, (destRank * 8) + destFile, validMoves);
+        }
+
+        if (temp.length == 0){
+            throw new AlgebraicParseException("validateMove() Error: No matching valid moves found");
+        }
+        else {
+            retMove = new Move(temp[0], temp[1], temp[2], moveType);
+        }   
+
+        if (promotionPiece != null){
+            retMove.setPromotionPiece(promotionPiece);
+        }
+        // If promotionPiece == null
+        else {
+            if (
+                (piece == 1 && destRank == 7) || 
+                (piece == -1 && destRank == 0)
+            ){
+                throw new AlgebraicParseException("validateMove() Error: Pawn moves to the last rank must promote");
+            }
+        }
+
+        return retMove;
+    }
 }
