@@ -1,0 +1,16 @@
+@echo off
+
+cd C:\\Users\Yulun\AppData\Local\Programs\Java\Chess
+
+javac -d bin\lanterna -cp lib\lanterna-3.1.3.jar entry.java lanterna\LanternaChess.java engine\Board.java engine\Move.java exceptions/AlgebraicParseException.java parser/RegexParser.java
+
+(
+echo Manifest-Version: 1.0
+echo Main-Class: entry
+echo Class-Path: lib\lanterna-3.1.3.jar
+echo.
+) > manifest.txt
+
+jar cfvm LanternaChess.jar manifest.txt -C bin/lanterna .
+
+pause

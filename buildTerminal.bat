@@ -9,7 +9,7 @@ echo.
 
 
 
-jar cfvm TerminalChess.jar manifest.txt -C bin/ .
+jar cfvm TerminalChess.jar manifest.txt -C bin/terminal .
 
 (
 echo @echo off

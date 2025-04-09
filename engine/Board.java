@@ -16,20 +16,20 @@ public class Board {
         IN_PLAY, CHECK, W_MATE, B_MATE, REPEAT_DRAW, MUTUAL_DRAW, STALEMATE, MATERIAL_DRAW, FIFTY_DRAW, W_RESIGN, B_RESIGN, W_TIME, B_TIME
     }
 
-        public static final Map<Integer, String> CHESS_EMOJI = new HashMap<>(){{
-        put(-6, "\u2654");
-        put(-5, "\u2655");
-        put(-4, "\u2656");
-        put(-3, "\u2657");
-        put(-2, "\u2658");
-        put(-1, "\u2659");
-        put(0, " ");
-        put(1, "\u265F");
-        put(2, "\u265E");
-        put(3, "\u265D");
-        put(4, "\u265C");
-        put(5, "\u265B");
-        put(6, "\u265A");
+    public static final Map<Integer, String> CHESS_EMOJI = new HashMap<>(){{
+    put(-6, "\u2654");
+    put(-5, "\u2655");
+    put(-4, "\u2656");
+    put(-3, "\u2657");
+    put(-2, "\u2658");
+    put(-1, "\u2659");
+    put(0, " ");
+    put(1, "\u265F");
+    put(2, "\u265E");
+    put(3, "\u265D");
+    put(4, "\u265C");
+    put(5, "\u265B");
+    put(6, "\u265A");
     }};
     // 0 - empty
     // 1 - Pawn
@@ -2137,6 +2137,11 @@ public class Board {
         return this.fiftyMoveDrawAvailable;
     }
 
+    public void setHalfClock(int halfClock){
+        if ((Object) halfClock instanceof Integer){
+            this.halfClock = halfClock;
+        }
+    }
     // TEST FUNCTION REMOVE AFTER
     public void setBoard(int[][] newBoard){
         this.boardState = newBoard;
@@ -2295,6 +2300,10 @@ public class Board {
     
     // We can generate valid moves for the next player before this method runs
     // Since all the state is done changing by this time, now we're just evaluating the state + moves
+    // exit code == 0 : game on
+    // exit code == 1 : Checkmate
+    // exit code >= 2 : Forced Draw
+    // 2 = Stalemate, 3 = Insufficient material, 4 = 75 move draw, 5 = five fold repeat draw
     public int evaluateGameEndConditions(ArrayList<int[]> validMoves){
         // Stalemate and Checkmate detection based on provided moves
         if (validMoves.size() == 0){
@@ -2311,15 +2320,15 @@ public class Board {
         // Check forced draw conditions
         if (checkInsufficientMaterial()){
             System.out.println("Insufficient materal!"); // Implement game-end method
-            return 2;
+            return 3;
         }
         else if (this.fiftyMoveDrawAvailable && checkNMoveDraw(75)){
             System.out.println("75 move draw!");
-            return 2;
+            return 4;
         }
         else if (this.threeFoldDrawAvailable && checkNFoldRepeat(5)){
             System.out.println("Five fold repeat draw!");
-            return 2;
+            return 5;
         }
         // If function exits without ending the game, then we can give control to next player
         return 0;

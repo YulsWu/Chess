@@ -1,10 +1,9 @@
-
-import loop.TerminalLoop;
-
+import lanterna.LanternaChess;
 
 public class entry{
     public static void main(String[] args){
-        TerminalLoop.startTerminalLoop();
+        LanternaChess.lanternaLoop();
+        System.out.println("Exiting");
     }
 
 }

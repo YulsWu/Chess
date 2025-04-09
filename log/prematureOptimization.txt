@@ -1,0 +1,6 @@
+validateMove() currently calls generateValidMoves() to validate the supplied move, but evaluateGameEndConditions() takes valid moves as a parameter, causing additional redundant valid move set generations
+- Either edit validateMove() to take validMoves as a parameter, or somehow share the valid moves list between the two functions.
+- Perhaps an overarching method that combines validateMove(), playMove(), updateState(), and evaluateGameEndConditions()
+
+Statically write masks for move generation rather than generating them programmatically
+

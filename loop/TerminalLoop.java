@@ -81,7 +81,7 @@ public class TerminalLoop {
                 System.out.println(turnString + " wins by Checkmate!");
                 return;
             }
-            else if(endGame == 2) {
+            else if(endGame >= 2) {
                 board.boardVisualize();
                 System.out.println("Draw!");
                 return;

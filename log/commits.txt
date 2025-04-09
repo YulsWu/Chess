@@ -162,3 +162,6 @@ Updated validateMove() to reject invalid promotion pieces for promotion moves
 TODO:
 - Invalidate pawn moves to the 8th or 1st rank without a promotion! [Done] - Must be done in move validation (validateMove()), generateValidMoves() only concerns the movement itself
 - Fix weird pawn capture invalidation for 4th and 5th rank as black and white respectively DONE - issue with regex captitalization of files vs pieces
+
+
+Added additional exit codes for evaluateGameEndConditions() to signify which conditions are met
