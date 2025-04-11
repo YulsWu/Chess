@@ -829,7 +829,7 @@ public class Board {
      * Uses {@link hypQuint} to calculate the blocked squares of the rays, and performs a bitwise OR
      * operation to combine the vertical and horizontal ray.
      * </p>
-     * @param position denotes the specific square that the mask is generated for, corresponding to RLERF encoding (see <a href="#RLERF">RLERF encoding</a> in {@link Board})
+     * @param position denotes the specific square that the mask is generated for, corresponding to RLERF encoding (see {@link Board})
      * @return Primitive long value representing the 'blocked capture' straight ray mask for provided square, in RLERF encoding.
      */
     public long generateValidStraightRayMask(int position){
@@ -876,7 +876,7 @@ public class Board {
      * and performs a bitwise OR operation to combine all four rays (vertical, horizontal, diagonal, antidiagonal)
      * </p>
      * 
-     * @param position denotes the specific square that the mask is generated for, corresponding to RLERF encoding (see <a href="#RLERF">RLERF encoding</a> in {@link Board})
+     * @param position denotes the specific square that the mask is generated for, corresponding to RLERF encoding (see {@link Board})
      * @return long value representing the 'blocked capture' all ray mask for provided square, in RLERF encoding.
      */
     public long generateValidAllRayMask(int position){
@@ -916,7 +916,7 @@ public class Board {
      *
      * @param piece primitive int representing piece value and ownership through signedness
      * @param origin primitive int representing the square on which the piece resides; an 
-     * index refering to the bit position of the RLERF encoded bitboard representation (see <a href="#RLERF">RLERF encoding</a> in {@link Board}).
+     * index refering to the bit position of the RLERF encoded bitboard representation (see {@link Board}).
      * @return a primitive long value representing the bitmask of all available move destination
      * squares, including captures on the opponent. RLERF encoded.
      */
@@ -971,7 +971,7 @@ public class Board {
      * whether the destination square is occupied and if its the pawn's first move.
      * </p>
      * @param playerSign int representing piece value and ownership through signedness, positive for white, negative for black.
-     * @param origin represents the position of the piece as the index of the square in a RLERF encoded bitboard (see <a href="#RLERF">RLERF encoding</a> in {@link Board}).
+     * @param origin represents the position of the piece as the index of the square in a RLERF encoded bitboard (see {@link Board}).
      * @return long representing valid move squares for the supplied piece, ownership, and origin square, in RLERF encoding.
      */
     public long generatePawnMoveMask(int playerSign, int origin){
@@ -1011,7 +1011,7 @@ public class Board {
      * whether the destination square is occupied with an enemy piece, and whether an en passent is possible.
      * </p>
      * @param playerSign int representing piece value and ownership through signedness, positive for white, negative for black.
-     * @param origin represents the position of the piece as the index of the square in a RLERF encoded bitboard (see <a href="#RLERF">RLERF encoding</a> in {@link Board}).
+     * @param origin represents the position of the piece as the index of the square in a RLERF encoded bitboard (see {@link Board}).
      * @return long representing valid move squares for the supplied piece, ownership, and origin square, in RLERF encoding.
      */
     public long generatePawnAttackMask(int playerSign, int origin){
@@ -1047,7 +1047,7 @@ public class Board {
      * </ul>
      * </p>
      * @param playerSign int representing piece value and ownership through signedness, positive for white, negative for black.
-     * @return long representing the player's piece vision, in RLERF encoding (see <a href="#RLERF">RLERF encoding</a> in {@link Board}).
+     * @return long representing the player's piece vision, in RLERF encoding (see {@link Board}).
      */
     public long generatePieceVision(int playerSign){
         long retMask = 0L;
@@ -1135,7 +1135,7 @@ public class Board {
      * ray by setting each bit and incrementing the index according to the ray direction until
      * it reaches the destination, which is not set.
      * </p>
-     * @param origin represents the origin square of the ray as the index of the square in a RLERF encoded bitboard (see <a href="#RLERF">RLERF encoding</a> in {@link Board}).
+     * @param origin represents the origin square of the ray as the index of the square in a RLERF encoded bitboard (see {@link Board}).
      * @param destination represents the destination square of the ray as the index of the square in a RLERF encoded bitboard.
      * @return long value representing the isolated raymask, including the origin square but not the destination square, in RLERF format.
      */
@@ -1216,7 +1216,7 @@ public class Board {
      * that had just moved last turn two squares forward.
      * </p>
      * @param playerSign int whose sign represents the player owning the pawn, positive for white, negative for black
-     * @param origin represents the position of the piece as the index of the square in a RLERF encoded bitboard (see <a href="#RLERF">RLERF encoding</a> in {@link Board}).
+     * @param origin represents the position of the piece as the index of the square in a RLERF encoded bitboard (see {@link Board}).
      * @return long value representing a bit mask of available en passent moves, in RLERF format. Returns 0 if there are no 
      * eligble en passent moves
      */
@@ -1744,7 +1744,7 @@ public class Board {
      * Converts a provided int[][] board array to a primitive long bitboard occupancy representation.
      * 
      * <p>
-     * Iterates through the board in RLERF order (see <a href="#RLERF">RLERF encoding</a> in {@link Board}) and sets the associated bit in the long<br>
+     * Iterates through the board in RLERF order (see {@link Board}) and sets the associated bit in the long<br>
      * to 1 if a piece exists on that square, 0 otherwise.
      * </p>
      * 
@@ -2001,7 +2001,7 @@ public class Board {
     
     /**
      * Returns the position of the specified player's king on the associated {@link Board} object, in the form of an index <br>
-     * of the corresponding bit in the RLERF encoded (see <a href="#RLERF">RLERF encoding</a> in {@link Board}) bitboard representation.
+     * of the corresponding bit in the RLERF encoded (see {@link Board}) bitboard representation.
      *
      * <p>
      * Iterates through the associated {@link boardState} looking for the value 6 for white, or -6 for black.<br>
@@ -2038,7 +2038,7 @@ public class Board {
      * </p>
      * @param playerSign int whose sign denotes which player's en passent moves are being generated.
      * @return long representing a bitmask of any en passent moves available for the provided player,<br>
-     * in RLERF format (see <a href="#RLERF">RLERF encoding</a> in {@link Board}). Will only ever be 0 or have a single bit flipped.
+     * in RLERF format (see {@link Board}). Will only ever be 0 or have a single bit flipped.
      */
     public long getPlayerEPMask(int playerSign){
         int friendlyPawn = (playerSign > 0) ? 1 : -1;
@@ -2066,7 +2066,7 @@ public class Board {
      * as two unique pieces.
      * </p>
      * @return a 12 length Map&lt;Integer, long[64]> representing a unique hash value for each board square,<br>
-     * for each piece. The order of the long[64] corresponds to the indices of a RLERF encoded board (see <a href="#RLERF">RLERF encoding</a> in {@link Board}).
+     * for each piece. The order of the long[64] corresponds to the indices of a RLERF encoded board (see {@link Board}).
      */
     public static Map<Integer, long[]> generateZobristTable(){
         // Each piece identifier is mapped to a 64 length int[], corresponding to each square on the board
@@ -2480,11 +2480,11 @@ public class Board {
      * 
      * <p>
      * Formatting considerations:
-     * The parameters are provided as RLERF encoded masks (see <a href="#RLERF">RLERF encoding</a> in {@link Board}). However the hyperbolic<br>
+     * The parameters are provided as RLERF encoded masks (see {@link Board}). However the hyperbolic<br>
      * quintessence method utilises LERF (non-reversed) encoding so the provided parameters must first<br>
      * be reversed RLERF -> LERF, and the return value reversed from LERF -> RLERF.
      * </p>
-     * @param occMask mask representing board occupancy in RLERF encoding (see <a href="#RLERF">RLERF encoding</a> in {@link Board}).
+     * @param occMask mask representing board occupancy in RLERF encoding (see {@link Board}).
      * @param rayMask mask representing the specific ray to be blocked in RLERF encoding.
      * @param pieceMask mask representing the location of the piece that lies on the ray, <br>
      * in RLERF encoding. Should only have one set bit representing location.
@@ -2521,7 +2521,7 @@ public class Board {
      * <p>
      * Uses {@link Long#numberOfTrailingZeros(long)} to count the zeroes from LSB -> MSB (left to right). That number<br>
      * would also be the LERF index of the first set bit from LSB -> MSB. We subtract this index from 63 to convert<br>
-     * to a RLERF index (see <a href="#RLERF">RLERF encoding</a> in {@link Board}), then add to the return array. We then unset this counted bit by subtracting 1 from it and<br>
+     * to a RLERF index (see {@link Board}), then add to the return array. We then unset this counted bit by subtracting 1 from it and<br>
      * and perfoming an AND with the original board, eliminating the bits that were set with the subtract 1 operation.<br>
      * This process is then repeated until there are no more set bits in the bitboard.
      * </p>
@@ -2559,7 +2559,7 @@ public class Board {
      * 
      * @param pos long RLERF bitmask (see {@Board}) with one flipped bit as the current 'position' to be shifted.
      * @param direction int representing the index shift required to shift the position in a specific direction in RLERF <br>
-     * encoding (see <a href="#RLERF">RLERF encoding</a> in {@link Board}). ie 'up' is +8, 'down' is -8, 'up-right' would be +9, etc.
+     * encoding (see {@link Board}). ie 'up' is +8, 'down' is -8, 'up-right' would be +9, etc.
      * @return long RLERF bitmask (see {@Board}) representing the original pos mask shifted by the provided direction.
      */
     public static long shift(long pos, int direction){

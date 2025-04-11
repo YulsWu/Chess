@@ -4,3 +4,14 @@ validateMove() currently calls generateValidMoves() to validate the supplied mov
 
 Statically write masks for move generation rather than generating them programmatically
 
+Re-arrange attack mask generation to two main methods: moveMaskGenerator and attackMaskGenerator for clarity
+- Currently generatePieceAttackMask = move (except pawn) + attack for all pieces, generatePawnMoveMask = pawn moves
+- moveMaskGenerator: (slidingMask & ^enemyOcc) | (nonSliding & ^(enemyOcc | friendlyOcc))
+    - Account for King moving into vision
+
+removeSelfCheckingMoves is needlessly expensive. Can achieve the same result by finding king position, then finding 
+opponent vision and seeing if they overlap at all, instead of instantiating a new board.
+
+Zobrist compatibility with external resources
+- Load in fixed pre-computed hash tables
+- Ensure same PRNG and seed

@@ -165,3 +165,17 @@ TODO:
 
 
 Added additional exit codes for evaluateGameEndConditions() to signify which conditions are met
+-----------------------------------
+Create javadocs for required .java files for LanternaChess
+- engine\Board
+- engine\Move
+- parser\RegexParser
+- lanterna\LanternaChess
+- exceptions\AlgebraicParseException
+
+Removed runLanterna.bat as that was for Testing
+
+Found bug in En passent zobrist hashing
+- Was generating for all destination squares instead of just file
+- Need to change updateZobrist to reflect this
+Stopped javadocs at generateEPhashtable to fix this bug [Done, changed like 4 things]

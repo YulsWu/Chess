@@ -1830,8 +1830,8 @@ public class test {
                     board.getClaimableDraw("threeFold"), 
                     board.getClaimableDraw("fiftyMove"), 
                     board.getHalfClock(), 
-                    board.getNumPlayedMoves(), 
-                    board.getNumZobristHistory()));
+                    board.getPlayedMovesLength(), 
+                    board.getZobristHistoryLength()));
 
                     if (verbosity >= 2){
                         for (int[] mv : validMoves){
@@ -1858,8 +1858,8 @@ public class test {
                 board.getClaimableDraw("threeFold"), 
                 board.getClaimableDraw("fiftyMove"), 
                 board.getHalfClock(), 
-                board.getNumPlayedMoves(), 
-                board.getNumZobristHistory()));
+                board.getPlayedMovesLength(), 
+                board.getZobristHistoryLength()));
             }
             scanner.nextLine();
 
