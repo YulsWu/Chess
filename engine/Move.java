@@ -1,5 +1,24 @@
 package engine;
+/**
+ * Holds all important information pertaining to a chess move by either player.<br>
+ * 
+ * <p>
+ * Data structure class that is only instantiated once a move is determined to be entirely valid<br>
+ * for the current move, defined by the state of the board at the current move ply. No validity checks<br>
+ * on an instantiated Move object are required, and can just be taken 'as is' assuming it is the correct<br>
+ * order in relation to other played moves.
+ * </p>
+ */
 public class Move {
+    /**
+     * Describes the type of move for a Move object.<br>
+     * 
+     * <p>
+     * Used in {@link Board#playMove(Move)} and {@link Board#updateState(int)} to inform changes <br>
+     * made to the pieces on the board, and the state of the board. Each entry in this enum describes <br>
+     * a different behaviour required to play the move on to the board.
+     * </p>
+     */
     public enum MOVE_TYPE {
         MOVE, ATTACK, CASTLE_LONG, CASTLE_SHORT, EN_PASSENT, PROMOTE_MOVE, PROMOTE_ATTACK
     }
@@ -29,6 +48,7 @@ public class Move {
         this.type = type;
     };
 
+    
     public Move(int pieceValue, int originBitIndex, int destinationBitIndex, MOVE_TYPE type, int promotionPiece){
         originRank = originBitIndex / 8;
         originFile = originBitIndex % 8;
