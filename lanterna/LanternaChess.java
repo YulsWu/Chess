@@ -183,7 +183,7 @@ public class LanternaChess {
                     Move currentMove = null;
                     while (currentMove == null){
                         
-                        drawBoard(textGraphics, board.getBoard());
+                        drawBoard(textGraphics, board.getBoard(), board.getTurnInt());
                         terminal.flush();
                         
                         if (claimedDraw || forcedDraw || checkmate){
@@ -305,24 +305,42 @@ public class LanternaChess {
         }
     }
 
-    public static void drawBoard(TextGraphics textGraphics, int[][] board){
+    public static void drawBoard(TextGraphics textGraphics, int[][] board, int playerInt){
         int colInd = 4;
         StringBuilder sb = new StringBuilder();
-        textGraphics.putString(colInd, 0, "  a b c d e f g h");
+        String fileLabels = playerInt > 0 ? "  a b c d e f g h" : "  h g f e d c b a";
+        textGraphics.putString(colInd, 0, fileLabels);
         textGraphics.putString(colInd, 1, "  ----------------");
         for (int i = 0; i < 8; i++){
-            int rank = 8 - i;
-            sb.append(rank + "|");
-            for (int j : board[7-i]){
+            int rankLabel;
+            int currentRank;
 
-                sb.append(CHESS_EMOJI.get(j) + " ");
+            if (playerInt > 0){
+                rankLabel = 8 - i;
+                currentRank = 7 - i;
             }
-            sb.append("|" + rank);
+            else {
+                rankLabel = i + 1;
+                currentRank = i;
+            }
+
+            for (int j : board[currentRank]){
+                
+                sb.append(CHESS_EMOJI.get(j));
+            }
+            if (playerInt < 0){sb.reverse();}
+
+            for (int k = 8; k >= 1; k--){
+                sb.insert(k, " ");
+            }
+
+            sb.insert(0, rankLabel + "|");
+            sb.append("|" + rankLabel);
             textGraphics.putString(colInd, 2 + i, sb.toString());
             sb.setLength(0);
         }
         textGraphics.putString(colInd, 10, "  ----------------");
-        textGraphics.putString(colInd, 11, "  a b c d e f g h");
+        textGraphics.putString(colInd, 11, fileLabels);
     }
 
     public static void drawUserPrompt(TextGraphics textGraphics, TextGraphics errorGraphics, int turnInt, boolean inputError, boolean threeFoldAvailable, boolean fiftyAvailable){
