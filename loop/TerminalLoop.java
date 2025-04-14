@@ -23,6 +23,7 @@ public class TerminalLoop {
         while(gameOn){
             currentMove = null;
             
+            gameLoop:
             while (currentMove == null){
                 board.boardVisualize();
                 System.out.println("Halfclock: " + board.getHalfClock());
@@ -53,15 +54,23 @@ public class TerminalLoop {
                 System.out.println(turnString + "'s turn, please input move");
 
 
+                boolean moveInput = false;
+                while (!moveInput){
+                    playerInput = scanner.nextLine();
+                    if (playerInput.equalsIgnoreCase("undo")){
+                        board.undoLastMove();
+                        continue gameLoop;
+                    }
+                    try {
+                        currentMove = RegexParser.validateMove(playerInput, board);
+                        moveInput = true;
+        
+                    }
+                    catch (AlgebraicParseException e){
+                        System.out.println(e);
+                        System.out.println("Invalid move input, try again");
+                    }
 
-                playerInput = scanner.nextLine();
-                try {
-                    currentMove = RegexParser.validateMove(playerInput, board);
-    
-                }
-                catch (AlgebraicParseException e){
-                    System.out.println(e);
-                    System.out.println("Invalid move input, try again");
                 }
             }
             

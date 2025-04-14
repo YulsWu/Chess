@@ -179,3 +179,48 @@ Found bug in En passent zobrist hashing
 - Was generating for all destination squares instead of just file
 - Need to change updateZobrist to reflect this
 Stopped javadocs at generateEPhashtable to fix this bug [Done, changed like 4 things]
+---------------------------------------------------------------------------------------------
+Back-seeking/undoing move
+- Castling rights
+    - Unknown when castling rights were set to false
+    - Can't determine whether current unplay move was the first to unset rights
+- Implement board history?
+    - Boards
+    - Bitboards
+    - Castling rights
+    - Zobrist hash
+- Update incrementally
+    - Halfclock
+    - Claimable draws (50 and 3-fold)
+    - Check
+
+To keep it all neat and tidy and logical, will implement a history of all variables, read the last one for backtracking.
+
+Added
+- boardStateHistory
+- bitStateHistory
+- castlingHistory
+- epHashHistory
+- boardStateHistory
+
+Changed playMove to add the last board to boardStateHistory before playing the move.
+playMove adds bitstate to history
+Changed bitstate from Long to long
+
+Changed Board.boardState to board
+Modified updateZobrist to work with epHashHistory instead of LastEPHAsh
+- Also to work with boardHistory instead of lastBoardState
+
+Updated generateCurrentZobristHash to use epHashHistory instead of lastEpHash
+
+"Reverse play"
+- Using history dequeues
+    - zobrist through zobristHistory (and repetition draws)
+    - board through boardHistory
+    - state through stateHistory
+    - bitState through bitStateHistory
+    - castling rights through casltingHistory
+    - halfclock history
+- Re-generated after unplay
+    - fiftyMove/ThreeFoldDraw available
+    - whitesTurn
