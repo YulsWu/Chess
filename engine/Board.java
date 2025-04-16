@@ -86,15 +86,20 @@ public class Board {
      */
     
 
-    private Long bitState; // Current occupancy map for the whole board
-    private int[][] boardState; // True board representation
-    private int[][] lastBoardState;
+    private long bitState; // Current occupancy map for the whole board
+    private int[][] board; // True board representation
+    
+    private ArrayDeque<Long> bitStateHistory;
+    private ArrayDeque<int[][]> boardHistory;
+    private ArrayDeque<BOARD_STATE> stateHistory;
     private ArrayDeque<Move> playedMoves;
     private ArrayDeque<Long> zobristHistory;
-    
+    private ArrayDeque<Long> epHashHistory;
+    private ArrayDeque<boolean[]> castlingHistory;
+    private ArrayDeque<Integer> halfClockHistory;
+
     // These are not constants as they are unique to each Board instance, not consistent across all Boards
     private long zobristHash; // Zobrist hash
-    private long lastEpHash = 0L;
     private final long whiteLongHash;
     private final long whiteShortHash;
     private final long blackLongHash;
@@ -119,6 +124,7 @@ public class Board {
     private boolean blackLong = true;
     private boolean blackShort = true;
     
+
     // Flags indicating caslting permissions have been flipped
     /**
      * Flag indicating that the whiteLong flag has been flipped, used by {@link updateZobrist}.
@@ -206,6 +212,14 @@ public class Board {
         // Generate fresh moves queue
         playedMoves = new ArrayDeque<>();
         zobristHistory = new ArrayDeque<>();
+        
+        boardHistory = new ArrayDeque<int[][]>();
+        bitStateHistory = new ArrayDeque<Long>();
+        castlingHistory = new ArrayDeque<boolean[]>();
+        epHashHistory = new ArrayDeque<Long>();
+        stateHistory = new ArrayDeque<BOARD_STATE>();
+        halfClockHistory = new ArrayDeque<Integer>();
+
 
         // Generate new zobrist hash
         whiteLongHash = ThreadLocalRandom.current().nextLong();
@@ -223,11 +237,10 @@ public class Board {
         bitState = 0xFFFF00000000FFFFL;
         
         // Populate freshboard
-        boardState = generateFreshBoard();
+        board = generateFreshBoard();
         
-        // Set "last board" to new board
-        lastBoardState = generateFreshBoard();
         zobristHash = generateCurrentZobristHash();
+        zobristHistory.push(zobristHash);
     }
 
     //#region Base ray generation -----------------------------------------------------------------------------------------------------------
@@ -802,13 +815,13 @@ public class Board {
             //File
             for (int j = 0; j < 8; j++){
                 if (piece < 0){
-                    if (this.boardState[i][j] < 0){
+                    if (this.board[i][j] < 0){
                         int bitPos = (i * 8) + j;
                         retMask |= (1L << (63 - bitPos));
                     }
                 }
                 else {
-                    if (this.boardState[i][j] > 0){
+                    if (this.board[i][j] > 0){
                         int bitPos = (i * 8) + j;
                         retMask |= (1L << (63 - bitPos));
                     }
@@ -1058,7 +1071,7 @@ public class Board {
         for (int i = 0; i < 8; i++){
             for (int j = 0; j < 8; j++){
                 int bitInd = (i * 8) + j;
-                int piece = this.boardState[i][j];
+                int piece = this.board[i][j];
                 if ((playerSign > 0) && (piece > 0)){
                     switch (piece){
                         // Pawn attack
@@ -1245,7 +1258,7 @@ public class Board {
        
         // Left border, only check right EP
         if (file == 0){
-            int rightPiece = this.boardState[rank][file + 1];
+            int rightPiece = this.board[rank][file + 1];
             int rightSquare = (rank * 8) + file + 1;
             //       If piece == pawn                  Check correct pawn,           2 squares 'forward'
             if ((rightPiece == opponentPawn) && (lastMoveDestBit == rightSquare) && (lastMoveRankDiff > 1)){
@@ -1255,7 +1268,7 @@ public class Board {
         }
         // Right border, only check left EP
         else if (file == 7){
-            int leftPiece = this.boardState[rank][file - 1];
+            int leftPiece = this.board[rank][file - 1];
             int leftSquare = (rank * 8) + file - 1;
 
             if ((leftPiece == opponentPawn) && (lastMoveDestBit == leftSquare) && (lastMoveRankDiff > 1)){
@@ -1264,8 +1277,8 @@ public class Board {
         }
         // Middle, check both side EP
         else {
-            int leftPiece = this.boardState[rank][file -1];
-            int rightPiece = this.boardState[rank][file + 1];
+            int leftPiece = this.board[rank][file -1];
+            int rightPiece = this.board[rank][file + 1];
 
             int leftSquare = (rank * 8) + file - 1;
             int rightSquare = leftSquare + 2;
@@ -1348,7 +1361,7 @@ public class Board {
             long combinedMask;
             for (int i = 0; i < 8; i++){
                 for (int j = 0; j < 8; j++){
-                    evasionPiece = this.boardState[i][j];
+                    evasionPiece = this.board[i][j];
                     square = (i * 8) + j;
     
                     // Skip king as we've already calculated it
@@ -1419,7 +1432,7 @@ public class Board {
                 int square = (i * 8) + j;
                 // If player and piece are opponents
                 // Piece sign never changes throughout, so only one of these ORs will ever be true
-                int piece = this.boardState[i][j];
+                int piece = this.board[i][j];
                 if (((piece < 0) && (playerSign > 0)) || ((piece > 0) && (playerSign < 0))){
                     if ((kingMask & generatePieceAttackMask(piece, square)) != 0){
                         retChecks.add(new int[]{piece, square, kingPos});
@@ -1512,7 +1525,7 @@ public class Board {
             for (int i = 0; i < 8; i++){
                 for (int j = 0; j < 8; j++){
                     int square = (i * 8) + j;
-                     int piece = this.boardState[i][j];
+                     int piece = this.board[i][j];
 
                     if ((piece * playerSign) > 0){
                         // Check if piece is a king, and if the player can castle at all
@@ -1631,7 +1644,7 @@ public class Board {
         // Determine long/short castling validity
         // Check ROOK IS ON SQUARE && CASTLING PATH NOT IN OPPONENT VISION && CASTLING PATH NOT BLOCKED && KING ON PROPER SQUARE   
         boolean canShortCastle = (
-            (this.boardState[shortRookSquare / 8][shortRookSquare % 8] == friendlyRook) && 
+            (this.board[shortRookSquare / 8][shortRookSquare % 8] == friendlyRook) && 
             ((opponentVision & shortCastleMask) == 0) && 
             ((this.bitState & shortCastleMask) == 0) &&
             (kingSquare == kingBitPos)
@@ -1640,7 +1653,7 @@ public class Board {
         // Long castle must check also that the square to the right of the Long rook is NOT occupied by pieces
         // No need to check for vision as rooks can castle through enemy vision
         boolean canLongCastle = (
-            (this.boardState[longRookSquare / 8][longRookSquare % 8] == friendlyRook) && 
+            (this.board[longRookSquare / 8][longRookSquare % 8] == friendlyRook) && 
             ((opponentVision & longCastleMask) == 0) && 
             ((this.bitState & (longCastleMask | longRookMask)) == 0) &&
             (kingSquare == kingBitPos)
@@ -1683,7 +1696,7 @@ public class Board {
         int dest = move[2];
         int destRank = dest / 8;
         int destFile = dest % 8;
-        int destOccPiece = this.boardState[destRank][destFile];
+        int destOccPiece = this.board[destRank][destFile];
         int promotionRank = (piece > 0) ? 7 : 0;
 
         // IF piece is pawn AND its a pawn attack AND the destination square is empty, then EN PASSENT
@@ -1917,7 +1930,7 @@ public class Board {
             sbInner.setLength(0);
             sbInner.append((i + 1) + " ");
             for (int j = 0; j < 8; j++){
-                sbInner.append("[" + CHESS_EMOJI.get(this.boardState[i][j]) + " ]");
+                sbInner.append("[" + CHESS_EMOJI.get(this.board[i][j]) + " ]");
             }
             sbInner.append("\n");
             sbOuter.insert(0, sbInner.toString());
@@ -1986,7 +1999,7 @@ public class Board {
             }
             
             // Switch for checking
-            futureBoard.boardState = candidateBoard;
+            futureBoard.board = candidateBoard;
             futureBoard.bitState = candidateOcc;
             // Ensure move doesn't result in discovered self-check
             if (futureBoard.getOpponentChecks(playerSign).size() == 0){
@@ -2017,7 +2030,7 @@ public class Board {
         int kingInt = (playerSign > 0) ? 6 : -6;
         for (int i = 0; i < 8; i++){
             for (int j = 0; j < 8; j++){
-                if (this.boardState[i][j] == kingInt){
+                if (this.board[i][j] == kingInt){
                     return (i * 8) + j;
                 }
             }
@@ -2044,7 +2057,7 @@ public class Board {
         int friendlyPawn = (playerSign > 0) ? 1 : -1;
         for (int i = 0; i < 8; i++){
             for (int j = 0; j < 8; j++){
-                if (this.boardState[i][j] == friendlyPawn){
+                if (this.board[i][j] == friendlyPawn){
                     long temp = generateEnPassentMask(playerSign, ((i * 8) + j));
                     if (temp > 0){
                         return temp;
@@ -2122,7 +2135,7 @@ public class Board {
         int piece;
         for (int i = 0; i < 8; i++){
             for (int j = 0; j < 8; j++){
-                piece = this.boardState[i][j];
+                piece = this.board[i][j];
                 if (piece != 0){
                     retLong ^= this.zobristTable.get(piece)[(i * 8) + j];
                 }
@@ -2136,8 +2149,10 @@ public class Board {
 
         if (blackLong){retLong ^= blackLongHash;};
 
-        // En passent rights (If they exist, if not this is just xoring with 0)
-        retLong ^= lastEpHash;
+        // En passent rights (If they exist)
+        if (epHashHistory.size() > 0){
+            retLong ^= epHashHistory.peek();
+        }
 
         // Player turn
         if (whitesTurn){retLong ^= whiteTurnHash;};
@@ -2182,6 +2197,7 @@ public class Board {
         int dest = lastMove.getDestBit();
         int piece = lastMove.getPiece();
         MOVE_TYPE lastType = lastMove.getType();
+        int[][] lastBoard = this.boardHistory.peek();
         
         //#region Piece Position
         // Moves will always remove piece from origin
@@ -2191,7 +2207,7 @@ public class Board {
             this.zobristHash ^= this.zobristTable.get(piece)[dest]; // Place piece in destination
         }
         else if (lastType == MOVE_TYPE.ATTACK){
-            int capturedPiece = this.lastBoardState[dest/8][dest%8];
+            int capturedPiece = lastBoard[dest/8][dest%8];
             this.zobristHash ^= this.zobristTable.get(capturedPiece)[dest]; // Remove captured piece from dest
             this.zobristHash ^= this.zobristTable.get(piece)[dest]; // Add new piece to dest
 
@@ -2222,13 +2238,13 @@ public class Board {
             this.zobristHash ^= this.zobristTable.get(rook)[dest - 1];
         }
         else if (lastType == MOVE_TYPE.PROMOTE_ATTACK){
-            int promotedPiece = this.boardState[dest/8][dest%8];
-            int capturedPiece = this.lastBoardState[dest/8][dest%8];
+            int promotedPiece = this.board[dest/8][dest%8];
+            int capturedPiece = lastBoard[dest/8][dest%8];
             this.zobristHash ^= this.zobristTable.get(capturedPiece)[dest];// remove captured piece
             this.zobristHash ^= this.zobristTable.get(promotedPiece)[dest];// add newly promoted piece
         }
         else if (lastType == MOVE_TYPE.PROMOTE_MOVE){
-            int promotedPiece = this.boardState[dest/8][dest%8];
+            int promotedPiece = this.board[dest/8][dest%8];
             this.zobristHash ^= this.zobristTable.get(promotedPiece)[dest]; // Place promoted piece
         }
         else{
@@ -2239,24 +2255,25 @@ public class Board {
         // En passent availability for next player
         long epMask = getPlayerEPMask(piece * -1);
         // If current player can EP
+        long lastEpHash = (this.epHashHistory.size() != 0) ? this.epHashHistory.peek() : 0L;
         if (epMask > 0){
             int epFile = getSetBitPositions(epMask).get(0) % 8;
             long currentEpHash = epHashTable.get(epFile);
             // Incoming zobrist is not ep-enabled
-            if (this.lastEpHash == 0){
+            if (lastEpHash == 0){
                 this.zobristHash ^= currentEpHash; // Add current
-                this.lastEpHash = currentEpHash; // Rewrite last ep as current ep for next turn
+                this.epHashHistory.push(currentEpHash); // Add current ep hash to history
             }
             else {
-                this.zobristHash ^= this.lastEpHash; // Remove last EP
+                this.zobristHash ^= lastEpHash; // Remove last EP
                 this.zobristHash ^= currentEpHash; // Add current EP
-                this.lastEpHash = currentEpHash; // Rewrite last ep as current ep for next turn
+                this.epHashHistory.push(currentEpHash); // add to history
             }
         }
         // If no current EP possibility exists
         else {
-            this.zobristHash ^= this.lastEpHash; // Either removes the last EP hash, or XOR's with 0 which doesn't matter
-            this.lastEpHash = 0L;
+            this.zobristHash ^= lastEpHash; // Either removes the last EP hash, or XOR's with 0 which doesn't matter
+            this.epHashHistory.push(0L);
         }
         //#endregion     
         //#region Castling Rights
@@ -2322,7 +2339,7 @@ public class Board {
         // Iterate through all board squares
         for (int i = 0; i < 8; i++){
             for (int j = 0; j < 8; j++){
-                int piece = this.boardState[i][j];
+                int piece = this.board[i][j];
                 int pieceID = Math.abs(piece);
                 // If any pawn, rook, or queen is detected return false
                 // Detect knights for both sides
@@ -2595,7 +2612,7 @@ public class Board {
         int[][] retBoard = new int[8][8];
 
         for (int i = 0; i < 8; i++){
-            retBoard[i] = this.boardState[i].clone();
+            retBoard[i] = this.board[i].clone();
         }
         return retBoard;
     }
@@ -2746,9 +2763,21 @@ public class Board {
             this.halfClock = halfClock;
         }
     }
+    
+    public long[] getZobristHistory(){
+        long[] retArray = new long[this.zobristHistory.size()];
+
+        int i = this.zobristHistory.size() - 1;
+        for (Long l : this.zobristHistory){
+            retArray[i] = l;
+            i--;
+        }
+        return retArray;
+    }
+    
     // TEST FUNCTION REMOVE AFTER
     public void setBoard(int[][] newBoard){
-        this.boardState = newBoard;
+        this.board = newBoard;
     }
     public void setOcc(long occ){
         this.bitState = occ;
@@ -2799,12 +2828,14 @@ public class Board {
         int destFile = dest % 8;
         int piece = mv.getPiece();
 
-        int[][] lastBoard = deepCloneBoard(this.boardState);
+        //int[][] lastBoard = deepCloneBoard(this.boardState);
+        this.boardHistory.push(deepCloneBoard(this.board));
+        this.bitStateHistory.push(this.bitState);
 
         // PLAY the move
         // Move the piece first, which occurs with all types of moves
-        this.boardState[originRank][originFile] = 0;
-        this.boardState[destRank][destFile] = piece;
+        this.board[originRank][originFile] = 0;
+        this.board[destRank][destFile] = piece;
 
         // Update occupancy mask accordingly
         setOccBit(0, origin);
@@ -2813,16 +2844,16 @@ public class Board {
         if (mvType == MOVE_TYPE.CASTLE_LONG){
             if (piece > 0){
                 // Set previous rook square to 0, set rook destination according to type of castling
-                this.boardState[0][0] = 0;
-                this.boardState[destRank][destFile + 1] = 4;
+                this.board[0][0] = 0;
+                this.board[destRank][destFile + 1] = 4;
 
                 // Update occupancy mask accordingly
                 setOccBit(0, 0);
                 setOccBit(1, (destRank * 8) + (destFile + 1));
             }
             else{
-                this.boardState[7][0] = 0;
-                this.boardState[destRank][destFile + 1] = -4;
+                this.board[7][0] = 0;
+                this.board[destRank][destFile + 1] = -4;
 
                 setOccBit(0, 56);
                 setOccBit(1, (destRank * 8) + (destFile + 1));
@@ -2831,15 +2862,15 @@ public class Board {
         else if (mvType == MOVE_TYPE.CASTLE_SHORT){
             // Move rooks to proper squares
             if (piece > 0){
-                this.boardState[0][7] = 0;
-                this.boardState[destRank][destFile - 1] = 4;
+                this.board[0][7] = 0;
+                this.board[destRank][destFile - 1] = 4;
 
                 setOccBit(0, 7);
                 setOccBit(1, (destRank * 8) + (destFile - 1));
             }
             else{
-                this.boardState[7][7] = 0;
-                this.boardState[destRank][destFile - 1] = -4;
+                this.board[7][7] = 0;
+                this.board[destRank][destFile - 1] = -4;
 
                 setOccBit(0, 63);
                 setOccBit(1, (destRank * 8) + (destFile - 1));
@@ -2848,24 +2879,21 @@ public class Board {
         else if (mvType == MOVE_TYPE.EN_PASSENT){
             // Depending on player, remove the piece above(black) or below (white) the en passent destination square
             if (piece > 0){
-                this.boardState[destRank - 1][destFile] = 0;
+                this.board[destRank - 1][destFile] = 0;
                 setOccBit(0, ((destRank - 1) * 8) + destFile);
             }
             else {
-                this.boardState[destRank + 1][destFile] = 0;
+                this.board[destRank + 1][destFile] = 0;
                 setOccBit(0, ((destRank + 1) * 8) + destFile);
             }
         }
         //Promotions
         else if ((mvType == MOVE_TYPE.PROMOTE_ATTACK) || (mvType == MOVE_TYPE.PROMOTE_MOVE)) {
-            this.boardState[destRank][destFile] = mv.getPromotionPiece(); // Overwrite previous piece with selected promotion piece
+            this.board[destRank][destFile] = mv.getPromotionPiece(); // Overwrite previous piece with selected promotion piece
         }
 
         // Add move to playedMoves
         this.playedMoves.push(mv);
-
-        // Update last board state
-        this.lastBoardState = lastBoard;
     }
 
     /**
@@ -2916,7 +2944,11 @@ public class Board {
         boolean shortCastleRights = (lastPlayerSign > 0) ? whiteShort : blackShort;
         boolean longCastleRights = (lastPlayerSign > 0) ? whiteLong : blackLong;
         int shortRookSquare = (lastPlayerSign > 0) ? 7 : 63;
-        int longRookSquare = (lastPlayerSign > 0) ? 0 : 56;  
+        int longRookSquare = (lastPlayerSign > 0) ? 0 : 56;
+        
+        this.castlingHistory.push(new boolean[]{this.whiteLong, this.whiteShort, this.blackLong, this.blackShort});
+        this.stateHistory.push(this.state);
+        this.halfClockHistory.push(this.halfClock);
 
         // Check/Checkmate
         if (getOpponentChecks(lastPlayerSign * -1).size() > 0){
@@ -3011,14 +3043,17 @@ public class Board {
      * </ol>
      */
     public int evaluateGameEndConditions(ArrayList<int[]> validMoves){
+        int turn = this.getTurnInt();
         // Stalemate and Checkmate detection based on provided moves
         if (validMoves.size() == 0){
             if (this.state == BOARD_STATE.CHECK){
                 System.out.println("Checkmate!"); // Replace with proper game-ending code
+                this.state = turn > 0 ? BOARD_STATE.B_MATE : BOARD_STATE.W_MATE;
                 return 1;
             }
             else {
                 System.out.println("Stalemate!");
+                this.state = BOARD_STATE.STALEMATE;
                 return 2;
             }
         }
@@ -3026,20 +3061,53 @@ public class Board {
         // Check forced draw conditions
         if (checkInsufficientMaterial()){
             System.out.println("Insufficient materal!"); // Implement game-end method
+            this.state = BOARD_STATE.MATERIAL_DRAW;
             return 3;
         }
         else if (this.fiftyMoveDrawAvailable && checkNMoveDraw(75)){
+            this.state = BOARD_STATE.FIFTY_DRAW;
             System.out.println("75 move draw!");
             return 4;
         }
         else if (this.threeFoldDrawAvailable && checkNFoldRepeat(5)){
             System.out.println("Five fold repeat draw!");
+            this.state = BOARD_STATE.REPEAT_DRAW;
             return 5;
         }
         // If function exits without ending the game, then we can give control to next player
         return 0;
     }
 
+    public void undoLastMove(){
+        if (playedMoves.size() > 0){
+            boolean[] lastCastling = castlingHistory.pop();
+            playedMoves.pop();
+            epHashHistory.pop();
+            this.whiteLong = lastCastling[0];
+            this.whiteShort = lastCastling[1];
+            this.blackLong = lastCastling[2];
+            this.blackShort = lastCastling[3];
+            
+            // At the beginning of a turn, zobristHistory.peek() == this.zobristHistory
+            // Once it is updated it is then pushed into the zobristHistory
+            // Thus the zobristHistory must be popped once, and this.zobristHistory set to the next occurence:
+            // zHistory(0) -> play -> zHistory(1) -> play -> zHistory(2) -> undo -> zHistory(1) -> play -> zHistory(2)
+            // Must restore the zobristHash to the point BEFORE the last move was played.
+            zobristHistory.pop();
+            this.zobristHash = zobristHistory.peek();
+    
+            this.board = boardHistory.pop();
+            this.state = stateHistory.pop();
+            this.bitState = bitStateHistory.pop();
+            this.halfClock = halfClockHistory.pop();
+    
+            this.fiftyMoveDrawAvailable = checkNMoveDraw(50);
+            this.threeFoldDrawAvailable = checkNFoldRepeat(3);
+    
+            this.whitesTurn = whitesTurn ? false : true;
+        }
+    
+    }
     //#endregion
 
     //#region Object method overrides
@@ -3053,7 +3121,7 @@ public class Board {
             sbInner.setLength(0);
             sbInner.append((i + 1) + " ");
             for (int j = 0; j < 8; j++){
-                sbInner.append("[" + CHESS_EMOJI.get(boardState[i][j]) + " ]");
+                sbInner.append("[" + CHESS_EMOJI.get(board[i][j]) + " ]");
             }
             sbInner.append("\n");
             sbOuter.insert(0, sbInner.toString());

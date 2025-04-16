@@ -185,6 +185,8 @@ public class LanternaChess {
                         
                         drawBoard(textGraphics, board.getBoard(), board.getTurnInt());
                         terminal.flush();
+
+                        debug(board);
                         
                         if (claimedDraw || forcedDraw || checkmate){
                             turnString = board.getTurnInt() > 0 ? "Black" : "White"; // Inverted turn string, we're looking for previous player to claim draw
@@ -246,6 +248,11 @@ public class LanternaChess {
                             claimedDraw = true;
                             continue;
                         }
+                        else if (inputString.equalsIgnoreCase("undo")){
+                            board.undoLastMove();
+                            terminal.clearScreen();
+                            continue;
+                        }
                         else if (inputString.equalsIgnoreCase("exit")){
                             terminal.close();
                             return;
@@ -264,12 +271,17 @@ public class LanternaChess {
                                 continue;
                             }
                         }
-                    }// End move input loop
+                    }// End input loop
     
                     // Now we should have a valid move
                     board.playMove(currentMove);
                     board.updateState(board.getTurnInt());
                     validMoves = board.generateValidMoves(board.getTurnInt());
+                    
+                    drawBoard(textGraphics, board.getBoard(), board.getTurnInt() * -1);
+                    terminal.flush(); 
+                    Thread.sleep(600);
+                    
                     terminal.clearScreen();
                     
                     int endGame = board.evaluateGameEndConditions(validMoves);
@@ -370,4 +382,19 @@ public class LanternaChess {
     public static void drawFiftyDrawAvailable(TextGraphics textGraphics){
         textGraphics.putString(1, 15, "Fifty move draw available");
     }
+
+    public static void debug(Board board){
+        System.out.println("Zobrist History:");
+        for (long l : board.getZobristHistory()){
+            int checksum = (int)(l ^ (l >>> 32));
+            System.out.println(String.format("0x%08X", checksum));
+        }
+        System.out.println("END");
+
+        // System.out.println("whiteShort:" + board.getCastlingRights("whiteShort"));
+        // System.out.println("whiteLong:" + board.getCastlingRights("whiteLong"));
+        // System.out.println("blackShort:" + board.getCastlingRights("blackShort"));
+        // System.out.println("blackLong:" + board.getCastlingRights("blackLong"));
+    }
+
 }
