@@ -15,6 +15,7 @@ import engine.Board;
 import engine.Move;
 import engine.Move.MOVE_TYPE;
 import exceptions.AlgebraicParseException;
+import db.RegexGameData;
 
 public class RegexParser {
     public static Map<String, Integer> PIECE_ID;
@@ -23,6 +24,8 @@ public class RegexParser {
     public static String ALGEBRAIC_REGEX = "([KQRBN])?([a-h])?([1-8])?(x)?([a-h])([1-8])(=[QRBN])?([+#])?|(O-O-O)|(O-O)";
     public static String META_BLOCK_REGEX = "((?:\\n?\\[.*\\]\\n)+)";
     public static String MOVE_BLOCK_REGEX = "(?s)\\n1\\..*?[ ]+[01][.\\/]?\\d?-[01][.\\/]?\\d?";
+    public static String META_FIELD_REGEX = "\n?\\[(.*) \"(.*)\"\\]";
+    public static String GAME_BLOCK_REGEX = "(?s)(.*? +[01][.\\/]?\\d?-[01][.\\/]?\\d?)";
 
     static {
         PIECE_ID = new HashMap<>();
@@ -369,13 +372,18 @@ public class RegexParser {
         return emptyMove;
     }
 
-    public static ArrayList<String[]> extractPGN(String filepath){
-        ArrayList<String[]> retArray = new ArrayList<>();
+    // Separates games first, then separates meta block from moves block, then separates each meta field and each move
+    // May be easier to skip the meta/move block regex, and directly get the meta fields and moves from the game block
+    public static ArrayList<RegexGameData> extractPGN(String filepath){
+        ArrayList<RegexGameData> retArray = new ArrayList<>();
         ArrayList<String> metaArray = new ArrayList<>();
         ArrayList<String> movesArray = new ArrayList<>();
 
         String pgnString;
         StringBuilder sb = new StringBuilder();
+
+        System.out.println("extractPGN(): Beginning PGN extraction from " + filepath);
+        long startTime = System.currentTimeMillis();
 
         try(BufferedReader bf = new BufferedReader(new FileReader(filepath))){
 
@@ -390,66 +398,58 @@ public class RegexParser {
 
         pgnString = sb.toString();
 
-        String metaRegex = RegexParser.META_BLOCK_REGEX;
-        String movesRegex = RegexParser.MOVE_BLOCK_REGEX;
-        Pattern metaPattern = Pattern.compile(metaRegex);
-        Pattern movesPattern = Pattern.compile(movesRegex);
-        Matcher metaMatcher = metaPattern.matcher(pgnString);
-        Matcher movesMatcher = movesPattern.matcher(pgnString);
+        // Separate games
+        Pattern gameBlockPattern = Pattern.compile(RegexParser.GAME_BLOCK_REGEX);
 
-        while (metaMatcher.find()){
-            metaArray.add(metaMatcher.group());
-        }
+        // Separate metadata from moves
+        Pattern metaBlockPattern = Pattern.compile(RegexParser.META_BLOCK_REGEX);
+        Pattern movesBlockPattern = Pattern.compile(RegexParser.MOVE_BLOCK_REGEX);
 
-        while (movesMatcher.find()){
-            movesArray.add(movesMatcher.group());
-        }
+        // Read metadata and moves
+        Pattern algebraicPattern = Pattern.compile(RegexParser.ALGEBRAIC_REGEX);
+        Pattern metaFieldPattern = Pattern.compile(RegexParser.META_FIELD_REGEX);
 
-        if (metaArray.size() != movesArray.size()){
-            System.out.println("extractPGN() Error: Number of metadata and moves blocks do not match, returning empty array");
-            return retArray;
-        }
+        Matcher gameBlockMatcher = gameBlockPattern.matcher(pgnString);
+        Matcher metaBlockMatcher;
+        Matcher movesBlockMatcher;
+        Matcher metaFieldMatcher;
+        Matcher algebraicMatcher;
 
-        for (int i = 0; i < metaArray.size(); i++){
-            retArray.add(new String[]{metaArray.get(i), movesArray.get(i)});
-        }
-
-        return retArray;
-    }
-
-    public static void moveValidatorLogger(String filePath, String logPath){
-        System.out.println("moveValidatorLogger(): Beginning logging...");
-        long startTime = System.currentTimeMillis();
-        PrintStream origOut = System.out;
-        int count = 0;
-
-        try (PrintStream fileOut = new PrintStream(new FileOutputStream(logPath))){
-            System.setOut(fileOut);
-
-            ArrayList<String[]> temp = extractPGN(filePath);
-
-            for (String[] tmv : temp){
-                System.out.println("Count " + count);
-                ArrayList<Move> tempMove = PGNMoveValidator(tmv[1]);
-                System.out.println(tempMove.size() + " moves present");
-                count ++;
+        HashMap<String, String> tempMetaMap;
+        ArrayList<String> tempMoveArray;
+        // Separate each "game" in the PGN
+        while (gameBlockMatcher.find()){
+            tempMetaMap = new HashMap<String, String>();
+            tempMoveArray = new ArrayList<String>();
+            
+            // Separate the meta block in each game
+            metaBlockMatcher = metaBlockPattern.matcher(gameBlockMatcher.group());
+            while (metaBlockMatcher.find()){
+                metaFieldMatcher = metaFieldPattern.matcher(metaBlockMatcher.group());
+                
+                // Populate meta fields
+                while (metaFieldMatcher.find()){
+                    tempMetaMap.put(metaFieldMatcher.group(1), metaFieldMatcher.group(2));
+                }
+            }
+            
+            // Separate the moves block from each game
+            movesBlockMatcher = movesBlockPattern.matcher(gameBlockMatcher.group());
+            while (movesBlockMatcher.find()){
+                algebraicMatcher = algebraicPattern.matcher(movesBlockMatcher.group());
+                // Extract moves sequence
+                while (algebraicMatcher.find()){
+                    tempMoveArray.add(algebraicMatcher.group());
+                }
             }
 
+            // Add game
+            retArray.add(new RegexGameData(tempMetaMap, tempMoveArray));
         }
-        catch (Exception e){
-            System.out.println("moveValidatorLogger() Error: " + e);
-        }
-        finally {
-            System.setOut(origOut);
-        }
+        String timeString = String.format("%1.3f", (float)(System.currentTimeMillis() - startTime)/1000);
+        System.out.println("extractPGN(): Finished extracting " + retArray.size() + " games from " + filepath + " in " + timeString + " seconds.");
 
-        long endTime = System.currentTimeMillis();
-        float difference = (endTime - startTime)/1000 ;
-
-        String duration = String.format("%.1f", difference);
-
-        System.out.println("moveValidatorLogger(): Logging done!");
-        System.out.println("Logged " + (count + 1) + " games in " + duration + " seconds.");
+        return retArray;
     }
 
     public static Move validateMove(String algebraicMove, Board board) throws AlgebraicParseException{

@@ -17,3 +17,6 @@ Zobrist compatibility with external resources
 - Load in fixed pre-computed hash tables
 - Ensure same PRNG and seed
 
+Save moves as move objects? Equating differently disambiguated algebraic chess moves ie Rad3 vs R3d3 (rook on a3)
+
+

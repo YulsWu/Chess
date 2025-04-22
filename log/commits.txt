@@ -224,3 +224,24 @@ Updated generateCurrentZobristHash to use epHashHistory instead of lastEpHash
 - Re-generated after unplay
     - fiftyMove/ThreeFoldDraw available
     - whitesTurn
+
+---- Committed to dev2 and merged dev2 with main
+---- Branched dbDev:
+- Re-format GameData to include only metadata fields
+    - Relegate any additonal fields to a dynamic sized array 
+    - Store these addtional fields as a blob? in SQL database.
+- Created new RegexDatabase.java 
+- Created new RegexGameData.java
+Currently working on RegexDatabase.writeDB() - About to implement batch writing after creating RegexDatabase.setValues()
+
+Duplicate checking does not work!!
+FIRST change ID hashing to something better (murmurhash)
+DONE - Changed to byte[16] representing a 128bit hash - MUCH faster writes to SQLDB
+
+Changed RegexGameData ID to byte[16] = 128 bit murmurhash3 hash
+Changing RegexDatabase to accomodate changes ^^
+- SQL DDL for Table
+- .setInt() to .setBytes() in setValues()
+DONE
+
+Now fixing removeDuplicates()

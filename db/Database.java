@@ -25,6 +25,7 @@ import java.util.Map;
 
 
 public class Database {
+    //#region Static class variables
     // Excludes stringID and moves, 29 total meta fields
     public static final Map<String, String> PGN_TO_SQL_META_LABELS = Map.ofEntries(
         Map.entry("Event", "chess_event"),
@@ -124,6 +125,8 @@ public class Database {
         "set_up BOOLEAN," +
         "variant VARCHAR(50)" +
         ")";
+    
+    //#endregion
     
     // Currently unsuitable for hash collision handling
     public static ArrayList<Integer> generate_hashcode(ArrayList<GameData> games){
