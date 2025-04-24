@@ -13,6 +13,4 @@ echo.
 
 jar cfvm LanternaChess.jar manifest.txt -C bin/lanterna .
 
-if "%~1"=="nopause" goto skip
 pause
-:skip

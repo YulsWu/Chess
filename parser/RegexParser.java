@@ -20,6 +20,7 @@ import db.RegexGameData;
 public class RegexParser {
     public static Map<String, Integer> PIECE_ID;
     public static Map<String, Integer> FILE_INDEX;
+    public static Map<Integer, String> FILE_LABEL;
 
     public static String ALGEBRAIC_REGEX = "([KQRBN])?([a-h])?([1-8])?(x)?([a-h])([1-8])(=[QRBN])?([+#])?|(O-O-O)|(O-O)";
     public static String META_BLOCK_REGEX = "((?:\\n?\\[.*\\]\\n)+)";
@@ -46,6 +47,16 @@ public class RegexParser {
         FILE_INDEX.put("f", 5);
         FILE_INDEX.put("g", 6);
         FILE_INDEX.put("h", 7);
+
+        FILE_LABEL = new HashMap<>();
+        FILE_LABEL.put(0, "a");
+        FILE_LABEL.put(1, "b");
+        FILE_LABEL.put(2, "c");
+        FILE_LABEL.put(3, "d");
+        FILE_LABEL.put(4, "e");
+        FILE_LABEL.put(5, "f");
+        FILE_LABEL.put(6, "g");
+        FILE_LABEL.put(7, "h");
     }
     
     public static ArrayList<Move> PGNMoveValidator(String movesString){
@@ -260,7 +271,7 @@ public class RegexParser {
             //#region Update validator board
             // Play the last move and update state
             board.playMove(lastMove);
-            board.updateState(turnInt);
+            board.updateState(turnInt, validMoves);
             validMoves = board.generateValidMoves(turnInt * -1);
 
             // if (validMoves.size() == 0){
@@ -299,6 +310,10 @@ public class RegexParser {
         if (count == 1){
             return targetMove;
         }
+        else if (count == 0){
+            System.out.println("getMoveInMoveset(): No matching moves found");
+            return new int[]{};
+        }
         else {
             System.out.println("getMoveInMoveset(): Multiple moves detected, returning empty array");
             return new int[]{};
@@ -335,6 +350,7 @@ public class RegexParser {
             rank1, rank2, rank3, rank4, rank5, rank6, rank7, rank8
         };
         
+        // All control paths should somewhere return a value but if not this is returned, which indicates something went wrong
         int[] emptyMove = new int[]{};
 
         if (dsRank >= 0 && dsFile >= 0){
@@ -464,7 +480,7 @@ public class RegexParser {
         }
         
         if (moveMatcher.find()){
-            if (
+            if (// Determines if mandatory destination file and rank are present, takes into account castling
                 !(moveMatcher.group().equals("O-O") || moveMatcher.group().equals("O-O-O")) && 
                 (moveMatcher.group(5) == null || moveMatcher.group(6) == null)
                 ){

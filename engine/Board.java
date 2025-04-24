@@ -7,6 +7,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 
 import engine.Move.MOVE_TYPE;
+import parser.RegexParser;
 
 /**
  * Board is the main class in this chess program, responsible for tracking and updating
@@ -43,7 +44,7 @@ public class Board {
     // Any state with W_ or B_ signifies they LOST due to the reason
     // ie W_MATE means that White was Mated
     public enum BOARD_STATE {
-        IN_PLAY, CHECK, W_MATE, B_MATE, REPEAT_DRAW, MUTUAL_DRAW, STALEMATE, MATERIAL_DRAW, FIFTY_DRAW, W_RESIGN, B_RESIGN, W_TIME, B_TIME
+        IN_PLAY, CHECK, W_MATE, B_MATE, THREE_REPEAT_DRAW, FIVE_REPEAT_DRAW, MUTUAL_DRAW, STALEMATE, MATERIAL_DRAW, FIFTY_DRAW, SEVENTY_FIVE_DRAW, W_RESIGN, B_RESIGN, W_TIME, B_TIME
     }
 
     public static final Map<Integer, String> CHESS_EMOJI = new HashMap<>(){{
@@ -97,6 +98,7 @@ public class Board {
     private ArrayDeque<Long> epHashHistory;
     private ArrayDeque<boolean[]> castlingHistory;
     private ArrayDeque<Integer> halfClockHistory;
+    private ArrayList<String> algebraicHistory;
 
     // These are not constants as they are unique to each Board instance, not consistent across all Boards
     private long zobristHash; // Zobrist hash
@@ -219,6 +221,7 @@ public class Board {
         epHashHistory = new ArrayDeque<Long>();
         stateHistory = new ArrayDeque<BOARD_STATE>();
         halfClockHistory = new ArrayDeque<Integer>();
+        algebraicHistory = new ArrayList<String>();
 
 
         // Generate new zobrist hash
@@ -2445,12 +2448,243 @@ public class Board {
         }
     }
 
-
     public boolean squareIsOccupied(int squareBit){
         long occ = this.bitState & (1L << (63 - squareBit));
 
         return occ != 0 ? true : false;
     }
+
+    public int getPieceAtBitAddress(int bit){
+        return this.board[bit/8][bit%8];
+    }
+
+    public void recordAlgebraicMove(ArrayList<int[]> lastValidMoves){
+        //#region Extract move info and setup
+        Move move = this.playedMoves.peek();
+        MOVE_TYPE moveType = move.getType();
+        int origin = move.getOriginBit();
+        int destination = move.getDestBit();
+        int piece = move.getPiece();
+        StringBuilder sb = new StringBuilder();
+        //#endregion
+
+        if (moveType == MOVE_TYPE.CASTLE_LONG){
+            this.algebraicHistory.add("O-O-O");
+            return;
+        }
+        else if(moveType == MOVE_TYPE.CASTLE_SHORT){
+            this.algebraicHistory.add("O-O");
+            return;
+        }
+        
+        //#region Piece determination
+        sb.append(Move.PIECE_INT_TO_STRING.get(piece));
+        //#endregion
+
+        //#region Disambiguation determination
+        // Determine if move requires disambiguation, if so rankDis and fileDis are set. If not they are left as empty strings
+        // to be appended to the string builder.
+        // Disambiguation possibilities:
+        // Single: Two pieces on the same rank OR file can attack the same square
+        // Double: Square can be attacked by pieces on the same RANK and FILE at the same time
+        // Check for disambig
+        // Only if >2 pieces of the same type can move to the target square
+        // Pawn: SINGLE only
+        // King: NO DISAMBIG
+        // Bishop: Single/Double
+        // Knight: Single/Double
+        // Rook: SINGLE only
+        // Queen: Single/Double
+        String rankDis = "";
+        String fileDis = "";
+        boolean sharedFile = false;
+        boolean sharedRank = false;
+        // Count identical pieces that share the file and/or rank of the target piece
+
+        // if not king, and (not (pawn and (move or promoteMove)))
+        if (Math.abs(piece) != 6 && !(Math.abs(piece) == 1 && (moveType == MOVE_TYPE.MOVE || moveType == MOVE_TYPE.PROMOTE_MOVE))){
+            
+            // If pawn capture move just set file disambiguation every time
+            if (Math.abs(piece) == 1 && (moveType == MOVE_TYPE.ATTACK || moveType == MOVE_TYPE.PROMOTE_ATTACK || moveType == MOVE_TYPE.EN_PASSENT)){
+                fileDis = RegexParser.FILE_LABEL.get(origin%8);
+            }
+            else {
+                for (int[] mv : lastValidMoves){
+                    // if piece is the same AND dest squares are the same AND origin squares not the same
+                    if (mv[0] == piece && mv[2] == destination && mv[1] != origin){
+    
+                        if (mv[1]/8 == origin/8){
+                            sharedRank = true;
+                        }
+                        else if(mv[1]%8 == origin%8){
+                            sharedFile = true;
+                        }
+                    }
+                    if (sharedRank && sharedFile) break;
+                }
+            }
+        }
+
+        /* 
+        // switch (Math.abs(piece)){
+        //     case 1:{
+        //         if (moveType == MOVE_TYPE.ATTACK || moveType == MOVE_TYPE.PROMOTE_ATTACK){
+        //             int diff = destination - origin;
+        //             int otherSquare;
+        //             if (diff == 9){ // Black pawn attack from NE
+        //                 otherSquare = origin + 7;
+        //             }
+        //             else if (diff == 7){// Black pawn attack from NW
+        //                 otherSquare = origin + 9;
+        //             }
+        //             else if (diff == -7){ // White pawn attack from SE
+        //                 otherSquare = origin - 9;
+        //             }
+        //             else if (diff == -9){ // White pawn attack from SW
+        //                 otherSquare = origin - 7;
+        //             }
+        //             else {
+        //                 // Should never get here, just to satisfy compiler, will throw out of bounds exception in the next 'if' if it reaches here
+        //                 otherSquare = -1; 
+        //             }
+        //             // If another of the player's pawns exist on the other square, disambiguate current move
+        //             if (this.board[otherSquare/8][otherSquare%8] == piece){
+        //                 fileDis = RegexParser.FILE_LABEL.get(origin%8);
+        //             }                    
+        //         }
+        //         break;
+        //     }
+        //     case 2:{
+        //         // Check all 8 squares
+        //         int[] otherSquares = new int[]{origin + 6, origin + 15, origin + 17, origin + 10, origin - 6, origin -15, origin - 17,
+        //             origin - 10};
+        //         sharedFile = 0;
+        //         sharedRank = 0;
+        //         for (int square : otherSquares){
+        //             // Prevent out of bounds checks
+        //             if (square < 0 || square > 63) continue;
+
+        //             if (this.board[square/8][square%8] == piece){
+        //                 if (square/8 == origin/8){
+        //                     sharedRank++;
+        //                 }
+        //                 else if (square%8 == origin%8){
+        //                     sharedFile++;
+        //                 }
+        //             }
+
+        //             if (sharedFile > 0 && sharedRank > 0){
+        //                 break;
+        //             }
+        //         }
+        //         break;
+        //     }
+        //     case 3:{
+        //         // Diagonal AND antidiagonal AND NOT destination square
+        //         // Use generateValidDiagonalRayMask to get a 'blocked' bishop ray mask
+        //         long candidateMask = generateValidDiagonalRayMask(destination);
+        //         ArrayList<Integer> otherSquares = getSetBitPositions(candidateMask);
+
+        //         // Single: Target piece shares rank OR file with another target piece
+        //         // Double: Target piece shares rank with a second piece, shares file with a third piece
+        //         sharedFile = 0;
+        //         sharedRank = 0;
+
+        //         for (int square : otherSquares){
+        //             if (this.board[square/8][square%8] == piece){
+        //                 if (square/8 == origin/8){
+        //                     sharedRank++;
+        //                 }
+        //                 else if (square%8 == origin%8){
+        //                     sharedFile++;
+        //                 }
+        //             }
+
+        //             // Break loop as soon as double disambiguation is required
+        //             if (sharedFile > 0 && sharedRank > 0){
+        //                 break; // Doesn't matter if there are more, we already maximally disambiguate
+        //             }
+        //         }
+        //         break;
+        //     }
+        //     case 4:{
+        //         long candidateMask = generateValidStraightRayMask(destination);
+        //         ArrayList<Integer> otherSquares = getSetBitPositions(candidateMask);
+
+        //         for (int square : otherSquares){
+        //             if (this.board[square/8][square%8] == piece){
+        //                 if (square/8 == origin/8){
+        //                     sharedRank++;
+        //                 }
+        //                 else if (square%8 == origin%8){
+        //                     sharedFile++;
+        //                 }
+        //             }
+
+        //             if (sharedFile > 0 && sharedRank > 0){
+        //                 break;
+        //             }
+        //         }
+        //         break;
+        //     }
+        //     case 5:{
+        //         long candidateMask = generateValidAllRayMask(destination);
+        //         ArrayList<Integer> otherSquares = getSetBitPositions(candidateMask);
+
+        //         for (int square : otherSquares){
+        //             if (this.board[square/8][square%8] == piece){
+        //                 if (square/8 == origin/8){
+        //                     sharedRank++;
+        //                 }
+        //                 else if (square%8 == origin%8){
+        //                     sharedFile++;
+        //                 }
+        //             }
+
+        //             if (sharedRank > 0 && sharedFile > 0){
+        //                 break;
+        //             }
+        //         }
+        //         break;
+        //     }
+        // }
+        // // Determine required disambiguation dependent on if the target piece shares its rank/file with other pieces of the same type and owner
+        */
+        if (sharedRank) fileDis = RegexParser.FILE_LABEL.get(origin%8);
+        if (sharedFile) rankDis = String.valueOf((origin/8) + 1);
+
+        sb.append(fileDis);
+        sb.append(rankDis);
+        //#endregion
+
+        //#region Capture determination
+        if (moveType == MOVE_TYPE.ATTACK || moveType == MOVE_TYPE.PROMOTE_ATTACK || moveType == MOVE_TYPE.EN_PASSENT){
+            sb.append('x');
+        }
+        //#endregion
+
+        //#region Destination square
+        sb.append(RegexParser.FILE_LABEL.get(destination%8));
+        sb.append(String.valueOf((destination/8) + 1));
+        //#endregion
+
+        //#region Promotion and possible check
+        if (moveType == MOVE_TYPE.PROMOTE_MOVE || moveType == MOVE_TYPE.PROMOTE_ATTACK){
+            sb.append("=");
+            sb.append(Move.PIECE_INT_TO_STRING.get(move.getPromotionPiece()));
+        }
+
+        if (this.state == BOARD_STATE.CHECK){
+            sb.append("+");
+        }
+        else if (this.state == BOARD_STATE.W_MATE || this.state == BOARD_STATE.B_MATE){
+            sb.append("#");
+        }
+        //#endregion
+
+        this.algebraicHistory.add(sb.toString());
+    }
+
     //#endregion--------------------------------------------------------------------------------------------------------------------------------------
 
     //#region Bit utility
@@ -2775,6 +3009,12 @@ public class Board {
         return retArray;
     }
     
+    public ArrayList<String> getAlgebraicHistory(){
+        @SuppressWarnings("unchecked")
+        ArrayList<String> copy = (ArrayList<String>)this.algebraicHistory.clone();
+        return copy;
+    }
+    
     // TEST FUNCTION REMOVE AFTER
     public void setBoard(int[][] newBoard){
         this.board = newBoard;
@@ -2895,52 +3135,52 @@ public class Board {
         // Add move to playedMoves
         this.playedMoves.push(mv);
     }
-
-    /**
-     * Updates the state of the current {@link Board} to reflect changes caused by the most recently played {@link Move}.
-     * 
-     * <p>
-     * Determines board state by generating opponent checks for opposing player. If no checks then game is <br>
-     * {@link BOARD_STATE#IN_PLAY}, otherwise game is in {@link BOARD_STATE#CHECK}. Also updates {@link halfClock}<br>
-     * , {@link zobristHash}, {@link threeFoldDrawAvailable}, and {@link fiftyMoveDrawAvailable}.
-     * </p>
-     * 
-     * <p>
-     * Updates castling rights based on last move:
-     * <ol>
-     * <li> If king moves both of that player's castling rights are invalidated</li>
-     * <li> If either rook moves from its starting position, that side's castling is invalidated</li>
-     * </ol>
-     * <br>
-     * Both castling flags as well as flags used to inform {@link updateZobrist} about the first time castling rights have changed are<br>
-     * maintained here.<br>
-     * 
-     * These separate flags are necessary as {@link updateZobrist} only removes the castling hash from the zobrist hash the first time<br>
-     * any of the castling rights are set to false.
-     * </p>
-     * 
-     * <p>
-     * Finally flips {@Board.whitesTurn} depending on whose turn it is.
-     * </p>
-     * 
-     * <p>
-     * Proper game loop order:<br>
-     * 
-     * Depending on user input mode this may vary slightly, but the following describes the order required<br>
-     * for moves to be played and the board to update its state accordingly. Move selection/validation require<br>
-     * separate methods.
-     * <ol>
-     * <li> {@link playMove} to play the move on to the board</li>
-     * <li> {@link updateState} to update the state based on the move just played, flips turn</li>
-     * <li> {@link generateValidMoves} to generate moves for the next player
-     * <li> {@link evaluateGameEndConditions} determines any forcing game-end states based on the current object<br>
-     * and the provided valid moves array.</li>
-     * </ol>
-     * </p>
-     * 
-     * @param lastPlayerSign int whose sign represents the player that played the last move. Positive for white negative for black.
-     */
-    public void updateState(int lastPlayerSign){
+    // Out of date Javadoc
+    // /**
+    //  * Updates the state of the current {@link Board} to reflect changes caused by the most recently played {@link Move}.
+    //  * 
+    //  * <p>
+    //  * Determines board state by generating opponent checks for opposing player. If no checks then game is <br>
+    //  * {@link BOARD_STATE#IN_PLAY}, otherwise game is in {@link BOARD_STATE#CHECK}. Also updates {@link halfClock}<br>
+    //  * , {@link zobristHash}, {@link threeFoldDrawAvailable}, and {@link fiftyMoveDrawAvailable}.
+    //  * </p>
+    //  * 
+    //  * <p>
+    //  * Updates castling rights based on last move:
+    //  * <ol>
+    //  * <li> If king moves both of that player's castling rights are invalidated</li>
+    //  * <li> If either rook moves from its starting position, that side's castling is invalidated</li>
+    //  * </ol>
+    //  * <br>
+    //  * Both castling flags as well as flags used to inform {@link updateZobrist} about the first time castling rights have changed are<br>
+    //  * maintained here.<br>
+    //  * 
+    //  * These separate flags are necessary as {@link updateZobrist} only removes the castling hash from the zobrist hash the first time<br>
+    //  * any of the castling rights are set to false.
+    //  * </p>
+    //  * 
+    //  * <p>
+    //  * Finally flips {@Board.whitesTurn} depending on whose turn it is.
+    //  * </p>
+    //  * 
+    //  * <p>
+    //  * Proper game loop order:<br>
+    //  * 
+    //  * Depending on user input mode this may vary slightly, but the following describes the order required<br>
+    //  * for moves to be played and the board to update its state accordingly. Move selection/validation require<br>
+    //  * separate methods.
+    //  * <ol>
+    //  * <li> {@link playMove} to play the move on to the board</li>
+    //  * <li> {@link updateState} to update the state based on the move just played, flips turn</li>
+    //  * <li> {@link generateValidMoves} to generate moves for the next player
+    //  * <li> {@link evaluateGameEndConditions} determines any forcing game-end states based on the current object<br>
+    //  * and the provided valid moves array.</li>
+    //  * </ol>
+    //  * </p>
+    //  * 
+    //  * @param lastPlayerSign int whose sign represents the player that played the last move. Positive for white negative for black.
+    //  */
+    public ArrayList<int[]> updateState(int lastPlayerSign, ArrayList<int[]> lastValidMoves){
         boolean shortCastleRights = (lastPlayerSign > 0) ? whiteShort : blackShort;
         boolean longCastleRights = (lastPlayerSign > 0) ? whiteLong : blackLong;
         int shortRookSquare = (lastPlayerSign > 0) ? 7 : 63;
@@ -2989,17 +3229,27 @@ public class Board {
 
         // Update board, castling, turn, and EP zobrist based on flags set previously in UpdateBoard()
         updateZobrist();
+
         
         // Update optional draw flags
         this.fiftyMoveDrawAvailable = checkNMoveDraw(50);
         this.threeFoldDrawAvailable = checkNFoldRepeat(3);
-
+        
         if (this.whitesTurn){
             this.whitesTurn = false;
         }
         else {
             this.whitesTurn = true;
         }
+
+        // At this point board state reflects the starting state for the next player
+        ArrayList<int[]> newValidMoves = generateValidMoves(getTurnInt());
+        // We execute this here so that Board.state is set properly for algebraic move generation
+        evaluateGameEndConditions(newValidMoves);
+        // Record algebraic move, must occur after board.state is updated
+        recordAlgebraicMove(lastValidMoves);
+
+        return newValidMoves;
     }
     
     // We can generate valid moves for the next player before this method runs
@@ -3065,13 +3315,13 @@ public class Board {
             return 3;
         }
         else if (this.fiftyMoveDrawAvailable && checkNMoveDraw(75)){
-            this.state = BOARD_STATE.FIFTY_DRAW;
+            this.state = BOARD_STATE.SEVENTY_FIVE_DRAW;
             System.out.println("75 move draw!");
             return 4;
         }
         else if (this.threeFoldDrawAvailable && checkNFoldRepeat(5)){
             System.out.println("Five fold repeat draw!");
-            this.state = BOARD_STATE.REPEAT_DRAW;
+            this.state = BOARD_STATE.FIVE_REPEAT_DRAW;
             return 5;
         }
         // If function exits without ending the game, then we can give control to next player
@@ -3103,6 +3353,8 @@ public class Board {
     
             this.fiftyMoveDrawAvailable = checkNMoveDraw(50);
             this.threeFoldDrawAvailable = checkNFoldRepeat(3);
+
+            this.algebraicHistory.remove(this.algebraicHistory.size() - 1);
     
             this.whitesTurn = whitesTurn ? false : true;
         }

@@ -1,4 +1,6 @@
 package engine;
+import java.util.HashMap;
+import java.util.Map;
 /**
  * Holds all important information pertaining to a chess move by either player.<br>
  * 
@@ -33,6 +35,20 @@ public class Move {
     private int destRank;
     private int destFile;
 
+    public static final Map<Integer, String> PIECE_INT_TO_STRING = new HashMap<>(){{
+        put(1, "");
+        put(-1, "");
+        put(2, "N");
+        put(-2, "N");
+        put(3, "B");
+        put(-3, "B");
+        put(4, "R");
+        put(-4, "R");
+        put(5, "Q");
+        put(-5, "Q");
+        put(6, "K");
+        put(-6, "K");
+    }};
 
     public Move(int pieceValue, int originBitIndex, int destinationBitIndex, MOVE_TYPE type){
         originRank = originBitIndex / 8;

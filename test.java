@@ -1791,7 +1791,7 @@ public class test {
                 board.playMove(mv);
                 turn *= -1;
                 turnString = (turn > 0) ? "White" : "Black";
-                board.updateState(board.peekMove().getPiece());
+                board.updateState(board.peekMove().getPiece(), validMoves);
                 validMoves = board.generateValidMoves(turn);
                 board.evaluateGameEndConditions(validMoves);
                 System.out.println(turnString + "s turn: " + validMoves.size() + " possible moves");
@@ -1841,7 +1841,7 @@ public class test {
                 }
                 scanner.nextLine();
                 board.playMove(moves[i]);
-                board.updateState(board.peekMove().getPiece());
+                board.updateState(board.peekMove().getPiece(), validMoves);
                 turn *= -1;
                 validMoves = board.generateValidMoves(turn);
                 board.evaluateGameEndConditions(validMoves);
@@ -2141,7 +2141,7 @@ public class test {
             //#region Update validator board
             // Play the last move and update state
             board.playMove(lastMove);
-            board.updateState(turnInt);
+            board.updateState(turnInt, validMoves);
             validMoves = board.generateValidMoves(turnInt * -1);
 
             // if (validMoves.size() == 0){
@@ -2379,48 +2379,4 @@ public class test {
         System.out.println("Logged " + (count + 1) + " games in " + duration + " seconds.");
         return retMoves;
     }
-
-    public static void validateMoveTest(String filePath, String logPath){
-        System.out.print("Generating moves list from moveValidatorLogger()....");
-        ArrayList<Move> moves1 = moveValidatorLogger(filePath, logPath);
-        System.out.println("DONE");
-        ArrayList<Move> moves2 = new ArrayList<>();
-
-        ArrayList<String[]> metaMovesStrings = extractPGN(filePath);
-
-        String regex = "([KQRBN])?([a-hA-H])?([1-8])?(x)?([a-hA-H])([1-8])(=[KQRBN])?([+#])?|(O-O-O)|(O-O)";
-        Pattern pattern = Pattern.compile(regex);
-
-        System.out.print("Generating moves list from validateMove()....");
-        for (String[] temp : metaMovesStrings){
-            Board board = new Board();
-            Matcher matcher = pattern.matcher(temp[1]);
-
-            while (matcher.find()){
-                try{
-                    moves2.add(RegexParser.validateMove(matcher.group(), board));
-                }
-                catch (AlgebraicParseException e){
-                    System.out.println("\nvalidateMoveTest(): Algebraic parse exception occurred when parsing string " + matcher.group());
-                    e.printStackTrace();
-                    return;
-                }
-
-                board.playMove(moves2.get(moves2.size() - 1));
-                board.updateState(moves2.get(moves2.size() - 1).getPiece());
-            }
-
-        }
-        System.out.println("DONE");
-        System.out.print("Comparing generated move lists....");
-
-        for (int i = 0; i < moves1.size(); i++){
-            if(!(moves1.get(i).equals(moves2.get(i)))){
-                System.out.println("\nFAILED: Non-matching move found");
-            }
-        }
-        System.out.println("DONE, Test succeeded");
-
-    }
-
 }

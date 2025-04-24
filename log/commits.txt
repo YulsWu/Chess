@@ -245,3 +245,59 @@ Changing RegexDatabase to accomodate changes ^^
 DONE
 
 Now fixing removeDuplicates()
+==============================
+Starting to modify LanternaChess to include game replay functionality
+
+  _____ _    _ ______  _____ _____ 
+ / ____| |  | |  ____|/ ____/ ____|
+| |    | |__| | |__  | (___| (___  
+| |    |  __  |  __|  \___ \\___ \ 
+| |____| |  | | |____ ____) |___) |
+ \_____|_|  |_|______|_____/_____/ 
+
+ Widen console to both accomodate splash screen and move list on the right side? or other information
+
+ Terminal size from 28, 20 to 38,20 to 42, 20 to 45, 20 to 48, 20
+
+ Working on displaying PGN moves as game is played, which requires playedMoves --> PGN functionality
+ - Algebraic notation requires CHECKS
+ - Began working on "Get moves as string array" but now thinking I should have a board variable
+ PGN moves that creates and records moves in PGN format as game progresses.
+
+ Created recordAlgebraicMove()
+ - Takes the last played move in the current object's playedMoves and converts it into algebraic notation
+ - Then adds to algebraicHistory
+
+Updated updateBoard() to include recordAlgebraicMove()
+
+updated undoLastMove() to remove the last added string to algebraicHistory
+
+Now incorporating it into LanternaChess
+wasted a bunch of time creating recordAlgebraicMove() the WRONG way (Specifically Disambiguation)
+Disambiguation, Check, Checkmate are the only board context dependent variables not included in MOVE
+
+MUST FIX it as currently it won't generate valid algebraic notation (in terms of disambiguations)
+FIXED - 
+- Modified game loop logic, now evaluateGameEndConditions() is called in updateState() due to how 
+algebraic move generation requires information from both the previous board state
+- Initialize Board -> playMove -> updateState() -> playMove()
+- Now takes in the previous valid moves, and returns the new valid moves
+- Backwards compatible: Running evaluateGameEndConditions multiple times has no effect as it just
+sets the board state depending on certain conditions, conditions which wouldn't have changed between calling
+updateState() and evaluateGameEndConditions() right afterwards, so this change does not break existing loops, 
+only perhaps makes them slightly less efficient
+- Modified lanternachess to accomodate these changes
+
+
+
+
+*** Adjust chess board rendering using BACKGROUNDS and MONOSPACED FONTS, 
+fonts set through accessing Jpanel from terminal.getComponent()?
+
+test disambiguation algebraic generation!@!
+Combine updateState and evaluate game end conditions in the loop
+
+Changed
+
+
+update javadocs

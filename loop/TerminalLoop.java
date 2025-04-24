@@ -75,7 +75,7 @@ public class TerminalLoop {
             }
             
             board.playMove(currentMove);
-            board.updateState(board.getTurnInt());
+            board.updateState(board.getTurnInt(), validMoves);
 
             // This invokes another valid move generation, perhaps create a local variable for Board
             // That holds the current valid moves to avoid re-generation of valid moves
