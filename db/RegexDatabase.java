@@ -5,13 +5,17 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ByteArrayInputStream;
 import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Collections;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -20,7 +24,9 @@ import java.sql.PreparedStatement;
 import java.sql.Types;
 import java.sql.Date;
 import java.sql.ResultSet;
+import java.sql.Blob;
 
+import db.RegexGameData;
 
 
 
@@ -434,4 +440,75 @@ public class RegexDatabase {
 
         return retMap;
     }
+
+    public static ArrayList<Map.Entry<String, Integer>> readPlayerCounts(){
+        ArrayList<Map.Entry<String, Integer>> retArray = new ArrayList<Map.Entry<String, Integer>>();
+        String query = 
+        "WITH all_players AS (\n" + 
+            "\tSELECT white_player AS player FROM pgn_database.games\n"+
+            "\tUNION ALL\n"+
+            "\tSELECT black_player FROM pgn_database.games\n"+
+        ")\n" +
+        "SELECT player, COUNT(*) AS appearances\n"+
+        "FROM all_players\n" + 
+        "GROUP BY player\n";
+
+        try(
+            Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+            PreparedStatement statement = conn.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
+            ){
+                while(rs.next()){
+                    retArray.add(new AbstractMap.SimpleEntry<String, Integer>(rs.getString("player"), (int) rs.getInt("appearances")));
+                }
+            }
+            catch (SQLException e){
+                System.out.println("readPlayerCounts() Error: Exception occurred while querying database " + e);
+                return new ArrayList<Map.Entry<String, Integer>>();
+            }
+
+
+
+        retArray.sort(Map.Entry.comparingByValue());
+        Collections.reverse(retArray);
+
+        return retArray;
+    }
+
+    // Date, event, White, Black, whiteElo, blackElo, Result, round
+    public static ArrayList<String[]> readDBPlayer(String player){
+        ArrayList<String[]> retArray = new ArrayList<>();
+
+        String query = "SELECT chess_event, game_date, white_player, black_player, result FROM " + DB_NAME + "." + DB_TABLE_NAME + " WHERE white_player = \"" + player + "\" OR black_player = \"" + player + "\"";
+
+        try(
+            Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+            PreparedStatement statement = conn.prepareStatement(query);
+            ResultSet resultSet = statement.executeQuery();
+        ){
+            while (resultSet.next()){
+
+                Blob blob = resultSet.getBlob("moves");
+                byte[] ID = blob.getBytes(1, (int)blob.length());
+
+                retArray.add(new String[] {resultSet.getString("chess_event"),
+                                            RegexGameData.DATE_FORMAT.format(resultSet.getDate("game_date")),
+                                            resultSet.getString("white_player"),
+                                            resultSet.getString("black_player"),
+                                            resultSet.getString("result"),
+                                            ID
+                });                    
+            }
+
+
+
+        }catch(Exception e){
+            System.out.println("filterReadOnPlayer() Exception: " + e);
+            return retArray;
+        }
+
+        return retArray;
+    }
+
+    
 }

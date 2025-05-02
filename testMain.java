@@ -3,6 +3,10 @@ import parser.RegexParser;
 import db.RegexGameData;
 import java.util.ArrayList;
 import db.databaseTests;
+import java.util.Map;
+import java.io.PrintStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class testMain {
     public static void main(String[] args){
@@ -20,23 +24,43 @@ public class testMain {
         String password = "fUZ8&ejS4]";
         String dirPath = "pgn/";
         
-        String filePath = "pgn/polgarj.pgn";
         
+        RegexDatabase.dropDatabase();
+        writeAllGames();
+        
+    }
+    
+    public static void writeAllGames(){
+        String filePath = "pgn/";
+        
+        String[] players = new String[]{
+            "andreikin.pgn", "aronian.pgn", "ashley.pgn", "carlsen.pgn",
+            "ding.pgn", "nakamura.pgn", "polgarj.pgn", "tatamast25.pgn"
+        };
+
         if (!RegexDatabase.doesDatabaseExist()){
             RegexDatabase.createDatabase();
         }
         if (!(RegexDatabase.doesTableExist())){
             RegexDatabase.createTable();
         }
+        
+        ArrayList<RegexGameData> gdArray;
+        for (String p : players){
+            System.out.println("Writing " + p);
+            gdArray = RegexParser.extractPGN(filePath + p);
+            RegexDatabase.writeDB(gdArray, 50);
+            System.out.println("DONE");
+        }
+        
+    }
 
-        ArrayList<RegexGameData> gd = RegexParser.extractPGN(filePath);
-
-        ArrayList<RegexGameData> subList = new ArrayList<>(gd.subList(0, 51));
-
-        RegexDatabase.writeDB(gd, 50);
-
-
-        //RegexDatabase.dropDatabase();
-
+    public static void printToFile(String filepath, String msg){
+        try (PrintStream fileOut = new PrintStream(new FileOutputStream(filepath))){
+            fileOut.print(msg);
+        }
+        catch(IOException e){
+            System.out.println("printToFile() Error: Exception occurred printing to file " + e);
+        }
     }
 }

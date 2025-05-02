@@ -57,6 +57,18 @@ public class RegexGameData {
         ID = generateID();
     }
 
+    public RegexGameData (byte[] ID,String event, String site, Date date, Float round, String whitePlayer, String blackPlayer, String result, HashMap<String, String> optionalMeta, ArrayList<String> moves){
+        this.ID = ID;
+        this.event = event;
+        this.site = site;
+        this.date = date;
+        this.whitePlayer = whitePlayer;
+        this.blackPlayer = blackPlayer;
+        this.result = result;
+        this.optionalMeta = optionalMeta;
+        this.moves = moves;
+    }
+
     public static Integer metaFormatInteger(String input){
         if (input == null){
             return null;

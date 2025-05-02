@@ -21,13 +21,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Collections;
 import java.awt.Font;
 import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JFrame;
 
 import engine.*;
 import parser.RegexParser;
 import exceptions.AlgebraicParseException;
+import db.RegexDatabase;
 
 public class LanternaChess {
     public static final Map<Integer, String> CHESS_EMOJI = new HashMap<>(){{
@@ -183,6 +186,10 @@ public class LanternaChess {
             errorGraphics.setForegroundColor(TextColor.ANSI.RED_BRIGHT);
             errorGraphics.setBackgroundColor(TextColor.ANSI.BLACK);
 
+            final TextGraphics highlightGraphics = terminal.newTextGraphics();
+            highlightGraphics.setForegroundColor(TextColor.ANSI.BLACK);
+            highlightGraphics.setBackgroundColor(TextColor.ANSI.WHITE);
+
 
             // GUI Loop
             boolean flipBoard = true;
@@ -191,19 +198,27 @@ public class LanternaChess {
                 drawMenu(textGraphics, errorGraphics, terminal);
 
                 switch(queryMenuInput(textGraphics, errorGraphics, terminal)){
-                    case 0:
+                    case 0:{
                         terminal.close();
                         return;
-                    case 1:
+                    }
+                    case 1: {
                         int restart = 1;
                         while(restart == 1){
                             terminal.clearScreen();
                             restart = gameLoop(textGraphics, errorGraphics, terminal, flipBoard); 
                         }
                         break;
-                    case 2:
+                    }
+                    case 2:{
                         // Replay loop
-                        break;
+                        terminal.clearScreen();
+                        terminal.flush();
+                        drawLoadingScreen(textGraphics, terminal);
+                        playerCountLoop(textGraphics, errorGraphics, highlightGraphics, terminal);
+                            
+
+                    }
                 }
               
 
@@ -620,5 +635,452 @@ public class LanternaChess {
         }
     }
 
-    
+    public static int replayLoop(TextGraphics textGraphics, TextGraphics errorGraphics, Terminal terminal){
+        while(true){
+            try{
+                terminal.clearScreen();
+            }
+            catch (IOException e){
+                System.out.println("replayLoop(): Exception occurred " + e);
+                continue; // Retry loop
+            }
+        }
+    }
+
+    public static void drawStaticBrowserElements(TextGraphics textGraphics, Terminal terminal){
+        int bottomPanelBorder = SCREEN_HEIGHT - ((SCREEN_HEIGHT)/4) - 1;
+        int verticalBorderBuffer = 1;
+        int horizontalBorderBuffer = 0;
+        String leftArrow = "<- PREV. PAGE(q)";
+        String rightArrow = "NEXT PAGE (e) ->";
+        String navigation = "ARROW KEYS TO NAVIGATE";
+        String exit = "(ESC) TO MAIN MENU";
+        String enter = "(ENTER) TO SELECT GAME";
+        String firstPage = "<-(f)irst";
+        String lastPage = "(l)ast->";
+
+        // Horizontal Borders--------------------------------------------
+        for (int x : new int[]{horizontalBorderBuffer, SCREEN_HEIGHT - 1, bottomPanelBorder}){
+            for (int i = 1; i < SCREEN_WIDTH - 1; i++){
+                textGraphics.putString(i, x, "-");
+            }
+        }
+        // Vertical borders|||||||||||||||||||||||||||||||||||||||||||||||
+        for (int x : new int[]{verticalBorderBuffer, SCREEN_WIDTH - 2}){
+            for (int i = 1; i < SCREEN_HEIGHT - 1; i++){
+                textGraphics.putString(x, i, "|");
+            }
+        }
+
+        textGraphics.putString(2, bottomPanelBorder + 1, leftArrow);
+        textGraphics.putString(2, bottomPanelBorder + 2, firstPage);
+        textGraphics.putString(SCREEN_WIDTH - 1 - 1 - rightArrow.length(), bottomPanelBorder + 1, rightArrow);
+        textGraphics.putString(SCREEN_WIDTH - 1 - 1 - lastPage.length(), bottomPanelBorder + 2, lastPage);
+        
+        textGraphics.putString(MID_COL - (enter.length()/2), bottomPanelBorder + 2, enter);
+        textGraphics.putString(MID_COL - (exit.length()/2), bottomPanelBorder + 3, exit);
+        textGraphics.putString(MID_COL - (navigation.length()/2), bottomPanelBorder + 4, navigation);
+
+        safeFlush(terminal);
+    }
+
+    public static int playerCountLoop(TextGraphics textGraphics, TextGraphics errorGraphics, TextGraphics highlightGraphics, Terminal terminal){        
+        ArrayList<Map.Entry<String, Integer>> players = RegexDatabase.readPlayerCounts();
+        safeClear(terminal);
+        
+        // Create list of all posititions the entries go into
+        ArrayList<int[]> entryPositions = new ArrayList<>();
+        for (int col = 2; col <= 29; col += 27){
+            for (int row = 2; row <= 13; row++){
+                entryPositions.add(new int[]{col, row});
+            }
+        }
+        
+        
+        // Draw browser contents
+        // Screen is 54x20
+        // width = 50
+        // height = 12 (20 - 3 borders - 5 bot pane)
+        // name spans 20 col, number spans 5
+        // 26 entries per page
+        int horizontalBorderBuffer = 0;
+        int bottomPanelBorder = SCREEN_HEIGHT - ((SCREEN_HEIGHT)/4) - 1;
+        int startRow = horizontalBorderBuffer + 2;
+        int endRow = bottomPanelBorder - 1;
+        int numElementsPerPage = 2 * (endRow - startRow + 1);
+        int numElementsPerCol = numElementsPerPage/2;
+        int numPages = (players.size()/(numElementsPerPage)) + 1; //for ceiling div
+        String sortedByNum = "Num. Games - (t)oggle sort";
+        String sortedAlphabetic = "Alphabetic - (t)oggle sort";
+        int currentPageInd = 0;
+        int currentElement = 0;
+        boolean numericSort = true;
+        String activeTitle = sortedByNum;
+        while(true){
+            textGraphics.putString(MID_COL - (activeTitle.length()/2), 1, activeTitle);
+
+            // Fill the menu with players and counts
+            int counter = 0;
+            int endElementInd = ((currentPageInd + 1) * numElementsPerPage) >= players.size() ? players.size() : ((currentPageInd + 1) * numElementsPerPage);
+            for (Map.Entry<String, Integer> me : players.subList(currentPageInd * numElementsPerPage, endElementInd)){ // End index is exclusive
+                int c = entryPositions.get(counter)[0];
+                int r = entryPositions.get(counter)[1];
+                
+                String player = me.getKey();
+                int numGames = me.getValue();
+                
+                if (player.length() > 20){
+                    player = player.substring(0, 16) + "...";
+                }
+                
+                if (counter == currentElement) {
+                    highlightGraphics.putString(c, r, player);
+                    highlightGraphics.putString(c + 20, r, String.valueOf(numGames));
+                }
+                else {
+                    textGraphics.putString(c, r, player);
+                    textGraphics.putString(c + 20, r, String.valueOf(numGames));
+                }
+                counter++;
+            }
+            String pageCounter = String.valueOf(currentPageInd + 1) + "/" + String.valueOf(numPages);
+            textGraphics.putString(MID_COL - (pageCounter.length()/2), 15, pageCounter);
+            
+            drawStaticBrowserElements(textGraphics, terminal);
+            safeFlush(terminal);
+
+            switch (queryBrowserInput(textGraphics, errorGraphics, terminal)){
+                // Exit
+                case 0 :{
+                    safeClear(terminal);
+                    return 0;
+                }
+                // Scroll left
+                case 1: {
+                    if (currentElement >= numElementsPerCol) currentElement -= numElementsPerCol;
+                    break;
+                }
+                // Scroll right
+                case 2: {
+                    // If last page
+                    if (currentPageInd == (numPages - 1)){
+                        if ((currentPageInd + numElementsPerCol) < (players.size() % numElementsPerPage)){
+                            currentElement += numElementsPerCol;
+                        }
+                    }
+                    // If not last page
+                    else if (currentElement < numElementsPerCol){
+                        currentElement += numElementsPerCol;
+                    } 
+                    break;
+                }
+                // Scroll up
+                case 3: {
+                    if ((currentElement % numElementsPerCol) > 0)currentElement--;
+                    break;
+                }
+                // Scroll down
+                case 4: {
+                    if (currentPageInd == numPages - 1){
+                        if (!(currentElement == (players.size() % numElementsPerPage) - 1)){
+                            currentElement++;
+                        }
+                    
+                    }
+                    else if ((currentElement % numElementsPerCol) != (numElementsPerCol - 1))
+                    {
+                        currentElement++;
+                    } 
+                    break;
+                }
+                // Toggle sorting
+                case 5: {
+                    safeClear(terminal);
+                    currentPageInd = 0;
+                    currentElement = 0;
+                    if (numericSort){
+                        players.sort(Map.Entry.comparingByKey());
+                        numericSort = false;
+                        activeTitle = sortedAlphabetic;
+                    }
+                    else {
+                        players.sort(Map.Entry.comparingByValue());
+                        Collections.reverse(players);
+                        numericSort = true;
+                        activeTitle = sortedByNum;
+                    }
+                    break;
+                }
+                // Prev.Page
+                case 6: {
+                    if (currentPageInd > 0) currentPageInd--;
+                    safeClear(terminal);
+                    currentElement = 0;
+                    break;
+                }
+                // Next Page
+                case 7: {
+                    if (currentPageInd < numPages) currentPageInd++;
+                    safeClear(terminal);
+                    currentElement = 0;
+                    break;
+                }
+                // First page
+                case 8: {
+                    safeClear(terminal);
+                    currentPageInd = 0;
+                    break;
+                }
+                // Last page
+                case 9: {
+                    safeClear(terminal);
+                    currentPageInd = numPages - 1;
+                    break;
+                }
+                case 10: {
+                    safeClear(terminal);
+                    playerGameLoop(textGraphics, errorGraphics, highlightGraphics, terminal, "Nakamura,Hi");
+                    currentPageInd = 0;
+                    currentElement = 0;
+                    break;
+                }
+            }
+        }
+
+    }
+
+    // 0 - escape
+    // 1 - left arrow
+    // 2 - right arrow
+    // 3 - up arrow
+    // 4 - down arrow
+    // 5 - toggle order
+    // 6 - previous page
+    // 7 - next page
+    // 8 - first page
+    // 9 - last page
+    // 10 - enter
+    public static  int queryBrowserInput(TextGraphics textGraphics, TextGraphics errorGraphics, Terminal terminal){
+        while(true){
+            try {
+                KeyStroke input = terminal.readInput();
+                KeyType type = input.getKeyType();
+
+                if (type == KeyType.Escape){
+                    return 0;
+                }
+                else if (type == KeyType.ArrowLeft){
+                    return 1;
+                }
+                else if (type == KeyType.ArrowRight){
+                    return 2;
+                }
+                else if (type == KeyType.ArrowUp){
+                    return 3;
+                }
+                else if (type == KeyType.ArrowDown){
+                    return 4;
+                }
+                else if (type == KeyType.Character){
+                    char inChar = input.getCharacter();
+                    if (inChar == 't'){
+                        return 5;
+                    }
+                    else if (inChar == 'q'){
+                        return 6;
+                    }
+                    else if (inChar == 'e'){
+                        return 7;
+                    }
+                    else if (inChar == 'f'){
+                        return 8;
+                    }
+                    else if (inChar == 'l'){
+                        return 9;
+                    }
+                }
+                else if(type == KeyType.Enter){
+                    return 10;
+                }
+                else {
+                    errorGraphics.putString(ERROR_COL, ERROR_ROW, "Invalid input, try again.");
+                    terminal.flush();
+                    
+                }
+            }
+            catch (IOException e){
+                System.out.println("queryReplayInput() Error: Exception occurred " + e);
+            }
+
+        } 
+    }
+
+    public static void safeClear(Terminal terminal){
+        try{
+            terminal.clearScreen();
+        }
+        catch (IOException e){
+            System.out.println("safeClear(): Exception occurred" + e);
+        }
+    }
+
+    public static void drawLoadingScreen(TextGraphics textGraphics, Terminal terminal){
+        String s0 = "  _                     _ _                   ";
+        String s1 = " | |                   | (_)                  ";
+        String s2 = " | |     ___   __ _  __| |_ _ __   __ _       ";
+        String s3 = " | |    / _ \\ / _` |/ _` | | '_ \\ / _` |      ";
+        String s4 = " | |___| (_) | (_| | (_| | | | | | (_| |_ _ _ ";
+        String s5 = " |______\\___/ \\__,_|\\__,_|_|_| |_|\\__, (_|_|_)";
+        String s6 = "                                   __/ |      ";
+        String s7 = "                                  |___/       ";
+
+        String[] loading = new String[]{s0, s1, s2, s3, s4, s5, s6, s7};
+
+        int i = 0;
+        for (String line : loading){
+            textGraphics.putString(MID_COL - (s4.length()/2), 5 + i, line);
+            i++;
+        }
+
+        safeFlush(terminal);
+    }
+
+    public static void playerGameLoop(TextGraphics textGraphics, TextGraphics errorGraphics, TextGraphics highlightGraphics, Terminal terminal, String player){
+        drawLoadingScreen(textGraphics, terminal);
+        ArrayList<String[]> games = RegexDatabase.readDBPlayer(player);
+        
+        int leftEdgeInd = 2;
+        int rightEdgeInd = SCREEN_WIDTH - 2 - 1;
+        int topRowInd = 1;
+        int botRowInd = 13;
+        int titleRow = topRowInd;
+        
+        int displayHeight = (botRowInd + 1) - (topRowInd - 1);
+        
+        int displayWidth = rightEdgeInd - leftEdgeInd; // 54 - (2 x 2 edge border) - 5 cols 4 dividers -> 46
+        int dateColWidth = 14;
+        int resColWidth = 6;
+        int playerColWidth = 10;
+        int eventColWidth = 6;
+        
+        int eventCol = leftEdgeInd;
+        int dateCol = eventCol + eventColWidth + 1;
+        int whiteCol = dateCol + dateColWidth + 1;
+        int blackCol = whiteCol + playerColWidth + 1;
+        int resCol = blackCol + playerColWidth + 1;
+        
+        int[] colIndices = new int[]{eventCol, dateCol, whiteCol, blackCol, resCol};
+        int[] colWidths = new int[]{eventColWidth, dateColWidth, playerColWidth, playerColWidth, resColWidth};
+        
+        String eventTitle = "EVENT";
+        String whiteTitle = "WHITE";
+        String blackTitle = "BLACK";
+        String dateTitle = "DATE";
+        String resTitle = "RESULT";
+
+        int numPages = (games.size()/displayHeight) + 1;
+        int currentElementInd = 0;
+        int currentPageInd = 0;
+
+        System.out.println("displayHeight = " + displayHeight);
+        System.out.println("displayWidth = " + displayWidth);
+        System.out.println("dateColWidth = " + dateColWidth);
+        System.out.println("resColWidth = " + resColWidth);
+        System.out.println("playerColWidth = " + playerColWidth);
+        System.out.println("eventColWidth = " + eventColWidth);
+
+        System.out.println("eventCol = " + eventCol);
+        System.out.println("dateCol = " + dateCol);
+        System.out.println("whiteCol = " + whiteCol);
+        System.out.println("blackCol = " + blackCol);
+        System.out.println("resCol = " + resCol);
+                
+        safeClear(terminal);
+        while (true){
+            List<String[]> subList = games.subList(currentPageInd * displayHeight, (currentPageInd + 1) * displayHeight);
+            String pageCounter = String.valueOf(currentPageInd + 1) + "/" + String.valueOf(numPages + 1);
+            drawStaticBrowserElements(textGraphics, terminal);
+            // Write titles
+            textGraphics.putString(eventCol + (eventColWidth/2) - (eventTitle.length()/2), titleRow, eventTitle);
+            textGraphics.putString(dateCol + (dateColWidth/2) - (dateTitle.length()/2), titleRow, dateTitle);
+            textGraphics.putString(whiteCol + (playerColWidth/2) - (whiteTitle.length()/2), titleRow, whiteTitle);
+            textGraphics.putString(blackCol + (playerColWidth/2) - (blackTitle.length()/2), titleRow, blackTitle);
+            textGraphics.putString(resCol + (resColWidth/2) - (resTitle.length()/2), titleRow, resTitle);
+
+            textGraphics.putString(MID_COL - pageCounter.length()/2, botRowInd + 2, pageCounter);
+
+            for (int i = topRowInd + 1; i < subList.size(); i++){
+                String[] game = subList.get(i);
+                for (int j = 0; j < 5; j++){
+                    // Truncate length to available width
+                    String currentString = game[j];
+                    if (currentString.length() >= colWidths[j]){
+                        currentString = currentString.substring(0, colWidths[j]);
+                    }
+                    System.out.println(currentString);
+
+                    // Write to terminal using appropriate text graphics
+                    if (currentElementInd == i){
+                        highlightGraphics.putString(colIndices[j], i, currentString);
+                    }
+                    else{
+                        textGraphics.putString(colIndices[j], i, currentString);
+                    }
+                }
+            }
+            
+            
+            safeFlush(terminal);
+
+            // 0 - escape
+            // 1 - left arrow
+            // 2 - right arrow
+            // 3 - up arrow
+            // 4 - down arrow
+            // 5 - toggle order
+            // 6 - previous page
+            // 7 - next page
+            // 8 - first page
+            // 9 - last page
+            // 10 - enter
+            switch (queryBrowserInput(textGraphics, errorGraphics, terminal)){
+                case 0:{
+                    return;
+                }
+                case 3:{
+                    if (currentElementInd > 0) currentElementInd--;
+                    break;
+                }
+                case 4: {
+                    if (currentElementInd < displayHeight) currentElementInd++; // displayHeight == elements per page
+                }
+                case 6: {
+                    if (currentPageInd > 0) {
+                        currentPageInd--;
+                        currentElementInd = 0;
+                    }
+                }
+                case 7: {
+                    if (currentPageInd < (numPages - 1)) {
+                        currentPageInd++;
+                        currentElementInd = 0;
+                    }
+                }
+                case 8: {
+                    currentPageInd = 0;
+                    currentElementInd = 0;
+                }
+                case 9: {
+                    currentPageInd = numPages - 1;
+                    currentElementInd = 0;
+                }
+                case 10: {
+                    String gameSelection;// Get ID
+                }
+            }
+
+        }
+        
+    }
+
 }

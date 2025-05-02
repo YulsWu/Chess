@@ -19,4 +19,8 @@ Zobrist compatibility with external resources
 
 Save moves as move objects? Equating differently disambiguated algebraic chess moves ie Rad3 vs R3d3 (rook on a3)
 
+Save uniquePlayers->count as view in db, query that view when needed
+- Set 'batch' size so its not loading every new page
+- Calculate numpages by fetching row num once and calculating
+
 

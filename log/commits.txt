@@ -257,7 +257,7 @@ Starting to modify LanternaChess to include game replay functionality
 
  Widen console to both accomodate splash screen and move list on the right side? or other information
 
- Terminal size from 28, 20 to 38,20 to 42, 20 to 45, 20 to 48, 20
+ Terminal size from 28, 20 to 38,20 to 42, 20 to 45, 20 to 48, 20 to 51, 20-
 
  Working on displaying PGN moves as game is played, which requires playedMoves --> PGN functionality
  - Algebraic notation requires CHECKS
@@ -301,3 +301,21 @@ Changed
 
 
 update javadocs
+
+Working on drawing the replay menu, then have to figure out replay loop
+
+
+Blob blob = resultSet.getBlob("moves");
+                byte[] byteMoves = blob.getBytes(1, (int)blob.length());
+                ArrayList<String> extractedMoves = new ArrayList<>(); 
+                
+                try(ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(byteMoves))){
+                    extractedMoves = (ArrayList<String>) ois.readObject();
+                }
+                catch(Exception e){
+                    System.out.println("filterReadOnPlayer(): Exception occurred deserializing move data");
+                    return retArray;
+                }
+
+Now nothing displays wtf
+also fix scrolling function for a non-full page in playerCountLoop
