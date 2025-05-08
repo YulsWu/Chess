@@ -951,17 +951,17 @@ public class LanternaChess {
         
         int leftEdgeInd = 2;
         int rightEdgeInd = SCREEN_WIDTH - 2 - 1;
-        int topRowInd = 1;
+        int topRowInd = 2;
         int botRowInd = 13;
-        int titleRow = topRowInd;
+        int titleRow = topRowInd - 1;
         
-        int displayHeight = (botRowInd + 1) - (topRowInd - 1);
+        int displayHeight = (botRowInd + 1) - topRowInd;
         
         int displayWidth = rightEdgeInd - leftEdgeInd; // 54 - (2 x 2 edge border) - 5 cols 4 dividers -> 46
-        int dateColWidth = 14;
-        int resColWidth = 6;
-        int playerColWidth = 10;
-        int eventColWidth = 6;
+        int dateColWidth = 10;
+        int resColWidth = 7;
+        int playerColWidth = 11;
+        int eventColWidth = 7;
         
         int eventCol = leftEdgeInd;
         int dateCol = eventCol + eventColWidth + 1;
@@ -978,27 +978,30 @@ public class LanternaChess {
         String dateTitle = "DATE";
         String resTitle = "RESULT";
 
-        int numPages = (games.size()/displayHeight) + 1;
+        int numPages = (games.size() + displayHeight - 1) / displayHeight;
         int currentElementInd = 0;
         int currentPageInd = 0;
 
-        System.out.println("displayHeight = " + displayHeight);
-        System.out.println("displayWidth = " + displayWidth);
-        System.out.println("dateColWidth = " + dateColWidth);
-        System.out.println("resColWidth = " + resColWidth);
-        System.out.println("playerColWidth = " + playerColWidth);
-        System.out.println("eventColWidth = " + eventColWidth);
+        // System.out.println("displayHeight = " + displayHeight);
+        // System.out.println("displayWidth = " + displayWidth);
+        // System.out.println("dateColWidth = " + dateColWidth);
+        // System.out.println("resColWidth = " + resColWidth);
+        // System.out.println("playerColWidth = " + playerColWidth);
+        // System.out.println("eventColWidth = " + eventColWidth);
 
-        System.out.println("eventCol = " + eventCol);
-        System.out.println("dateCol = " + dateCol);
-        System.out.println("whiteCol = " + whiteCol);
-        System.out.println("blackCol = " + blackCol);
-        System.out.println("resCol = " + resCol);
+        // System.out.println("eventCol = " + eventCol);
+        // System.out.println("dateCol = " + dateCol);
+        // System.out.println("whiteCol = " + whiteCol);
+        // System.out.println("blackCol = " + blackCol);
+        // System.out.println("resCol = " + resCol);
                 
         safeClear(terminal);
         while (true){
-            List<String[]> subList = games.subList(currentPageInd * displayHeight, (currentPageInd + 1) * displayHeight);
-            String pageCounter = String.valueOf(currentPageInd + 1) + "/" + String.valueOf(numPages + 1);
+            int endIndex = ((currentPageInd + 1) * displayHeight) > games.size() ? games.size() : (currentPageInd + 1) * displayHeight;
+
+            List<String[]> subList = games.subList(currentPageInd * displayHeight, endIndex);
+
+            String pageCounter = String.valueOf(currentPageInd + 1) + "/" + String.valueOf(numPages);
             drawStaticBrowserElements(textGraphics, terminal);
             // Write titles
             textGraphics.putString(eventCol + (eventColWidth/2) - (eventTitle.length()/2), titleRow, eventTitle);
@@ -1009,7 +1012,7 @@ public class LanternaChess {
 
             textGraphics.putString(MID_COL - pageCounter.length()/2, botRowInd + 2, pageCounter);
 
-            for (int i = topRowInd + 1; i < subList.size(); i++){
+            for (int i = 0; i < subList.size(); i++){
                 String[] game = subList.get(i);
                 for (int j = 0; j < 5; j++){
                     // Truncate length to available width
@@ -1017,14 +1020,13 @@ public class LanternaChess {
                     if (currentString.length() >= colWidths[j]){
                         currentString = currentString.substring(0, colWidths[j]);
                     }
-                    System.out.println(currentString);
 
                     // Write to terminal using appropriate text graphics
                     if (currentElementInd == i){
-                        highlightGraphics.putString(colIndices[j], i, currentString);
+                        highlightGraphics.putString(colIndices[j], i + topRowInd, currentString);
                     }
                     else{
-                        textGraphics.putString(colIndices[j], i, currentString);
+                        textGraphics.putString(colIndices[j], i + topRowInd, currentString);
                     }
                 }
             }
@@ -1047,35 +1049,45 @@ public class LanternaChess {
                 case 0:{
                     return;
                 }
+                // Skip left + right arrow cases
                 case 3:{
                     if (currentElementInd > 0) currentElementInd--;
                     break;
                 }
                 case 4: {
-                    if (currentElementInd < displayHeight) currentElementInd++; // displayHeight == elements per page
+                    if ((currentElementInd < displayHeight) && (currentElementInd < subList.size() - 1)) currentElementInd++; // displayHeight == elements per page
+                    break;
                 }
                 case 6: {
                     if (currentPageInd > 0) {
                         currentPageInd--;
                         currentElementInd = 0;
                     }
+                    safeClear(terminal);
+                    break;
                 }
                 case 7: {
                     if (currentPageInd < (numPages - 1)) {
                         currentPageInd++;
                         currentElementInd = 0;
                     }
+                    safeClear(terminal);
+                    break;
                 }
                 case 8: {
                     currentPageInd = 0;
                     currentElementInd = 0;
+                    safeClear(terminal);
+                    break;
                 }
                 case 9: {
                     currentPageInd = numPages - 1;
                     currentElementInd = 0;
+                    safeClear(terminal);
+                    break;
                 }
                 case 10: {
-                    String gameSelection;// Get ID
+                    break;
                 }
             }
 

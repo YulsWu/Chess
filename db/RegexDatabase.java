@@ -488,15 +488,11 @@ public class RegexDatabase {
         ){
             while (resultSet.next()){
 
-                Blob blob = resultSet.getBlob("moves");
-                byte[] ID = blob.getBytes(1, (int)blob.length());
-
                 retArray.add(new String[] {resultSet.getString("chess_event"),
                                             RegexGameData.DATE_FORMAT.format(resultSet.getDate("game_date")),
                                             resultSet.getString("white_player"),
                                             resultSet.getString("black_player"),
-                                            resultSet.getString("result"),
-                                            ID
+                                            resultSet.getString("result")
                 });                    
             }
 
