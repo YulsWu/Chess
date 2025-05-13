@@ -1,2 +1,5 @@
-/build/
+/build/lanterna/bin/
+/build/lanterna/lib/
+/build/lanterna/manifest.txt
+/build/lanterna/LanternaChess.jar
 directedCmd.bat

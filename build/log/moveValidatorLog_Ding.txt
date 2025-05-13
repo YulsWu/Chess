@@ -1,0 +1,6348 @@
+Count 0
+moveValidator(): All moves validated!
+110 moves present
+Count 1
+moveValidator(): All moves validated!
+85 moves present
+Count 2
+moveValidator(): All moves validated!
+117 moves present
+Count 3
+moveValidator(): All moves validated!
+70 moves present
+Count 4
+moveValidator(): All moves validated!
+122 moves present
+Count 5
+moveValidator(): All moves validated!
+115 moves present
+Count 6
+moveValidator(): All moves validated!
+148 moves present
+Count 7
+moveValidator(): All moves validated!
+69 moves present
+Count 8
+moveValidator(): All moves validated!
+215 moves present
+Count 9
+moveValidator(): All moves validated!
+110 moves present
+Count 10
+moveValidator(): All moves validated!
+48 moves present
+Count 11
+moveValidator(): All moves validated!
+88 moves present
+Count 12
+moveValidator(): All moves validated!
+125 moves present
+Count 13
+moveValidator(): All moves validated!
+87 moves present
+Count 14
+moveValidator(): All moves validated!
+45 moves present
+Count 15
+moveValidator(): All moves validated!
+54 moves present
+Count 16
+moveValidator(): All moves validated!
+71 moves present
+Count 17
+moveValidator(): All moves validated!
+43 moves present
+Count 18
+moveValidator(): All moves validated!
+91 moves present
+Count 19
+moveValidator(): All moves validated!
+71 moves present
+Count 20
+moveValidator(): All moves validated!
+51 moves present
+Count 21
+moveValidator(): All moves validated!
+88 moves present
+Count 22
+moveValidator(): All moves validated!
+55 moves present
+Count 23
+moveValidator(): All moves validated!
+53 moves present
+Count 24
+moveValidator(): All moves validated!
+86 moves present
+Count 25
+moveValidator(): All moves validated!
+64 moves present
+Count 26
+moveValidator(): All moves validated!
+120 moves present
+Count 27
+moveValidator(): All moves validated!
+104 moves present
+Count 28
+moveValidator(): All moves validated!
+103 moves present
+Count 29
+moveValidator(): All moves validated!
+117 moves present
+Count 30
+moveValidator(): All moves validated!
+94 moves present
+Count 31
+moveValidator(): All moves validated!
+71 moves present
+Count 32
+moveValidator(): All moves validated!
+55 moves present
+Count 33
+moveValidator(): All moves validated!
+142 moves present
+Count 34
+moveValidator(): All moves validated!
+69 moves present
+Count 35
+moveValidator(): All moves validated!
+123 moves present
+Count 36
+moveValidator(): All moves validated!
+96 moves present
+Count 37
+moveValidator(): All moves validated!
+116 moves present
+Count 38
+moveValidator(): All moves validated!
+138 moves present
+Count 39
+moveValidator(): All moves validated!
+76 moves present
+Count 40
+moveValidator(): All moves validated!
+57 moves present
+Count 41
+moveValidator(): All moves validated!
+83 moves present
+Count 42
+moveValidator(): All moves validated!
+95 moves present
+Count 43
+moveValidator(): All moves validated!
+87 moves present
+Count 44
+moveValidator(): All moves validated!
+136 moves present
+Count 45
+moveValidator(): All moves validated!
+132 moves present
+Count 46
+moveValidator(): All moves validated!
+60 moves present
+Count 47
+moveValidator(): All moves validated!
+145 moves present
+Count 48
+moveValidator(): All moves validated!
+130 moves present
+Count 49
+moveValidator(): All moves validated!
+67 moves present
+Count 50
+moveValidator(): All moves validated!
+122 moves present
+Count 51
+moveValidator(): All moves validated!
+85 moves present
+Count 52
+moveValidator(): All moves validated!
+39 moves present
+Count 53
+moveValidator(): All moves validated!
+85 moves present
+Count 54
+moveValidator(): All moves validated!
+131 moves present
+Count 55
+moveValidator(): All moves validated!
+100 moves present
+Count 56
+moveValidator(): All moves validated!
+73 moves present
+Count 57
+moveValidator(): All moves validated!
+60 moves present
+Count 58
+moveValidator(): All moves validated!
+77 moves present
+Count 59
+moveValidator(): All moves validated!
+120 moves present
+Count 60
+moveValidator(): All moves validated!
+82 moves present
+Count 61
+moveValidator(): All moves validated!
+69 moves present
+Count 62
+moveValidator(): All moves validated!
+132 moves present
+Count 63
+moveValidator(): All moves validated!
+51 moves present
+Count 64
+moveValidator(): All moves validated!
+65 moves present
+Count 65
+moveValidator(): All moves validated!
+97 moves present
+Count 66
+moveValidator(): All moves validated!
+73 moves present
+Count 67
+moveValidator(): All moves validated!
+63 moves present
+Count 68
+moveValidator(): All moves validated!
+81 moves present
+Count 69
+moveValidator(): All moves validated!
+79 moves present
+Count 70
+moveValidator(): All moves validated!
+74 moves present
+Count 71
+moveValidator(): All moves validated!
+70 moves present
+Count 72
+moveValidator(): All moves validated!
+108 moves present
+Count 73
+moveValidator(): All moves validated!
+156 moves present
+Count 74
+moveValidator(): All moves validated!
+60 moves present
+Count 75
+moveValidator(): All moves validated!
+65 moves present
+Count 76
+moveValidator(): All moves validated!
+162 moves present
+Count 77
+moveValidator(): All moves validated!
+97 moves present
+Count 78
+moveValidator(): All moves validated!
+71 moves present
+Count 79
+moveValidator(): All moves validated!
+116 moves present
+Count 80
+moveValidator(): All moves validated!
+105 moves present
+Count 81
+moveValidator(): All moves validated!
+141 moves present
+Count 82
+moveValidator(): All moves validated!
+79 moves present
+Count 83
+moveValidator(): All moves validated!
+96 moves present
+Count 84
+moveValidator(): All moves validated!
+129 moves present
+Count 85
+moveValidator(): All moves validated!
+55 moves present
+Count 86
+moveValidator(): All moves validated!
+90 moves present
+Count 87
+moveValidator(): All moves validated!
+108 moves present
+Count 88
+moveValidator(): All moves validated!
+72 moves present
+Count 89
+moveValidator(): All moves validated!
+64 moves present
+Count 90
+moveValidator(): All moves validated!
+167 moves present
+Count 91
+moveValidator(): All moves validated!
+73 moves present
+Count 92
+moveValidator(): All moves validated!
+42 moves present
+Count 93
+moveValidator(): All moves validated!
+265 moves present
+Count 94
+moveValidator(): All moves validated!
+121 moves present
+Count 95
+moveValidator(): All moves validated!
+114 moves present
+Count 96
+moveValidator(): All moves validated!
+61 moves present
+Count 97
+moveValidator(): All moves validated!
+107 moves present
+Count 98
+moveValidator(): All moves validated!
+91 moves present
+Count 99
+moveValidator(): All moves validated!
+87 moves present
+Count 100
+moveValidator(): All moves validated!
+86 moves present
+Count 101
+moveValidator(): All moves validated!
+75 moves present
+Count 102
+moveValidator(): All moves validated!
+70 moves present
+Count 103
+moveValidator(): All moves validated!
+79 moves present
+Count 104
+moveValidator(): All moves validated!
+82 moves present
+Count 105
+moveValidator(): All moves validated!
+63 moves present
+Count 106
+moveValidator(): All moves validated!
+94 moves present
+Count 107
+moveValidator(): All moves validated!
+113 moves present
+Count 108
+moveValidator(): All moves validated!
+74 moves present
+Count 109
+moveValidator(): All moves validated!
+92 moves present
+Count 110
+moveValidator(): All moves validated!
+125 moves present
+Count 111
+moveValidator(): All moves validated!
+91 moves present
+Count 112
+moveValidator(): All moves validated!
+64 moves present
+Count 113
+moveValidator(): All moves validated!
+83 moves present
+Count 114
+moveValidator(): All moves validated!
+45 moves present
+Count 115
+moveValidator(): All moves validated!
+71 moves present
+Count 116
+moveValidator(): All moves validated!
+60 moves present
+Count 117
+moveValidator(): All moves validated!
+114 moves present
+Count 118
+moveValidator(): All moves validated!
+97 moves present
+Count 119
+moveValidator(): All moves validated!
+95 moves present
+Count 120
+moveValidator(): All moves validated!
+100 moves present
+Count 121
+moveValidator(): All moves validated!
+73 moves present
+Count 122
+moveValidator(): All moves validated!
+105 moves present
+Count 123
+moveValidator(): All moves validated!
+91 moves present
+Count 124
+moveValidator(): All moves validated!
+61 moves present
+Count 125
+moveValidator(): All moves validated!
+70 moves present
+Count 126
+moveValidator(): All moves validated!
+89 moves present
+Count 127
+moveValidator(): All moves validated!
+61 moves present
+Count 128
+moveValidator(): All moves validated!
+70 moves present
+Count 129
+moveValidator(): All moves validated!
+98 moves present
+Count 130
+moveValidator(): All moves validated!
+138 moves present
+Count 131
+moveValidator(): All moves validated!
+111 moves present
+Count 132
+moveValidator(): All moves validated!
+94 moves present
+Count 133
+moveValidator(): All moves validated!
+138 moves present
+Count 134
+moveValidator(): All moves validated!
+51 moves present
+Count 135
+moveValidator(): All moves validated!
+95 moves present
+Count 136
+moveValidator(): All moves validated!
+75 moves present
+Count 137
+moveValidator(): All moves validated!
+122 moves present
+Count 138
+moveValidator(): All moves validated!
+82 moves present
+Count 139
+moveValidator(): All moves validated!
+73 moves present
+Count 140
+moveValidator(): All moves validated!
+108 moves present
+Count 141
+moveValidator(): All moves validated!
+67 moves present
+Count 142
+moveValidator(): All moves validated!
+65 moves present
+Count 143
+moveValidator(): All moves validated!
+108 moves present
+Count 144
+moveValidator(): All moves validated!
+62 moves present
+Count 145
+moveValidator(): All moves validated!
+34 moves present
+Count 146
+moveValidator(): All moves validated!
+149 moves present
+Count 147
+moveValidator(): All moves validated!
+71 moves present
+Count 148
+moveValidator(): All moves validated!
+79 moves present
+Count 149
+moveValidator(): All moves validated!
+115 moves present
+Count 150
+moveValidator(): All moves validated!
+59 moves present
+Count 151
+moveValidator(): All moves validated!
+51 moves present
+Count 152
+moveValidator(): All moves validated!
+71 moves present
+Count 153
+moveValidator(): All moves validated!
+69 moves present
+Count 154
+moveValidator(): All moves validated!
+99 moves present
+Count 155
+moveValidator(): All moves validated!
+112 moves present
+Count 156
+moveValidator(): All moves validated!
+107 moves present
+Count 157
+moveValidator(): All moves validated!
+48 moves present
+Count 158
+moveValidator(): All moves validated!
+83 moves present
+Count 159
+moveValidator(): All moves validated!
+49 moves present
+Count 160
+moveValidator(): All moves validated!
+113 moves present
+Count 161
+moveValidator(): All moves validated!
+30 moves present
+Count 162
+moveValidator(): All moves validated!
+73 moves present
+Count 163
+moveValidator(): All moves validated!
+60 moves present
+Count 164
+moveValidator(): All moves validated!
+31 moves present
+Count 165
+moveValidator(): All moves validated!
+49 moves present
+Count 166
+moveValidator(): All moves validated!
+58 moves present
+Count 167
+moveValidator(): All moves validated!
+131 moves present
+Count 168
+moveValidator(): All moves validated!
+39 moves present
+Count 169
+moveValidator(): All moves validated!
+44 moves present
+Count 170
+moveValidator(): All moves validated!
+87 moves present
+Count 171
+moveValidator(): All moves validated!
+68 moves present
+Count 172
+moveValidator(): All moves validated!
+80 moves present
+Count 173
+moveValidator(): All moves validated!
+55 moves present
+Count 174
+moveValidator(): All moves validated!
+111 moves present
+Count 175
+moveValidator(): All moves validated!
+65 moves present
+Count 176
+moveValidator(): All moves validated!
+82 moves present
+Count 177
+moveValidator(): All moves validated!
+81 moves present
+Count 178
+moveValidator(): All moves validated!
+65 moves present
+Count 179
+moveValidator(): All moves validated!
+91 moves present
+Count 180
+moveValidator(): All moves validated!
+80 moves present
+Count 181
+moveValidator(): All moves validated!
+105 moves present
+Count 182
+moveValidator(): All moves validated!
+111 moves present
+Count 183
+moveValidator(): All moves validated!
+88 moves present
+Count 184
+moveValidator(): All moves validated!
+59 moves present
+Count 185
+moveValidator(): All moves validated!
+25 moves present
+Count 186
+moveValidator(): All moves validated!
+79 moves present
+Count 187
+moveValidator(): All moves validated!
+48 moves present
+Count 188
+moveValidator(): All moves validated!
+60 moves present
+Count 189
+moveValidator(): All moves validated!
+155 moves present
+Count 190
+moveValidator(): All moves validated!
+111 moves present
+Count 191
+moveValidator(): All moves validated!
+111 moves present
+Count 192
+moveValidator(): All moves validated!
+92 moves present
+Count 193
+moveValidator(): All moves validated!
+47 moves present
+Count 194
+moveValidator(): All moves validated!
+148 moves present
+Count 195
+moveValidator(): All moves validated!
+132 moves present
+Count 196
+moveValidator(): All moves validated!
+124 moves present
+Count 197
+moveValidator(): All moves validated!
+53 moves present
+Count 198
+moveValidator(): All moves validated!
+59 moves present
+Count 199
+moveValidator(): All moves validated!
+62 moves present
+Count 200
+moveValidator(): All moves validated!
+83 moves present
+Count 201
+moveValidator(): All moves validated!
+59 moves present
+Count 202
+moveValidator(): All moves validated!
+105 moves present
+Count 203
+moveValidator(): All moves validated!
+68 moves present
+Count 204
+moveValidator(): All moves validated!
+101 moves present
+Count 205
+moveValidator(): All moves validated!
+92 moves present
+Count 206
+moveValidator(): All moves validated!
+157 moves present
+Count 207
+moveValidator(): All moves validated!
+60 moves present
+Count 208
+moveValidator(): All moves validated!
+72 moves present
+Count 209
+moveValidator(): All moves validated!
+59 moves present
+Count 210
+moveValidator(): All moves validated!
+81 moves present
+Count 211
+moveValidator(): All moves validated!
+60 moves present
+Count 212
+moveValidator(): All moves validated!
+57 moves present
+Count 213
+moveValidator(): All moves validated!
+144 moves present
+Count 214
+moveValidator(): All moves validated!
+87 moves present
+Count 215
+moveValidator(): All moves validated!
+57 moves present
+Count 216
+moveValidator(): All moves validated!
+63 moves present
+Count 217
+moveValidator(): All moves validated!
+80 moves present
+Count 218
+moveValidator(): All moves validated!
+115 moves present
+Count 219
+moveValidator(): All moves validated!
+82 moves present
+Count 220
+moveValidator(): All moves validated!
+65 moves present
+Count 221
+moveValidator(): All moves validated!
+64 moves present
+Count 222
+moveValidator(): All moves validated!
+117 moves present
+Count 223
+moveValidator(): All moves validated!
+66 moves present
+Count 224
+moveValidator(): All moves validated!
+76 moves present
+Count 225
+moveValidator(): All moves validated!
+71 moves present
+Count 226
+moveValidator(): All moves validated!
+99 moves present
+Count 227
+moveValidator(): All moves validated!
+140 moves present
+Count 228
+moveValidator(): All moves validated!
+106 moves present
+Count 229
+moveValidator(): All moves validated!
+64 moves present
+Count 230
+moveValidator(): All moves validated!
+71 moves present
+Count 231
+moveValidator(): All moves validated!
+111 moves present
+Count 232
+moveValidator(): All moves validated!
+52 moves present
+Count 233
+moveValidator(): All moves validated!
+47 moves present
+Count 234
+moveValidator(): All moves validated!
+82 moves present
+Count 235
+moveValidator(): All moves validated!
+88 moves present
+Count 236
+moveValidator(): All moves validated!
+113 moves present
+Count 237
+moveValidator(): All moves validated!
+103 moves present
+Count 238
+moveValidator(): All moves validated!
+75 moves present
+Count 239
+moveValidator(): All moves validated!
+124 moves present
+Count 240
+moveValidator(): All moves validated!
+67 moves present
+Count 241
+moveValidator(): All moves validated!
+107 moves present
+Count 242
+moveValidator(): All moves validated!
+121 moves present
+Count 243
+moveValidator(): All moves validated!
+73 moves present
+Count 244
+moveValidator(): All moves validated!
+70 moves present
+Count 245
+moveValidator(): All moves validated!
+75 moves present
+Count 246
+moveValidator(): All moves validated!
+66 moves present
+Count 247
+moveValidator(): All moves validated!
+102 moves present
+Count 248
+moveValidator(): All moves validated!
+60 moves present
+Count 249
+moveValidator(): All moves validated!
+81 moves present
+Count 250
+moveValidator(): All moves validated!
+49 moves present
+Count 251
+moveValidator(): All moves validated!
+112 moves present
+Count 252
+moveValidator(): All moves validated!
+83 moves present
+Count 253
+moveValidator(): All moves validated!
+89 moves present
+Count 254
+moveValidator(): All moves validated!
+147 moves present
+Count 255
+moveValidator(): All moves validated!
+91 moves present
+Count 256
+moveValidator(): All moves validated!
+111 moves present
+Count 257
+moveValidator(): All moves validated!
+64 moves present
+Count 258
+moveValidator(): All moves validated!
+70 moves present
+Count 259
+moveValidator(): All moves validated!
+52 moves present
+Count 260
+moveValidator(): All moves validated!
+60 moves present
+Count 261
+moveValidator(): All moves validated!
+82 moves present
+Count 262
+moveValidator(): All moves validated!
+84 moves present
+Count 263
+moveValidator(): All moves validated!
+63 moves present
+Count 264
+moveValidator(): All moves validated!
+83 moves present
+Count 265
+moveValidator(): All moves validated!
+74 moves present
+Count 266
+moveValidator(): All moves validated!
+60 moves present
+Count 267
+moveValidator(): All moves validated!
+114 moves present
+Count 268
+moveValidator(): All moves validated!
+61 moves present
+Count 269
+moveValidator(): All moves validated!
+49 moves present
+Count 270
+moveValidator(): All moves validated!
+51 moves present
+Count 271
+moveValidator(): All moves validated!
+131 moves present
+Count 272
+moveValidator(): All moves validated!
+128 moves present
+Count 273
+moveValidator(): All moves validated!
+68 moves present
+Count 274
+moveValidator(): All moves validated!
+98 moves present
+Count 275
+moveValidator(): All moves validated!
+47 moves present
+Count 276
+moveValidator(): All moves validated!
+66 moves present
+Count 277
+moveValidator(): All moves validated!
+92 moves present
+Count 278
+moveValidator(): All moves validated!
+127 moves present
+Count 279
+moveValidator(): All moves validated!
+67 moves present
+Count 280
+moveValidator(): All moves validated!
+106 moves present
+Count 281
+moveValidator(): All moves validated!
+85 moves present
+Count 282
+moveValidator(): All moves validated!
+113 moves present
+Count 283
+moveValidator(): All moves validated!
+91 moves present
+Count 284
+moveValidator(): All moves validated!
+66 moves present
+Count 285
+moveValidator(): All moves validated!
+81 moves present
+Count 286
+moveValidator(): All moves validated!
+45 moves present
+Count 287
+moveValidator(): All moves validated!
+116 moves present
+Count 288
+moveValidator(): All moves validated!
+107 moves present
+Count 289
+moveValidator(): All moves validated!
+72 moves present
+Count 290
+moveValidator(): All moves validated!
+80 moves present
+Count 291
+moveValidator(): All moves validated!
+53 moves present
+Count 292
+moveValidator(): All moves validated!
+132 moves present
+Count 293
+moveValidator(): All moves validated!
+62 moves present
+Count 294
+moveValidator(): All moves validated!
+82 moves present
+Count 295
+moveValidator(): All moves validated!
+146 moves present
+Count 296
+moveValidator(): All moves validated!
+100 moves present
+Count 297
+moveValidator(): All moves validated!
+115 moves present
+Count 298
+moveValidator(): All moves validated!
+96 moves present
+Count 299
+moveValidator(): All moves validated!
+106 moves present
+Count 300
+moveValidator(): All moves validated!
+49 moves present
+Count 301
+moveValidator(): All moves validated!
+83 moves present
+Count 302
+moveValidator(): All moves validated!
+94 moves present
+Count 303
+moveValidator(): All moves validated!
+62 moves present
+Count 304
+moveValidator(): All moves validated!
+55 moves present
+Count 305
+moveValidator(): All moves validated!
+103 moves present
+Count 306
+moveValidator(): All moves validated!
+83 moves present
+Count 307
+moveValidator(): All moves validated!
+75 moves present
+Count 308
+moveValidator(): All moves validated!
+61 moves present
+Count 309
+moveValidator(): All moves validated!
+64 moves present
+Count 310
+moveValidator(): All moves validated!
+203 moves present
+Count 311
+moveValidator(): All moves validated!
+84 moves present
+Count 312
+moveValidator(): All moves validated!
+66 moves present
+Count 313
+moveValidator(): All moves validated!
+86 moves present
+Count 314
+moveValidator(): All moves validated!
+48 moves present
+Count 315
+moveValidator(): All moves validated!
+67 moves present
+Count 316
+moveValidator(): All moves validated!
+128 moves present
+Count 317
+moveValidator(): All moves validated!
+54 moves present
+Count 318
+moveValidator(): All moves validated!
+119 moves present
+Count 319
+moveValidator(): All moves validated!
+120 moves present
+Count 320
+moveValidator(): All moves validated!
+63 moves present
+Count 321
+moveValidator(): All moves validated!
+73 moves present
+Count 322
+moveValidator(): All moves validated!
+71 moves present
+Count 323
+moveValidator(): All moves validated!
+62 moves present
+Count 324
+moveValidator(): All moves validated!
+46 moves present
+Count 325
+moveValidator(): All moves validated!
+112 moves present
+Count 326
+moveValidator(): All moves validated!
+91 moves present
+Count 327
+moveValidator(): All moves validated!
+77 moves present
+Count 328
+moveValidator(): All moves validated!
+58 moves present
+Count 329
+moveValidator(): All moves validated!
+68 moves present
+Count 330
+moveValidator(): All moves validated!
+63 moves present
+Count 331
+moveValidator(): All moves validated!
+57 moves present
+Count 332
+moveValidator(): All moves validated!
+153 moves present
+Count 333
+moveValidator(): All moves validated!
+89 moves present
+Count 334
+moveValidator(): All moves validated!
+80 moves present
+Count 335
+moveValidator(): All moves validated!
+60 moves present
+Count 336
+moveValidator(): All moves validated!
+113 moves present
+Count 337
+moveValidator(): All moves validated!
+92 moves present
+Count 338
+moveValidator(): All moves validated!
+57 moves present
+Count 339
+moveValidator(): All moves validated!
+34 moves present
+Count 340
+moveValidator(): All moves validated!
+80 moves present
+Count 341
+moveValidator(): All moves validated!
+91 moves present
+Count 342
+moveValidator(): All moves validated!
+107 moves present
+Count 343
+moveValidator(): All moves validated!
+125 moves present
+Count 344
+moveValidator(): All moves validated!
+50 moves present
+Count 345
+moveValidator(): All moves validated!
+73 moves present
+Count 346
+moveValidator(): All moves validated!
+129 moves present
+Count 347
+moveValidator(): All moves validated!
+123 moves present
+Count 348
+moveValidator(): All moves validated!
+55 moves present
+Count 349
+moveValidator(): All moves validated!
+103 moves present
+Count 350
+moveValidator(): All moves validated!
+95 moves present
+Count 351
+moveValidator(): All moves validated!
+80 moves present
+Count 352
+moveValidator(): All moves validated!
+99 moves present
+Count 353
+moveValidator(): All moves validated!
+80 moves present
+Count 354
+moveValidator(): All moves validated!
+55 moves present
+Count 355
+moveValidator(): All moves validated!
+131 moves present
+Count 356
+moveValidator(): All moves validated!
+79 moves present
+Count 357
+moveValidator(): All moves validated!
+113 moves present
+Count 358
+moveValidator(): All moves validated!
+118 moves present
+Count 359
+moveValidator(): All moves validated!
+128 moves present
+Count 360
+moveValidator(): All moves validated!
+149 moves present
+Count 361
+moveValidator(): All moves validated!
+75 moves present
+Count 362
+moveValidator(): All moves validated!
+109 moves present
+Count 363
+moveValidator(): All moves validated!
+62 moves present
+Count 364
+moveValidator(): All moves validated!
+98 moves present
+Count 365
+moveValidator(): All moves validated!
+83 moves present
+Count 366
+moveValidator(): All moves validated!
+162 moves present
+Count 367
+moveValidator(): All moves validated!
+134 moves present
+Count 368
+moveValidator(): All moves validated!
+69 moves present
+Count 369
+moveValidator(): All moves validated!
+123 moves present
+Count 370
+moveValidator(): All moves validated!
+131 moves present
+Count 371
+moveValidator(): All moves validated!
+117 moves present
+Count 372
+moveValidator(): All moves validated!
+106 moves present
+Count 373
+moveValidator(): All moves validated!
+56 moves present
+Count 374
+moveValidator(): All moves validated!
+105 moves present
+Count 375
+moveValidator(): All moves validated!
+88 moves present
+Count 376
+moveValidator(): All moves validated!
+145 moves present
+Count 377
+moveValidator(): All moves validated!
+83 moves present
+Count 378
+moveValidator(): All moves validated!
+106 moves present
+Count 379
+moveValidator(): All moves validated!
+100 moves present
+Count 380
+moveValidator(): All moves validated!
+103 moves present
+Count 381
+moveValidator(): All moves validated!
+68 moves present
+Count 382
+moveValidator(): All moves validated!
+80 moves present
+Count 383
+moveValidator(): All moves validated!
+47 moves present
+Count 384
+moveValidator(): All moves validated!
+176 moves present
+Count 385
+moveValidator(): All moves validated!
+64 moves present
+Count 386
+moveValidator(): All moves validated!
+70 moves present
+Count 387
+moveValidator(): All moves validated!
+53 moves present
+Count 388
+moveValidator(): All moves validated!
+48 moves present
+Count 389
+moveValidator(): All moves validated!
+67 moves present
+Count 390
+moveValidator(): All moves validated!
+96 moves present
+Count 391
+moveValidator(): All moves validated!
+87 moves present
+Count 392
+moveValidator(): All moves validated!
+61 moves present
+Count 393
+moveValidator(): All moves validated!
+59 moves present
+Count 394
+moveValidator(): All moves validated!
+123 moves present
+Count 395
+moveValidator(): All moves validated!
+77 moves present
+Count 396
+moveValidator(): All moves validated!
+78 moves present
+Count 397
+moveValidator(): All moves validated!
+69 moves present
+Count 398
+moveValidator(): All moves validated!
+96 moves present
+Count 399
+moveValidator(): All moves validated!
+85 moves present
+Count 400
+moveValidator(): All moves validated!
+91 moves present
+Count 401
+moveValidator(): All moves validated!
+71 moves present
+Count 402
+moveValidator(): All moves validated!
+98 moves present
+Count 403
+moveValidator(): All moves validated!
+61 moves present
+Count 404
+moveValidator(): All moves validated!
+83 moves present
+Count 405
+moveValidator(): All moves validated!
+71 moves present
+Count 406
+moveValidator(): All moves validated!
+46 moves present
+Count 407
+moveValidator(): All moves validated!
+97 moves present
+Count 408
+moveValidator(): All moves validated!
+62 moves present
+Count 409
+moveValidator(): All moves validated!
+163 moves present
+Count 410
+moveValidator(): All moves validated!
+78 moves present
+Count 411
+moveValidator(): All moves validated!
+76 moves present
+Count 412
+moveValidator(): All moves validated!
+42 moves present
+Count 413
+moveValidator(): All moves validated!
+118 moves present
+Count 414
+moveValidator(): All moves validated!
+48 moves present
+Count 415
+moveValidator(): All moves validated!
+70 moves present
+Count 416
+moveValidator(): All moves validated!
+73 moves present
+Count 417
+moveValidator(): All moves validated!
+188 moves present
+Count 418
+moveValidator(): All moves validated!
+120 moves present
+Count 419
+moveValidator(): All moves validated!
+70 moves present
+Count 420
+moveValidator(): All moves validated!
+51 moves present
+Count 421
+moveValidator(): All moves validated!
+71 moves present
+Count 422
+moveValidator(): All moves validated!
+237 moves present
+Count 423
+moveValidator(): All moves validated!
+101 moves present
+Count 424
+moveValidator(): All moves validated!
+118 moves present
+Count 425
+moveValidator(): All moves validated!
+73 moves present
+Count 426
+moveValidator(): All moves validated!
+88 moves present
+Count 427
+moveValidator(): All moves validated!
+77 moves present
+Count 428
+moveValidator(): All moves validated!
+60 moves present
+Count 429
+moveValidator(): All moves validated!
+58 moves present
+Count 430
+moveValidator(): All moves validated!
+83 moves present
+Count 431
+moveValidator(): All moves validated!
+153 moves present
+Count 432
+moveValidator(): All moves validated!
+62 moves present
+Count 433
+moveValidator(): All moves validated!
+120 moves present
+Count 434
+moveValidator(): All moves validated!
+52 moves present
+Count 435
+moveValidator(): All moves validated!
+60 moves present
+Count 436
+moveValidator(): All moves validated!
+61 moves present
+Count 437
+moveValidator(): All moves validated!
+64 moves present
+Count 438
+moveValidator(): All moves validated!
+79 moves present
+Count 439
+moveValidator(): All moves validated!
+74 moves present
+Count 440
+moveValidator(): All moves validated!
+124 moves present
+Count 441
+moveValidator(): All moves validated!
+78 moves present
+Count 442
+moveValidator(): All moves validated!
+108 moves present
+Count 443
+moveValidator(): All moves validated!
+19 moves present
+Count 444
+moveValidator(): All moves validated!
+46 moves present
+Count 445
+moveValidator(): All moves validated!
+121 moves present
+Count 446
+moveValidator(): All moves validated!
+152 moves present
+Count 447
+moveValidator(): All moves validated!
+61 moves present
+Count 448
+moveValidator(): All moves validated!
+103 moves present
+Count 449
+moveValidator(): All moves validated!
+75 moves present
+Count 450
+moveValidator(): All moves validated!
+96 moves present
+Count 451
+moveValidator(): All moves validated!
+81 moves present
+Count 452
+moveValidator(): All moves validated!
+81 moves present
+Count 453
+moveValidator(): All moves validated!
+84 moves present
+Count 454
+moveValidator(): All moves validated!
+155 moves present
+Count 455
+moveValidator(): All moves validated!
+69 moves present
+Count 456
+moveValidator(): All moves validated!
+61 moves present
+Count 457
+moveValidator(): All moves validated!
+95 moves present
+Count 458
+moveValidator(): All moves validated!
+66 moves present
+Count 459
+moveValidator(): All moves validated!
+156 moves present
+Count 460
+moveValidator(): All moves validated!
+110 moves present
+Count 461
+moveValidator(): All moves validated!
+67 moves present
+Count 462
+moveValidator(): All moves validated!
+21 moves present
+Count 463
+moveValidator(): All moves validated!
+183 moves present
+Count 464
+moveValidator(): All moves validated!
+82 moves present
+Count 465
+moveValidator(): All moves validated!
+92 moves present
+Count 466
+moveValidator(): All moves validated!
+40 moves present
+Count 467
+moveValidator(): All moves validated!
+120 moves present
+Count 468
+moveValidator(): All moves validated!
+69 moves present
+Count 469
+moveValidator(): All moves validated!
+77 moves present
+Count 470
+moveValidator(): All moves validated!
+91 moves present
+Count 471
+moveValidator(): All moves validated!
+88 moves present
+Count 472
+moveValidator(): All moves validated!
+95 moves present
+Count 473
+moveValidator(): All moves validated!
+102 moves present
+Count 474
+moveValidator(): All moves validated!
+67 moves present
+Count 475
+moveValidator(): All moves validated!
+118 moves present
+Count 476
+moveValidator(): All moves validated!
+97 moves present
+Count 477
+moveValidator(): All moves validated!
+88 moves present
+Count 478
+moveValidator(): All moves validated!
+101 moves present
+Count 479
+moveValidator(): All moves validated!
+94 moves present
+Count 480
+moveValidator(): All moves validated!
+79 moves present
+Count 481
+moveValidator(): All moves validated!
+80 moves present
+Count 482
+moveValidator(): All moves validated!
+116 moves present
+Count 483
+moveValidator(): All moves validated!
+43 moves present
+Count 484
+moveValidator(): All moves validated!
+80 moves present
+Count 485
+moveValidator(): All moves validated!
+51 moves present
+Count 486
+moveValidator(): All moves validated!
+89 moves present
+Count 487
+moveValidator(): All moves validated!
+157 moves present
+Count 488
+moveValidator(): All moves validated!
+67 moves present
+Count 489
+moveValidator(): All moves validated!
+149 moves present
+Count 490
+moveValidator(): All moves validated!
+48 moves present
+Count 491
+moveValidator(): All moves validated!
+130 moves present
+Count 492
+moveValidator(): All moves validated!
+71 moves present
+Count 493
+moveValidator(): All moves validated!
+110 moves present
+Count 494
+moveValidator(): All moves validated!
+57 moves present
+Count 495
+moveValidator(): All moves validated!
+140 moves present
+Count 496
+moveValidator(): All moves validated!
+169 moves present
+Count 497
+moveValidator(): All moves validated!
+70 moves present
+Count 498
+moveValidator(): All moves validated!
+91 moves present
+Count 499
+moveValidator(): All moves validated!
+115 moves present
+Count 500
+moveValidator(): All moves validated!
+46 moves present
+Count 501
+moveValidator(): All moves validated!
+148 moves present
+Count 502
+moveValidator(): All moves validated!
+149 moves present
+Count 503
+moveValidator(): All moves validated!
+61 moves present
+Count 504
+moveValidator(): All moves validated!
+67 moves present
+Count 505
+moveValidator(): All moves validated!
+38 moves present
+Count 506
+moveValidator(): All moves validated!
+49 moves present
+Count 507
+moveValidator(): All moves validated!
+53 moves present
+Count 508
+moveValidator(): All moves validated!
+97 moves present
+Count 509
+moveValidator(): All moves validated!
+64 moves present
+Count 510
+moveValidator(): All moves validated!
+51 moves present
+Count 511
+moveValidator(): All moves validated!
+58 moves present
+Count 512
+moveValidator(): All moves validated!
+71 moves present
+Count 513
+moveValidator(): All moves validated!
+75 moves present
+Count 514
+moveValidator(): All moves validated!
+59 moves present
+Count 515
+moveValidator(): All moves validated!
+41 moves present
+Count 516
+moveValidator(): All moves validated!
+69 moves present
+Count 517
+moveValidator(): All moves validated!
+76 moves present
+Count 518
+moveValidator(): All moves validated!
+110 moves present
+Count 519
+moveValidator(): All moves validated!
+83 moves present
+Count 520
+moveValidator(): All moves validated!
+53 moves present
+Count 521
+moveValidator(): All moves validated!
+60 moves present
+Count 522
+moveValidator(): All moves validated!
+80 moves present
+Count 523
+moveValidator(): All moves validated!
+60 moves present
+Count 524
+moveValidator(): All moves validated!
+90 moves present
+Count 525
+moveValidator(): All moves validated!
+65 moves present
+Count 526
+moveValidator(): All moves validated!
+80 moves present
+Count 527
+moveValidator(): All moves validated!
+115 moves present
+Count 528
+moveValidator(): All moves validated!
+113 moves present
+Count 529
+moveValidator(): All moves validated!
+106 moves present
+Count 530
+moveValidator(): All moves validated!
+39 moves present
+Count 531
+moveValidator(): All moves validated!
+72 moves present
+Count 532
+moveValidator(): All moves validated!
+134 moves present
+Count 533
+moveValidator(): All moves validated!
+49 moves present
+Count 534
+moveValidator(): All moves validated!
+150 moves present
+Count 535
+moveValidator(): All moves validated!
+93 moves present
+Count 536
+moveValidator(): All moves validated!
+53 moves present
+Count 537
+moveValidator(): All moves validated!
+88 moves present
+Count 538
+moveValidator(): All moves validated!
+49 moves present
+Count 539
+moveValidator(): All moves validated!
+150 moves present
+Count 540
+moveValidator(): All moves validated!
+87 moves present
+Count 541
+moveValidator(): All moves validated!
+68 moves present
+Count 542
+moveValidator(): All moves validated!
+66 moves present
+Count 543
+moveValidator(): All moves validated!
+98 moves present
+Count 544
+moveValidator(): All moves validated!
+111 moves present
+Count 545
+moveValidator(): All moves validated!
+65 moves present
+Count 546
+moveValidator(): All moves validated!
+74 moves present
+Count 547
+moveValidator(): All moves validated!
+131 moves present
+Count 548
+moveValidator(): All moves validated!
+87 moves present
+Count 549
+moveValidator(): All moves validated!
+50 moves present
+Count 550
+moveValidator(): All moves validated!
+62 moves present
+Count 551
+moveValidator(): All moves validated!
+130 moves present
+Count 552
+moveValidator(): All moves validated!
+36 moves present
+Count 553
+moveValidator(): All moves validated!
+77 moves present
+Count 554
+moveValidator(): All moves validated!
+143 moves present
+Count 555
+moveValidator(): All moves validated!
+44 moves present
+Count 556
+moveValidator(): All moves validated!
+81 moves present
+Count 557
+moveValidator(): All moves validated!
+77 moves present
+Count 558
+moveValidator(): All moves validated!
+159 moves present
+Count 559
+moveValidator(): All moves validated!
+128 moves present
+Count 560
+moveValidator(): All moves validated!
+62 moves present
+Count 561
+moveValidator(): All moves validated!
+94 moves present
+Count 562
+moveValidator(): All moves validated!
+67 moves present
+Count 563
+moveValidator(): All moves validated!
+119 moves present
+Count 564
+moveValidator(): All moves validated!
+68 moves present
+Count 565
+moveValidator(): All moves validated!
+343 moves present
+Count 566
+moveValidator(): All moves validated!
+106 moves present
+Count 567
+moveValidator(): All moves validated!
+84 moves present
+Count 568
+moveValidator(): All moves validated!
+137 moves present
+Count 569
+moveValidator(): All moves validated!
+69 moves present
+Count 570
+moveValidator(): All moves validated!
+88 moves present
+Count 571
+moveValidator(): All moves validated!
+148 moves present
+Count 572
+moveValidator(): All moves validated!
+46 moves present
+Count 573
+moveValidator(): All moves validated!
+73 moves present
+Count 574
+moveValidator(): All moves validated!
+76 moves present
+Count 575
+moveValidator(): All moves validated!
+67 moves present
+Count 576
+moveValidator(): All moves validated!
+115 moves present
+Count 577
+moveValidator(): All moves validated!
+80 moves present
+Count 578
+moveValidator(): All moves validated!
+103 moves present
+Count 579
+moveValidator(): All moves validated!
+49 moves present
+Count 580
+moveValidator(): All moves validated!
+60 moves present
+Count 581
+moveValidator(): All moves validated!
+121 moves present
+Count 582
+moveValidator(): All moves validated!
+66 moves present
+Count 583
+moveValidator(): All moves validated!
+73 moves present
+Count 584
+moveValidator(): All moves validated!
+81 moves present
+Count 585
+moveValidator(): All moves validated!
+109 moves present
+Count 586
+moveValidator(): All moves validated!
+81 moves present
+Count 587
+moveValidator(): All moves validated!
+165 moves present
+Count 588
+moveValidator(): All moves validated!
+53 moves present
+Count 589
+moveValidator(): All moves validated!
+60 moves present
+Count 590
+moveValidator(): All moves validated!
+128 moves present
+Count 591
+moveValidator(): All moves validated!
+106 moves present
+Count 592
+moveValidator(): All moves validated!
+75 moves present
+Count 593
+moveValidator(): All moves validated!
+197 moves present
+Count 594
+moveValidator(): All moves validated!
+75 moves present
+Count 595
+moveValidator(): All moves validated!
+77 moves present
+Count 596
+moveValidator(): All moves validated!
+74 moves present
+Count 597
+moveValidator(): All moves validated!
+170 moves present
+Count 598
+moveValidator(): All moves validated!
+100 moves present
+Count 599
+moveValidator(): All moves validated!
+63 moves present
+Count 600
+moveValidator(): All moves validated!
+134 moves present
+Count 601
+moveValidator(): All moves validated!
+129 moves present
+Count 602
+moveValidator(): All moves validated!
+116 moves present
+Count 603
+moveValidator(): All moves validated!
+59 moves present
+Count 604
+moveValidator(): All moves validated!
+84 moves present
+Count 605
+moveValidator(): All moves validated!
+111 moves present
+Count 606
+moveValidator(): All moves validated!
+75 moves present
+Count 607
+moveValidator(): All moves validated!
+116 moves present
+Count 608
+moveValidator(): All moves validated!
+80 moves present
+Count 609
+moveValidator(): All moves validated!
+85 moves present
+Count 610
+moveValidator(): All moves validated!
+51 moves present
+Count 611
+moveValidator(): All moves validated!
+56 moves present
+Count 612
+moveValidator(): All moves validated!
+122 moves present
+Count 613
+moveValidator(): All moves validated!
+114 moves present
+Count 614
+moveValidator(): All moves validated!
+206 moves present
+Count 615
+moveValidator(): All moves validated!
+85 moves present
+Count 616
+moveValidator(): All moves validated!
+48 moves present
+Count 617
+moveValidator(): All moves validated!
+67 moves present
+Count 618
+moveValidator(): All moves validated!
+94 moves present
+Count 619
+moveValidator(): All moves validated!
+51 moves present
+Count 620
+moveValidator(): All moves validated!
+58 moves present
+Count 621
+moveValidator(): All moves validated!
+106 moves present
+Count 622
+moveValidator(): All moves validated!
+82 moves present
+Count 623
+moveValidator(): All moves validated!
+118 moves present
+Count 624
+moveValidator(): All moves validated!
+96 moves present
+Count 625
+moveValidator(): All moves validated!
+127 moves present
+Count 626
+moveValidator(): All moves validated!
+140 moves present
+Count 627
+moveValidator(): All moves validated!
+67 moves present
+Count 628
+moveValidator(): All moves validated!
+109 moves present
+Count 629
+moveValidator(): All moves validated!
+91 moves present
+Count 630
+moveValidator(): All moves validated!
+64 moves present
+Count 631
+moveValidator(): All moves validated!
+68 moves present
+Count 632
+moveValidator(): All moves validated!
+62 moves present
+Count 633
+moveValidator(): All moves validated!
+78 moves present
+Count 634
+moveValidator(): All moves validated!
+105 moves present
+Count 635
+moveValidator(): All moves validated!
+45 moves present
+Count 636
+moveValidator(): All moves validated!
+76 moves present
+Count 637
+moveValidator(): All moves validated!
+121 moves present
+Count 638
+moveValidator(): All moves validated!
+69 moves present
+Count 639
+moveValidator(): All moves validated!
+76 moves present
+Count 640
+moveValidator(): All moves validated!
+89 moves present
+Count 641
+moveValidator(): All moves validated!
+68 moves present
+Count 642
+moveValidator(): All moves validated!
+120 moves present
+Count 643
+moveValidator(): All moves validated!
+93 moves present
+Count 644
+moveValidator(): All moves validated!
+51 moves present
+Count 645
+moveValidator(): All moves validated!
+80 moves present
+Count 646
+moveValidator(): All moves validated!
+61 moves present
+Count 647
+moveValidator(): All moves validated!
+75 moves present
+Count 648
+moveValidator(): All moves validated!
+108 moves present
+Count 649
+moveValidator(): All moves validated!
+79 moves present
+Count 650
+moveValidator(): All moves validated!
+113 moves present
+Count 651
+moveValidator(): All moves validated!
+60 moves present
+Count 652
+moveValidator(): All moves validated!
+79 moves present
+Count 653
+moveValidator(): All moves validated!
+94 moves present
+Count 654
+moveValidator(): All moves validated!
+81 moves present
+Count 655
+moveValidator(): All moves validated!
+95 moves present
+Count 656
+moveValidator(): All moves validated!
+80 moves present
+Count 657
+moveValidator(): All moves validated!
+123 moves present
+Count 658
+moveValidator(): All moves validated!
+129 moves present
+Count 659
+moveValidator(): All moves validated!
+78 moves present
+Count 660
+moveValidator(): All moves validated!
+94 moves present
+Count 661
+moveValidator(): All moves validated!
+182 moves present
+Count 662
+moveValidator(): All moves validated!
+121 moves present
+Count 663
+moveValidator(): All moves validated!
+111 moves present
+Count 664
+moveValidator(): All moves validated!
+62 moves present
+Count 665
+moveValidator(): All moves validated!
+111 moves present
+Count 666
+moveValidator(): All moves validated!
+57 moves present
+Count 667
+moveValidator(): All moves validated!
+61 moves present
+Count 668
+moveValidator(): All moves validated!
+70 moves present
+Count 669
+moveValidator(): All moves validated!
+76 moves present
+Count 670
+moveValidator(): All moves validated!
+72 moves present
+Count 671
+moveValidator(): All moves validated!
+131 moves present
+Count 672
+moveValidator(): All moves validated!
+117 moves present
+Count 673
+moveValidator(): All moves validated!
+189 moves present
+Count 674
+moveValidator(): All moves validated!
+51 moves present
+Count 675
+moveValidator(): All moves validated!
+55 moves present
+Count 676
+moveValidator(): All moves validated!
+114 moves present
+Count 677
+moveValidator(): All moves validated!
+141 moves present
+Count 678
+moveValidator(): All moves validated!
+108 moves present
+Count 679
+moveValidator(): All moves validated!
+113 moves present
+Count 680
+moveValidator(): All moves validated!
+114 moves present
+Count 681
+moveValidator(): All moves validated!
+34 moves present
+Count 682
+moveValidator(): All moves validated!
+141 moves present
+Count 683
+moveValidator(): All moves validated!
+69 moves present
+Count 684
+moveValidator(): All moves validated!
+89 moves present
+Count 685
+moveValidator(): All moves validated!
+89 moves present
+Count 686
+moveValidator(): All moves validated!
+73 moves present
+Count 687
+moveValidator(): All moves validated!
+94 moves present
+Count 688
+moveValidator(): All moves validated!
+66 moves present
+Count 689
+moveValidator(): All moves validated!
+69 moves present
+Count 690
+moveValidator(): All moves validated!
+66 moves present
+Count 691
+moveValidator(): All moves validated!
+55 moves present
+Count 692
+moveValidator(): All moves validated!
+65 moves present
+Count 693
+moveValidator(): All moves validated!
+89 moves present
+Count 694
+moveValidator(): All moves validated!
+160 moves present
+Count 695
+moveValidator(): All moves validated!
+88 moves present
+Count 696
+moveValidator(): All moves validated!
+73 moves present
+Count 697
+moveValidator(): All moves validated!
+103 moves present
+Count 698
+moveValidator(): All moves validated!
+56 moves present
+Count 699
+moveValidator(): All moves validated!
+92 moves present
+Count 700
+moveValidator(): All moves validated!
+75 moves present
+Count 701
+moveValidator(): All moves validated!
+45 moves present
+Count 702
+moveValidator(): All moves validated!
+116 moves present
+Count 703
+moveValidator(): All moves validated!
+57 moves present
+Count 704
+moveValidator(): All moves validated!
+123 moves present
+Count 705
+moveValidator(): All moves validated!
+95 moves present
+Count 706
+moveValidator(): All moves validated!
+68 moves present
+Count 707
+moveValidator(): All moves validated!
+97 moves present
+Count 708
+moveValidator(): All moves validated!
+61 moves present
+Count 709
+moveValidator(): All moves validated!
+80 moves present
+Count 710
+moveValidator(): All moves validated!
+68 moves present
+Count 711
+moveValidator(): All moves validated!
+95 moves present
+Count 712
+moveValidator(): All moves validated!
+57 moves present
+Count 713
+moveValidator(): All moves validated!
+89 moves present
+Count 714
+moveValidator(): All moves validated!
+66 moves present
+Count 715
+moveValidator(): All moves validated!
+55 moves present
+Count 716
+moveValidator(): All moves validated!
+64 moves present
+Count 717
+moveValidator(): All moves validated!
+87 moves present
+Count 718
+moveValidator(): All moves validated!
+175 moves present
+Count 719
+moveValidator(): All moves validated!
+73 moves present
+Count 720
+moveValidator(): All moves validated!
+87 moves present
+Count 721
+moveValidator(): All moves validated!
+60 moves present
+Count 722
+moveValidator(): All moves validated!
+87 moves present
+Count 723
+moveValidator(): All moves validated!
+101 moves present
+Count 724
+moveValidator(): All moves validated!
+113 moves present
+Count 725
+moveValidator(): All moves validated!
+36 moves present
+Count 726
+moveValidator(): All moves validated!
+61 moves present
+Count 727
+moveValidator(): All moves validated!
+106 moves present
+Count 728
+moveValidator(): All moves validated!
+56 moves present
+Count 729
+moveValidator(): All moves validated!
+64 moves present
+Count 730
+moveValidator(): All moves validated!
+83 moves present
+Count 731
+moveValidator(): All moves validated!
+72 moves present
+Count 732
+moveValidator(): All moves validated!
+89 moves present
+Count 733
+moveValidator(): All moves validated!
+173 moves present
+Count 734
+moveValidator(): All moves validated!
+102 moves present
+Count 735
+moveValidator(): All moves validated!
+66 moves present
+Count 736
+moveValidator(): All moves validated!
+29 moves present
+Count 737
+moveValidator(): All moves validated!
+104 moves present
+Count 738
+moveValidator(): All moves validated!
+119 moves present
+Count 739
+moveValidator(): All moves validated!
+55 moves present
+Count 740
+moveValidator(): All moves validated!
+70 moves present
+Count 741
+moveValidator(): All moves validated!
+113 moves present
+Count 742
+moveValidator(): All moves validated!
+81 moves present
+Count 743
+moveValidator(): All moves validated!
+102 moves present
+Count 744
+moveValidator(): All moves validated!
+56 moves present
+Count 745
+moveValidator(): All moves validated!
+80 moves present
+Count 746
+moveValidator(): All moves validated!
+83 moves present
+Count 747
+moveValidator(): All moves validated!
+164 moves present
+Count 748
+moveValidator(): All moves validated!
+87 moves present
+Count 749
+moveValidator(): All moves validated!
+55 moves present
+Count 750
+moveValidator(): All moves validated!
+51 moves present
+Count 751
+moveValidator(): All moves validated!
+88 moves present
+Count 752
+moveValidator(): All moves validated!
+80 moves present
+Count 753
+moveValidator(): All moves validated!
+127 moves present
+Count 754
+moveValidator(): All moves validated!
+104 moves present
+Count 755
+moveValidator(): All moves validated!
+79 moves present
+Count 756
+moveValidator(): All moves validated!
+142 moves present
+Count 757
+moveValidator(): All moves validated!
+98 moves present
+Count 758
+moveValidator(): All moves validated!
+145 moves present
+Count 759
+moveValidator(): All moves validated!
+74 moves present
+Count 760
+moveValidator(): All moves validated!
+81 moves present
+Count 761
+moveValidator(): All moves validated!
+97 moves present
+Count 762
+moveValidator(): All moves validated!
+71 moves present
+Count 763
+moveValidator(): All moves validated!
+114 moves present
+Count 764
+moveValidator(): All moves validated!
+90 moves present
+Count 765
+moveValidator(): All moves validated!
+122 moves present
+Count 766
+moveValidator(): All moves validated!
+65 moves present
+Count 767
+moveValidator(): All moves validated!
+141 moves present
+Count 768
+moveValidator(): All moves validated!
+51 moves present
+Count 769
+moveValidator(): All moves validated!
+86 moves present
+Count 770
+moveValidator(): All moves validated!
+94 moves present
+Count 771
+moveValidator(): All moves validated!
+91 moves present
+Count 772
+moveValidator(): All moves validated!
+57 moves present
+Count 773
+moveValidator(): All moves validated!
+91 moves present
+Count 774
+moveValidator(): All moves validated!
+118 moves present
+Count 775
+moveValidator(): All moves validated!
+49 moves present
+Count 776
+moveValidator(): All moves validated!
+220 moves present
+Count 777
+moveValidator(): All moves validated!
+75 moves present
+Count 778
+moveValidator(): All moves validated!
+73 moves present
+Count 779
+moveValidator(): All moves validated!
+94 moves present
+Count 780
+moveValidator(): All moves validated!
+75 moves present
+Count 781
+moveValidator(): All moves validated!
+76 moves present
+Count 782
+moveValidator(): All moves validated!
+113 moves present
+Count 783
+moveValidator(): All moves validated!
+21 moves present
+Count 784
+moveValidator(): All moves validated!
+81 moves present
+Count 785
+moveValidator(): All moves validated!
+94 moves present
+Count 786
+moveValidator(): All moves validated!
+116 moves present
+Count 787
+moveValidator(): All moves validated!
+92 moves present
+Count 788
+moveValidator(): All moves validated!
+138 moves present
+Count 789
+moveValidator(): All moves validated!
+17 moves present
+Count 790
+moveValidator(): All moves validated!
+135 moves present
+Count 791
+moveValidator(): All moves validated!
+70 moves present
+Count 792
+moveValidator(): All moves validated!
+149 moves present
+Count 793
+moveValidator(): All moves validated!
+61 moves present
+Count 794
+moveValidator(): All moves validated!
+103 moves present
+Count 795
+moveValidator(): All moves validated!
+59 moves present
+Count 796
+moveValidator(): All moves validated!
+66 moves present
+Count 797
+moveValidator(): All moves validated!
+57 moves present
+Count 798
+moveValidator(): All moves validated!
+80 moves present
+Count 799
+moveValidator(): All moves validated!
+78 moves present
+Count 800
+moveValidator(): All moves validated!
+97 moves present
+Count 801
+moveValidator(): All moves validated!
+60 moves present
+Count 802
+moveValidator(): All moves validated!
+107 moves present
+Count 803
+moveValidator(): All moves validated!
+61 moves present
+Count 804
+moveValidator(): All moves validated!
+63 moves present
+Count 805
+moveValidator(): All moves validated!
+133 moves present
+Count 806
+moveValidator(): All moves validated!
+64 moves present
+Count 807
+moveValidator(): All moves validated!
+108 moves present
+Count 808
+moveValidator(): All moves validated!
+169 moves present
+Count 809
+moveValidator(): All moves validated!
+106 moves present
+Count 810
+moveValidator(): All moves validated!
+80 moves present
+Count 811
+moveValidator(): All moves validated!
+72 moves present
+Count 812
+moveValidator(): All moves validated!
+134 moves present
+Count 813
+moveValidator(): All moves validated!
+87 moves present
+Count 814
+moveValidator(): All moves validated!
+54 moves present
+Count 815
+moveValidator(): All moves validated!
+61 moves present
+Count 816
+moveValidator(): All moves validated!
+66 moves present
+Count 817
+moveValidator(): All moves validated!
+94 moves present
+Count 818
+moveValidator(): All moves validated!
+70 moves present
+Count 819
+moveValidator(): All moves validated!
+63 moves present
+Count 820
+moveValidator(): All moves validated!
+144 moves present
+Count 821
+moveValidator(): All moves validated!
+85 moves present
+Count 822
+moveValidator(): All moves validated!
+69 moves present
+Count 823
+moveValidator(): All moves validated!
+170 moves present
+Count 824
+moveValidator(): All moves validated!
+130 moves present
+Count 825
+moveValidator(): All moves validated!
+99 moves present
+Count 826
+moveValidator(): All moves validated!
+114 moves present
+Count 827
+moveValidator(): All moves validated!
+114 moves present
+Count 828
+moveValidator(): All moves validated!
+46 moves present
+Count 829
+moveValidator(): All moves validated!
+169 moves present
+Count 830
+moveValidator(): All moves validated!
+86 moves present
+Count 831
+moveValidator(): All moves validated!
+108 moves present
+Count 832
+moveValidator(): All moves validated!
+156 moves present
+Count 833
+moveValidator(): All moves validated!
+84 moves present
+Count 834
+moveValidator(): All moves validated!
+82 moves present
+Count 835
+moveValidator(): All moves validated!
+79 moves present
+Count 836
+moveValidator(): All moves validated!
+104 moves present
+Count 837
+moveValidator(): All moves validated!
+40 moves present
+Count 838
+moveValidator(): All moves validated!
+90 moves present
+Count 839
+moveValidator(): All moves validated!
+76 moves present
+Count 840
+moveValidator(): All moves validated!
+88 moves present
+Count 841
+moveValidator(): All moves validated!
+39 moves present
+Count 842
+moveValidator(): All moves validated!
+41 moves present
+Count 843
+moveValidator(): All moves validated!
+83 moves present
+Count 844
+moveValidator(): All moves validated!
+52 moves present
+Count 845
+moveValidator(): All moves validated!
+46 moves present
+Count 846
+moveValidator(): All moves validated!
+97 moves present
+Count 847
+moveValidator(): All moves validated!
+55 moves present
+Count 848
+moveValidator(): All moves validated!
+296 moves present
+Count 849
+moveValidator(): All moves validated!
+108 moves present
+Count 850
+moveValidator(): All moves validated!
+105 moves present
+Count 851
+moveValidator(): All moves validated!
+125 moves present
+Count 852
+moveValidator(): All moves validated!
+71 moves present
+Count 853
+moveValidator(): All moves validated!
+118 moves present
+Count 854
+moveValidator(): All moves validated!
+118 moves present
+Count 855
+moveValidator(): All moves validated!
+117 moves present
+Count 856
+moveValidator(): All moves validated!
+76 moves present
+Count 857
+moveValidator(): All moves validated!
+79 moves present
+Count 858
+moveValidator(): All moves validated!
+151 moves present
+Count 859
+moveValidator(): All moves validated!
+72 moves present
+Count 860
+moveValidator(): All moves validated!
+124 moves present
+Count 861
+moveValidator(): All moves validated!
+66 moves present
+Count 862
+moveValidator(): All moves validated!
+154 moves present
+Count 863
+moveValidator(): All moves validated!
+85 moves present
+Count 864
+moveValidator(): All moves validated!
+131 moves present
+Count 865
+moveValidator(): All moves validated!
+87 moves present
+Count 866
+moveValidator(): All moves validated!
+55 moves present
+Count 867
+moveValidator(): All moves validated!
+94 moves present
+Count 868
+moveValidator(): All moves validated!
+171 moves present
+Count 869
+moveValidator(): All moves validated!
+76 moves present
+Count 870
+moveValidator(): All moves validated!
+107 moves present
+Count 871
+moveValidator(): All moves validated!
+61 moves present
+Count 872
+moveValidator(): All moves validated!
+155 moves present
+Count 873
+moveValidator(): All moves validated!
+74 moves present
+Count 874
+moveValidator(): All moves validated!
+90 moves present
+Count 875
+moveValidator(): All moves validated!
+87 moves present
+Count 876
+moveValidator(): All moves validated!
+68 moves present
+Count 877
+moveValidator(): All moves validated!
+71 moves present
+Count 878
+moveValidator(): All moves validated!
+107 moves present
+Count 879
+moveValidator(): All moves validated!
+131 moves present
+Count 880
+moveValidator(): All moves validated!
+133 moves present
+Count 881
+moveValidator(): All moves validated!
+81 moves present
+Count 882
+moveValidator(): All moves validated!
+109 moves present
+Count 883
+moveValidator(): All moves validated!
+70 moves present
+Count 884
+moveValidator(): All moves validated!
+91 moves present
+Count 885
+moveValidator(): All moves validated!
+88 moves present
+Count 886
+moveValidator(): All moves validated!
+77 moves present
+Count 887
+moveValidator(): All moves validated!
+102 moves present
+Count 888
+moveValidator(): All moves validated!
+99 moves present
+Count 889
+moveValidator(): All moves validated!
+159 moves present
+Count 890
+moveValidator(): All moves validated!
+139 moves present
+Count 891
+moveValidator(): All moves validated!
+51 moves present
+Count 892
+moveValidator(): All moves validated!
+54 moves present
+Count 893
+moveValidator(): All moves validated!
+44 moves present
+Count 894
+moveValidator(): All moves validated!
+69 moves present
+Count 895
+moveValidator(): All moves validated!
+81 moves present
+Count 896
+moveValidator(): All moves validated!
+103 moves present
+Count 897
+moveValidator(): All moves validated!
+84 moves present
+Count 898
+moveValidator(): All moves validated!
+69 moves present
+Count 899
+moveValidator(): All moves validated!
+42 moves present
+Count 900
+moveValidator(): All moves validated!
+93 moves present
+Count 901
+moveValidator(): All moves validated!
+19 moves present
+Count 902
+moveValidator(): All moves validated!
+39 moves present
+Count 903
+moveValidator(): All moves validated!
+89 moves present
+Count 904
+moveValidator(): All moves validated!
+70 moves present
+Count 905
+moveValidator(): All moves validated!
+43 moves present
+Count 906
+moveValidator(): All moves validated!
+140 moves present
+Count 907
+moveValidator(): All moves validated!
+132 moves present
+Count 908
+moveValidator(): All moves validated!
+91 moves present
+Count 909
+moveValidator(): All moves validated!
+122 moves present
+Count 910
+moveValidator(): All moves validated!
+119 moves present
+Count 911
+moveValidator(): All moves validated!
+209 moves present
+Count 912
+moveValidator(): All moves validated!
+75 moves present
+Count 913
+moveValidator(): All moves validated!
+72 moves present
+Count 914
+moveValidator(): All moves validated!
+114 moves present
+Count 915
+moveValidator(): All moves validated!
+34 moves present
+Count 916
+moveValidator(): All moves validated!
+29 moves present
+Count 917
+moveValidator(): All moves validated!
+107 moves present
+Count 918
+moveValidator(): All moves validated!
+74 moves present
+Count 919
+moveValidator(): All moves validated!
+100 moves present
+Count 920
+moveValidator(): All moves validated!
+110 moves present
+Count 921
+moveValidator(): All moves validated!
+133 moves present
+Count 922
+moveValidator(): All moves validated!
+130 moves present
+Count 923
+moveValidator(): All moves validated!
+41 moves present
+Count 924
+moveValidator(): All moves validated!
+43 moves present
+Count 925
+moveValidator(): All moves validated!
+91 moves present
+Count 926
+moveValidator(): All moves validated!
+73 moves present
+Count 927
+moveValidator(): All moves validated!
+102 moves present
+Count 928
+moveValidator(): All moves validated!
+61 moves present
+Count 929
+moveValidator(): All moves validated!
+35 moves present
+Count 930
+moveValidator(): All moves validated!
+147 moves present
+Count 931
+moveValidator(): All moves validated!
+81 moves present
+Count 932
+moveValidator(): All moves validated!
+133 moves present
+Count 933
+moveValidator(): All moves validated!
+61 moves present
+Count 934
+moveValidator(): All moves validated!
+192 moves present
+Count 935
+moveValidator(): All moves validated!
+86 moves present
+Count 936
+moveValidator(): All moves validated!
+94 moves present
+Count 937
+moveValidator(): All moves validated!
+90 moves present
+Count 938
+moveValidator(): All moves validated!
+97 moves present
+Count 939
+moveValidator(): All moves validated!
+67 moves present
+Count 940
+moveValidator(): All moves validated!
+102 moves present
+Count 941
+moveValidator(): All moves validated!
+113 moves present
+Count 942
+moveValidator(): All moves validated!
+66 moves present
+Count 943
+moveValidator(): All moves validated!
+99 moves present
+Count 944
+moveValidator(): All moves validated!
+106 moves present
+Count 945
+moveValidator(): All moves validated!
+57 moves present
+Count 946
+moveValidator(): All moves validated!
+101 moves present
+Count 947
+moveValidator(): All moves validated!
+82 moves present
+Count 948
+moveValidator(): All moves validated!
+81 moves present
+Count 949
+moveValidator(): All moves validated!
+54 moves present
+Count 950
+moveValidator(): All moves validated!
+133 moves present
+Count 951
+moveValidator(): All moves validated!
+54 moves present
+Count 952
+moveValidator(): All moves validated!
+114 moves present
+Count 953
+moveValidator(): All moves validated!
+138 moves present
+Count 954
+moveValidator(): All moves validated!
+80 moves present
+Count 955
+moveValidator(): All moves validated!
+74 moves present
+Count 956
+moveValidator(): All moves validated!
+72 moves present
+Count 957
+moveValidator(): All moves validated!
+83 moves present
+Count 958
+moveValidator(): All moves validated!
+53 moves present
+Count 959
+moveValidator(): All moves validated!
+129 moves present
+Count 960
+moveValidator(): All moves validated!
+82 moves present
+Count 961
+moveValidator(): All moves validated!
+97 moves present
+Count 962
+moveValidator(): All moves validated!
+72 moves present
+Count 963
+moveValidator(): All moves validated!
+123 moves present
+Count 964
+moveValidator(): All moves validated!
+80 moves present
+Count 965
+moveValidator(): All moves validated!
+80 moves present
+Count 966
+moveValidator(): All moves validated!
+56 moves present
+Count 967
+moveValidator(): All moves validated!
+124 moves present
+Count 968
+moveValidator(): All moves validated!
+107 moves present
+Count 969
+moveValidator(): All moves validated!
+65 moves present
+Count 970
+moveValidator(): All moves validated!
+49 moves present
+Count 971
+moveValidator(): All moves validated!
+73 moves present
+Count 972
+moveValidator(): All moves validated!
+85 moves present
+Count 973
+moveValidator(): All moves validated!
+70 moves present
+Count 974
+moveValidator(): All moves validated!
+112 moves present
+Count 975
+moveValidator(): All moves validated!
+80 moves present
+Count 976
+moveValidator(): All moves validated!
+120 moves present
+Count 977
+moveValidator(): All moves validated!
+79 moves present
+Count 978
+moveValidator(): All moves validated!
+58 moves present
+Count 979
+moveValidator(): All moves validated!
+77 moves present
+Count 980
+moveValidator(): All moves validated!
+112 moves present
+Count 981
+moveValidator(): All moves validated!
+103 moves present
+Count 982
+moveValidator(): All moves validated!
+84 moves present
+Count 983
+moveValidator(): All moves validated!
+107 moves present
+Count 984
+moveValidator(): All moves validated!
+75 moves present
+Count 985
+moveValidator(): All moves validated!
+45 moves present
+Count 986
+moveValidator(): All moves validated!
+146 moves present
+Count 987
+moveValidator(): All moves validated!
+64 moves present
+Count 988
+moveValidator(): All moves validated!
+81 moves present
+Count 989
+moveValidator(): All moves validated!
+60 moves present
+Count 990
+moveValidator(): All moves validated!
+114 moves present
+Count 991
+moveValidator(): All moves validated!
+79 moves present
+Count 992
+moveValidator(): All moves validated!
+77 moves present
+Count 993
+moveValidator(): All moves validated!
+121 moves present
+Count 994
+moveValidator(): All moves validated!
+87 moves present
+Count 995
+moveValidator(): All moves validated!
+96 moves present
+Count 996
+moveValidator(): All moves validated!
+128 moves present
+Count 997
+moveValidator(): All moves validated!
+69 moves present
+Count 998
+moveValidator(): All moves validated!
+115 moves present
+Count 999
+moveValidator(): All moves validated!
+147 moves present
+Count 1000
+moveValidator(): All moves validated!
+60 moves present
+Count 1001
+moveValidator(): All moves validated!
+84 moves present
+Count 1002
+moveValidator(): All moves validated!
+86 moves present
+Count 1003
+moveValidator(): All moves validated!
+122 moves present
+Count 1004
+moveValidator(): All moves validated!
+65 moves present
+Count 1005
+moveValidator(): All moves validated!
+159 moves present
+Count 1006
+moveValidator(): All moves validated!
+63 moves present
+Count 1007
+moveValidator(): All moves validated!
+66 moves present
+Count 1008
+moveValidator(): All moves validated!
+100 moves present
+Count 1009
+moveValidator(): All moves validated!
+85 moves present
+Count 1010
+moveValidator(): All moves validated!
+66 moves present
+Count 1011
+moveValidator(): All moves validated!
+149 moves present
+Count 1012
+moveValidator(): All moves validated!
+58 moves present
+Count 1013
+moveValidator(): All moves validated!
+34 moves present
+Count 1014
+moveValidator(): All moves validated!
+88 moves present
+Count 1015
+moveValidator(): All moves validated!
+91 moves present
+Count 1016
+moveValidator(): All moves validated!
+32 moves present
+Count 1017
+moveValidator(): All moves validated!
+79 moves present
+Count 1018
+moveValidator(): All moves validated!
+69 moves present
+Count 1019
+moveValidator(): All moves validated!
+97 moves present
+Count 1020
+moveValidator(): All moves validated!
+55 moves present
+Count 1021
+moveValidator(): All moves validated!
+100 moves present
+Count 1022
+moveValidator(): All moves validated!
+63 moves present
+Count 1023
+moveValidator(): All moves validated!
+108 moves present
+Count 1024
+moveValidator(): All moves validated!
+82 moves present
+Count 1025
+moveValidator(): All moves validated!
+80 moves present
+Count 1026
+moveValidator(): All moves validated!
+107 moves present
+Count 1027
+moveValidator(): All moves validated!
+70 moves present
+Count 1028
+moveValidator(): All moves validated!
+95 moves present
+Count 1029
+moveValidator(): All moves validated!
+100 moves present
+Count 1030
+moveValidator(): All moves validated!
+108 moves present
+Count 1031
+moveValidator(): All moves validated!
+128 moves present
+Count 1032
+moveValidator(): All moves validated!
+117 moves present
+Count 1033
+moveValidator(): All moves validated!
+68 moves present
+Count 1034
+moveValidator(): All moves validated!
+48 moves present
+Count 1035
+moveValidator(): All moves validated!
+153 moves present
+Count 1036
+moveValidator(): All moves validated!
+86 moves present
+Count 1037
+moveValidator(): All moves validated!
+67 moves present
+Count 1038
+moveValidator(): All moves validated!
+89 moves present
+Count 1039
+moveValidator(): All moves validated!
+78 moves present
+Count 1040
+moveValidator(): All moves validated!
+108 moves present
+Count 1041
+moveValidator(): All moves validated!
+219 moves present
+Count 1042
+moveValidator(): All moves validated!
+52 moves present
+Count 1043
+moveValidator(): All moves validated!
+133 moves present
+Count 1044
+moveValidator(): All moves validated!
+63 moves present
+Count 1045
+moveValidator(): All moves validated!
+60 moves present
+Count 1046
+moveValidator(): All moves validated!
+157 moves present
+Count 1047
+moveValidator(): All moves validated!
+83 moves present
+Count 1048
+moveValidator(): All moves validated!
+86 moves present
+Count 1049
+moveValidator(): All moves validated!
+72 moves present
+Count 1050
+moveValidator(): All moves validated!
+86 moves present
+Count 1051
+moveValidator(): All moves validated!
+84 moves present
+Count 1052
+moveValidator(): All moves validated!
+144 moves present
+Count 1053
+moveValidator(): All moves validated!
+154 moves present
+Count 1054
+moveValidator(): All moves validated!
+71 moves present
+Count 1055
+moveValidator(): All moves validated!
+136 moves present
+Count 1056
+moveValidator(): All moves validated!
+74 moves present
+Count 1057
+moveValidator(): All moves validated!
+101 moves present
+Count 1058
+moveValidator(): All moves validated!
+75 moves present
+Count 1059
+moveValidator(): All moves validated!
+63 moves present
+Count 1060
+moveValidator(): All moves validated!
+98 moves present
+Count 1061
+moveValidator(): All moves validated!
+88 moves present
+Count 1062
+moveValidator(): All moves validated!
+83 moves present
+Count 1063
+moveValidator(): All moves validated!
+73 moves present
+Count 1064
+moveValidator(): All moves validated!
+99 moves present
+Count 1065
+moveValidator(): All moves validated!
+95 moves present
+Count 1066
+moveValidator(): All moves validated!
+69 moves present
+Count 1067
+moveValidator(): All moves validated!
+91 moves present
+Count 1068
+moveValidator(): All moves validated!
+86 moves present
+Count 1069
+moveValidator(): All moves validated!
+107 moves present
+Count 1070
+moveValidator(): All moves validated!
+82 moves present
+Count 1071
+moveValidator(): All moves validated!
+113 moves present
+Count 1072
+moveValidator(): All moves validated!
+93 moves present
+Count 1073
+moveValidator(): All moves validated!
+72 moves present
+Count 1074
+moveValidator(): All moves validated!
+43 moves present
+Count 1075
+moveValidator(): All moves validated!
+185 moves present
+Count 1076
+moveValidator(): All moves validated!
+56 moves present
+Count 1077
+moveValidator(): All moves validated!
+57 moves present
+Count 1078
+moveValidator(): All moves validated!
+87 moves present
+Count 1079
+moveValidator(): All moves validated!
+87 moves present
+Count 1080
+moveValidator(): All moves validated!
+79 moves present
+Count 1081
+moveValidator(): All moves validated!
+65 moves present
+Count 1082
+moveValidator(): All moves validated!
+77 moves present
+Count 1083
+moveValidator(): All moves validated!
+110 moves present
+Count 1084
+moveValidator(): All moves validated!
+130 moves present
+Count 1085
+moveValidator(): All moves validated!
+96 moves present
+Count 1086
+moveValidator(): All moves validated!
+127 moves present
+Count 1087
+moveValidator(): All moves validated!
+127 moves present
+Count 1088
+moveValidator(): All moves validated!
+72 moves present
+Count 1089
+moveValidator(): All moves validated!
+100 moves present
+Count 1090
+moveValidator(): All moves validated!
+74 moves present
+Count 1091
+moveValidator(): All moves validated!
+119 moves present
+Count 1092
+moveValidator(): All moves validated!
+113 moves present
+Count 1093
+moveValidator(): All moves validated!
+103 moves present
+Count 1094
+moveValidator(): All moves validated!
+69 moves present
+Count 1095
+moveValidator(): All moves validated!
+70 moves present
+Count 1096
+moveValidator(): All moves validated!
+111 moves present
+Count 1097
+moveValidator(): All moves validated!
+87 moves present
+Count 1098
+moveValidator(): All moves validated!
+153 moves present
+Count 1099
+moveValidator(): All moves validated!
+214 moves present
+Count 1100
+moveValidator(): All moves validated!
+53 moves present
+Count 1101
+moveValidator(): All moves validated!
+194 moves present
+Count 1102
+moveValidator(): All moves validated!
+65 moves present
+Count 1103
+moveValidator(): All moves validated!
+103 moves present
+Count 1104
+moveValidator(): All moves validated!
+120 moves present
+Count 1105
+moveValidator(): All moves validated!
+67 moves present
+Count 1106
+moveValidator(): All moves validated!
+40 moves present
+Count 1107
+moveValidator(): All moves validated!
+117 moves present
+Count 1108
+moveValidator(): All moves validated!
+86 moves present
+Count 1109
+moveValidator(): All moves validated!
+61 moves present
+Count 1110
+moveValidator(): All moves validated!
+75 moves present
+Count 1111
+moveValidator(): All moves validated!
+95 moves present
+Count 1112
+moveValidator(): All moves validated!
+121 moves present
+Count 1113
+moveValidator(): All moves validated!
+94 moves present
+Count 1114
+moveValidator(): All moves validated!
+79 moves present
+Count 1115
+moveValidator(): All moves validated!
+92 moves present
+Count 1116
+moveValidator(): All moves validated!
+60 moves present
+Count 1117
+moveValidator(): All moves validated!
+81 moves present
+Count 1118
+moveValidator(): All moves validated!
+78 moves present
+Count 1119
+moveValidator(): All moves validated!
+107 moves present
+Count 1120
+moveValidator(): All moves validated!
+99 moves present
+Count 1121
+moveValidator(): All moves validated!
+102 moves present
+Count 1122
+moveValidator(): All moves validated!
+65 moves present
+Count 1123
+moveValidator(): All moves validated!
+89 moves present
+Count 1124
+moveValidator(): All moves validated!
+128 moves present
+Count 1125
+moveValidator(): All moves validated!
+69 moves present
+Count 1126
+moveValidator(): All moves validated!
+53 moves present
+Count 1127
+moveValidator(): All moves validated!
+118 moves present
+Count 1128
+moveValidator(): All moves validated!
+115 moves present
+Count 1129
+moveValidator(): All moves validated!
+75 moves present
+Count 1130
+moveValidator(): All moves validated!
+103 moves present
+Count 1131
+moveValidator(): All moves validated!
+143 moves present
+Count 1132
+moveValidator(): All moves validated!
+59 moves present
+Count 1133
+moveValidator(): All moves validated!
+111 moves present
+Count 1134
+moveValidator(): All moves validated!
+98 moves present
+Count 1135
+moveValidator(): All moves validated!
+66 moves present
+Count 1136
+moveValidator(): All moves validated!
+127 moves present
+Count 1137
+moveValidator(): All moves validated!
+73 moves present
+Count 1138
+moveValidator(): All moves validated!
+61 moves present
+Count 1139
+moveValidator(): All moves validated!
+89 moves present
+Count 1140
+moveValidator(): All moves validated!
+70 moves present
+Count 1141
+moveValidator(): All moves validated!
+75 moves present
+Count 1142
+moveValidator(): All moves validated!
+68 moves present
+Count 1143
+moveValidator(): All moves validated!
+97 moves present
+Count 1144
+moveValidator(): All moves validated!
+127 moves present
+Count 1145
+moveValidator(): All moves validated!
+143 moves present
+Count 1146
+moveValidator(): All moves validated!
+89 moves present
+Count 1147
+moveValidator(): All moves validated!
+61 moves present
+Count 1148
+moveValidator(): All moves validated!
+49 moves present
+Count 1149
+moveValidator(): All moves validated!
+53 moves present
+Count 1150
+moveValidator(): All moves validated!
+97 moves present
+Count 1151
+moveValidator(): All moves validated!
+109 moves present
+Count 1152
+moveValidator(): All moves validated!
+78 moves present
+Count 1153
+moveValidator(): All moves validated!
+59 moves present
+Count 1154
+moveValidator(): All moves validated!
+57 moves present
+Count 1155
+moveValidator(): All moves validated!
+40 moves present
+Count 1156
+moveValidator(): All moves validated!
+85 moves present
+Count 1157
+moveValidator(): All moves validated!
+78 moves present
+Count 1158
+moveValidator(): All moves validated!
+56 moves present
+Count 1159
+moveValidator(): All moves validated!
+83 moves present
+Count 1160
+moveValidator(): All moves validated!
+97 moves present
+Count 1161
+moveValidator(): All moves validated!
+73 moves present
+Count 1162
+moveValidator(): All moves validated!
+94 moves present
+Count 1163
+moveValidator(): All moves validated!
+59 moves present
+Count 1164
+moveValidator(): All moves validated!
+39 moves present
+Count 1165
+moveValidator(): All moves validated!
+52 moves present
+Count 1166
+moveValidator(): All moves validated!
+79 moves present
+Count 1167
+moveValidator(): All moves validated!
+70 moves present
+Count 1168
+moveValidator(): All moves validated!
+99 moves present
+Count 1169
+moveValidator(): All moves validated!
+94 moves present
+Count 1170
+moveValidator(): All moves validated!
+93 moves present
+Count 1171
+moveValidator(): All moves validated!
+86 moves present
+Count 1172
+moveValidator(): All moves validated!
+119 moves present
+Count 1173
+moveValidator(): All moves validated!
+84 moves present
+Count 1174
+moveValidator(): All moves validated!
+113 moves present
+Count 1175
+moveValidator(): All moves validated!
+85 moves present
+Count 1176
+moveValidator(): All moves validated!
+104 moves present
+Count 1177
+moveValidator(): All moves validated!
+68 moves present
+Count 1178
+moveValidator(): All moves validated!
+69 moves present
+Count 1179
+moveValidator(): All moves validated!
+174 moves present
+Count 1180
+moveValidator(): All moves validated!
+80 moves present
+Count 1181
+moveValidator(): All moves validated!
+80 moves present
+Count 1182
+moveValidator(): All moves validated!
+89 moves present
+Count 1183
+moveValidator(): All moves validated!
+109 moves present
+Count 1184
+moveValidator(): All moves validated!
+50 moves present
+Count 1185
+moveValidator(): All moves validated!
+43 moves present
+Count 1186
+moveValidator(): All moves validated!
+69 moves present
+Count 1187
+moveValidator(): All moves validated!
+75 moves present
+Count 1188
+moveValidator(): All moves validated!
+75 moves present
+Count 1189
+moveValidator(): All moves validated!
+77 moves present
+Count 1190
+moveValidator(): All moves validated!
+55 moves present
+Count 1191
+moveValidator(): All moves validated!
+71 moves present
+Count 1192
+moveValidator(): All moves validated!
+32 moves present
+Count 1193
+moveValidator(): All moves validated!
+55 moves present
+Count 1194
+moveValidator(): All moves validated!
+133 moves present
+Count 1195
+moveValidator(): All moves validated!
+106 moves present
+Count 1196
+moveValidator(): All moves validated!
+101 moves present
+Count 1197
+moveValidator(): All moves validated!
+49 moves present
+Count 1198
+moveValidator(): All moves validated!
+58 moves present
+Count 1199
+moveValidator(): All moves validated!
+62 moves present
+Count 1200
+moveValidator(): All moves validated!
+128 moves present
+Count 1201
+moveValidator(): All moves validated!
+117 moves present
+Count 1202
+moveValidator(): All moves validated!
+71 moves present
+Count 1203
+moveValidator(): All moves validated!
+141 moves present
+Count 1204
+moveValidator(): All moves validated!
+81 moves present
+Count 1205
+moveValidator(): All moves validated!
+41 moves present
+Count 1206
+moveValidator(): All moves validated!
+69 moves present
+Count 1207
+moveValidator(): All moves validated!
+105 moves present
+Count 1208
+moveValidator(): All moves validated!
+104 moves present
+Count 1209
+moveValidator(): All moves validated!
+109 moves present
+Count 1210
+moveValidator(): All moves validated!
+66 moves present
+Count 1211
+moveValidator(): All moves validated!
+93 moves present
+Count 1212
+moveValidator(): All moves validated!
+68 moves present
+Count 1213
+moveValidator(): All moves validated!
+35 moves present
+Count 1214
+moveValidator(): All moves validated!
+81 moves present
+Count 1215
+moveValidator(): All moves validated!
+60 moves present
+Count 1216
+moveValidator(): All moves validated!
+61 moves present
+Count 1217
+moveValidator(): All moves validated!
+158 moves present
+Count 1218
+moveValidator(): All moves validated!
+46 moves present
+Count 1219
+moveValidator(): All moves validated!
+67 moves present
+Count 1220
+moveValidator(): All moves validated!
+68 moves present
+Count 1221
+moveValidator(): All moves validated!
+133 moves present
+Count 1222
+moveValidator(): All moves validated!
+139 moves present
+Count 1223
+moveValidator(): All moves validated!
+119 moves present
+Count 1224
+moveValidator(): All moves validated!
+124 moves present
+Count 1225
+moveValidator(): All moves validated!
+47 moves present
+Count 1226
+moveValidator(): All moves validated!
+82 moves present
+Count 1227
+moveValidator(): All moves validated!
+83 moves present
+Count 1228
+moveValidator(): All moves validated!
+53 moves present
+Count 1229
+moveValidator(): All moves validated!
+61 moves present
+Count 1230
+moveValidator(): All moves validated!
+85 moves present
+Count 1231
+moveValidator(): All moves validated!
+65 moves present
+Count 1232
+moveValidator(): All moves validated!
+79 moves present
+Count 1233
+moveValidator(): All moves validated!
+91 moves present
+Count 1234
+moveValidator(): All moves validated!
+61 moves present
+Count 1235
+moveValidator(): All moves validated!
+152 moves present
+Count 1236
+moveValidator(): All moves validated!
+60 moves present
+Count 1237
+moveValidator(): All moves validated!
+79 moves present
+Count 1238
+moveValidator(): All moves validated!
+128 moves present
+Count 1239
+moveValidator(): All moves validated!
+91 moves present
+Count 1240
+moveValidator(): All moves validated!
+81 moves present
+Count 1241
+moveValidator(): All moves validated!
+44 moves present
+Count 1242
+moveValidator(): All moves validated!
+190 moves present
+Count 1243
+moveValidator(): All moves validated!
+63 moves present
+Count 1244
+moveValidator(): All moves validated!
+45 moves present
+Count 1245
+moveValidator(): All moves validated!
+97 moves present
+Count 1246
+moveValidator(): All moves validated!
+84 moves present
+Count 1247
+moveValidator(): All moves validated!
+120 moves present
+Count 1248
+moveValidator(): All moves validated!
+65 moves present
+Count 1249
+moveValidator(): All moves validated!
+79 moves present
+Count 1250
+moveValidator(): All moves validated!
+41 moves present
+Count 1251
+moveValidator(): All moves validated!
+59 moves present
+Count 1252
+moveValidator(): All moves validated!
+74 moves present
+Count 1253
+moveValidator(): All moves validated!
+126 moves present
+Count 1254
+moveValidator(): All moves validated!
+85 moves present
+Count 1255
+moveValidator(): All moves validated!
+88 moves present
+Count 1256
+moveValidator(): All moves validated!
+106 moves present
+Count 1257
+moveValidator(): All moves validated!
+62 moves present
+Count 1258
+moveValidator(): All moves validated!
+59 moves present
+Count 1259
+moveValidator(): All moves validated!
+149 moves present
+Count 1260
+moveValidator(): All moves validated!
+85 moves present
+Count 1261
+moveValidator(): All moves validated!
+65 moves present
+Count 1262
+moveValidator(): All moves validated!
+66 moves present
+Count 1263
+moveValidator(): All moves validated!
+46 moves present
+Count 1264
+moveValidator(): All moves validated!
+86 moves present
+Count 1265
+moveValidator(): All moves validated!
+92 moves present
+Count 1266
+moveValidator(): All moves validated!
+86 moves present
+Count 1267
+moveValidator(): All moves validated!
+61 moves present
+Count 1268
+moveValidator(): All moves validated!
+48 moves present
+Count 1269
+moveValidator(): All moves validated!
+84 moves present
+Count 1270
+moveValidator(): All moves validated!
+43 moves present
+Count 1271
+moveValidator(): All moves validated!
+121 moves present
+Count 1272
+moveValidator(): All moves validated!
+50 moves present
+Count 1273
+moveValidator(): All moves validated!
+82 moves present
+Count 1274
+moveValidator(): All moves validated!
+163 moves present
+Count 1275
+moveValidator(): All moves validated!
+82 moves present
+Count 1276
+moveValidator(): All moves validated!
+94 moves present
+Count 1277
+moveValidator(): All moves validated!
+41 moves present
+Count 1278
+moveValidator(): All moves validated!
+87 moves present
+Count 1279
+moveValidator(): All moves validated!
+69 moves present
+Count 1280
+moveValidator(): All moves validated!
+118 moves present
+Count 1281
+moveValidator(): All moves validated!
+70 moves present
+Count 1282
+moveValidator(): All moves validated!
+158 moves present
+Count 1283
+moveValidator(): All moves validated!
+60 moves present
+Count 1284
+moveValidator(): All moves validated!
+86 moves present
+Count 1285
+moveValidator(): All moves validated!
+70 moves present
+Count 1286
+moveValidator(): All moves validated!
+92 moves present
+Count 1287
+moveValidator(): All moves validated!
+104 moves present
+Count 1288
+moveValidator(): All moves validated!
+65 moves present
+Count 1289
+moveValidator(): All moves validated!
+94 moves present
+Count 1290
+moveValidator(): All moves validated!
+48 moves present
+Count 1291
+moveValidator(): All moves validated!
+218 moves present
+Count 1292
+moveValidator(): All moves validated!
+63 moves present
+Count 1293
+moveValidator(): All moves validated!
+162 moves present
+Count 1294
+moveValidator(): All moves validated!
+77 moves present
+Count 1295
+moveValidator(): All moves validated!
+192 moves present
+Count 1296
+moveValidator(): All moves validated!
+106 moves present
+Count 1297
+moveValidator(): All moves validated!
+71 moves present
+Count 1298
+moveValidator(): All moves validated!
+56 moves present
+Count 1299
+moveValidator(): All moves validated!
+56 moves present
+Count 1300
+moveValidator(): All moves validated!
+64 moves present
+Count 1301
+moveValidator(): All moves validated!
+78 moves present
+Count 1302
+moveValidator(): All moves validated!
+72 moves present
+Count 1303
+moveValidator(): All moves validated!
+97 moves present
+Count 1304
+moveValidator(): All moves validated!
+72 moves present
+Count 1305
+moveValidator(): All moves validated!
+70 moves present
+Count 1306
+moveValidator(): All moves validated!
+180 moves present
+Count 1307
+moveValidator(): All moves validated!
+99 moves present
+Count 1308
+moveValidator(): All moves validated!
+77 moves present
+Count 1309
+moveValidator(): All moves validated!
+105 moves present
+Count 1310
+moveValidator(): All moves validated!
+92 moves present
+Count 1311
+moveValidator(): All moves validated!
+84 moves present
+Count 1312
+moveValidator(): All moves validated!
+96 moves present
+Count 1313
+moveValidator(): All moves validated!
+164 moves present
+Count 1314
+moveValidator(): All moves validated!
+159 moves present
+Count 1315
+moveValidator(): All moves validated!
+64 moves present
+Count 1316
+moveValidator(): All moves validated!
+77 moves present
+Count 1317
+moveValidator(): All moves validated!
+88 moves present
+Count 1318
+moveValidator(): All moves validated!
+130 moves present
+Count 1319
+moveValidator(): All moves validated!
+97 moves present
+Count 1320
+moveValidator(): All moves validated!
+55 moves present
+Count 1321
+moveValidator(): All moves validated!
+74 moves present
+Count 1322
+moveValidator(): All moves validated!
+52 moves present
+Count 1323
+moveValidator(): All moves validated!
+57 moves present
+Count 1324
+moveValidator(): All moves validated!
+116 moves present
+Count 1325
+moveValidator(): All moves validated!
+79 moves present
+Count 1326
+moveValidator(): All moves validated!
+57 moves present
+Count 1327
+moveValidator(): All moves validated!
+91 moves present
+Count 1328
+moveValidator(): All moves validated!
+73 moves present
+Count 1329
+moveValidator(): All moves validated!
+90 moves present
+Count 1330
+moveValidator(): All moves validated!
+73 moves present
+Count 1331
+moveValidator(): All moves validated!
+117 moves present
+Count 1332
+moveValidator(): All moves validated!
+83 moves present
+Count 1333
+moveValidator(): All moves validated!
+107 moves present
+Count 1334
+moveValidator(): All moves validated!
+79 moves present
+Count 1335
+moveValidator(): All moves validated!
+80 moves present
+Count 1336
+moveValidator(): All moves validated!
+90 moves present
+Count 1337
+moveValidator(): All moves validated!
+83 moves present
+Count 1338
+moveValidator(): All moves validated!
+93 moves present
+Count 1339
+moveValidator(): All moves validated!
+84 moves present
+Count 1340
+moveValidator(): All moves validated!
+127 moves present
+Count 1341
+moveValidator(): All moves validated!
+87 moves present
+Count 1342
+moveValidator(): All moves validated!
+72 moves present
+Count 1343
+moveValidator(): All moves validated!
+70 moves present
+Count 1344
+moveValidator(): All moves validated!
+145 moves present
+Count 1345
+moveValidator(): All moves validated!
+91 moves present
+Count 1346
+moveValidator(): All moves validated!
+116 moves present
+Count 1347
+moveValidator(): All moves validated!
+31 moves present
+Count 1348
+moveValidator(): All moves validated!
+88 moves present
+Count 1349
+moveValidator(): All moves validated!
+125 moves present
+Count 1350
+moveValidator(): All moves validated!
+85 moves present
+Count 1351
+moveValidator(): All moves validated!
+116 moves present
+Count 1352
+moveValidator(): All moves validated!
+100 moves present
+Count 1353
+moveValidator(): All moves validated!
+66 moves present
+Count 1354
+moveValidator(): All moves validated!
+79 moves present
+Count 1355
+moveValidator(): All moves validated!
+45 moves present
+Count 1356
+moveValidator(): All moves validated!
+89 moves present
+Count 1357
+moveValidator(): All moves validated!
+67 moves present
+Count 1358
+moveValidator(): All moves validated!
+113 moves present
+Count 1359
+moveValidator(): All moves validated!
+76 moves present
+Count 1360
+moveValidator(): All moves validated!
+130 moves present
+Count 1361
+moveValidator(): All moves validated!
+58 moves present
+Count 1362
+moveValidator(): All moves validated!
+112 moves present
+Count 1363
+moveValidator(): All moves validated!
+58 moves present
+Count 1364
+moveValidator(): All moves validated!
+53 moves present
+Count 1365
+moveValidator(): All moves validated!
+63 moves present
+Count 1366
+moveValidator(): All moves validated!
+58 moves present
+Count 1367
+moveValidator(): All moves validated!
+46 moves present
+Count 1368
+moveValidator(): All moves validated!
+65 moves present
+Count 1369
+moveValidator(): All moves validated!
+90 moves present
+Count 1370
+moveValidator(): All moves validated!
+95 moves present
+Count 1371
+moveValidator(): All moves validated!
+65 moves present
+Count 1372
+moveValidator(): All moves validated!
+79 moves present
+Count 1373
+moveValidator(): All moves validated!
+89 moves present
+Count 1374
+moveValidator(): All moves validated!
+107 moves present
+Count 1375
+moveValidator(): All moves validated!
+71 moves present
+Count 1376
+moveValidator(): All moves validated!
+106 moves present
+Count 1377
+moveValidator(): All moves validated!
+90 moves present
+Count 1378
+moveValidator(): All moves validated!
+59 moves present
+Count 1379
+moveValidator(): All moves validated!
+131 moves present
+Count 1380
+moveValidator(): All moves validated!
+76 moves present
+Count 1381
+moveValidator(): All moves validated!
+119 moves present
+Count 1382
+moveValidator(): All moves validated!
+132 moves present
+Count 1383
+moveValidator(): All moves validated!
+95 moves present
+Count 1384
+moveValidator(): All moves validated!
+48 moves present
+Count 1385
+moveValidator(): All moves validated!
+50 moves present
+Count 1386
+moveValidator(): All moves validated!
+87 moves present
+Count 1387
+moveValidator(): All moves validated!
+91 moves present
+Count 1388
+moveValidator(): All moves validated!
+109 moves present
+Count 1389
+moveValidator(): All moves validated!
+54 moves present
+Count 1390
+moveValidator(): All moves validated!
+61 moves present
+Count 1391
+moveValidator(): All moves validated!
+65 moves present
+Count 1392
+moveValidator(): All moves validated!
+98 moves present
+Count 1393
+moveValidator(): All moves validated!
+86 moves present
+Count 1394
+moveValidator(): All moves validated!
+74 moves present
+Count 1395
+moveValidator(): All moves validated!
+137 moves present
+Count 1396
+moveValidator(): All moves validated!
+87 moves present
+Count 1397
+moveValidator(): All moves validated!
+82 moves present
+Count 1398
+moveValidator(): All moves validated!
+124 moves present
+Count 1399
+moveValidator(): All moves validated!
+58 moves present
+Count 1400
+moveValidator(): All moves validated!
+73 moves present
+Count 1401
+moveValidator(): All moves validated!
+133 moves present
+Count 1402
+moveValidator(): All moves validated!
+108 moves present
+Count 1403
+moveValidator(): All moves validated!
+93 moves present
+Count 1404
+moveValidator(): All moves validated!
+62 moves present
+Count 1405
+moveValidator(): All moves validated!
+77 moves present
+Count 1406
+moveValidator(): All moves validated!
+152 moves present
+Count 1407
+moveValidator(): All moves validated!
+103 moves present
+Count 1408
+moveValidator(): All moves validated!
+77 moves present
+Count 1409
+moveValidator(): All moves validated!
+39 moves present
+Count 1410
+moveValidator(): All moves validated!
+93 moves present
+Count 1411
+moveValidator(): All moves validated!
+42 moves present
+Count 1412
+moveValidator(): All moves validated!
+101 moves present
+Count 1413
+moveValidator(): All moves validated!
+87 moves present
+Count 1414
+moveValidator(): All moves validated!
+73 moves present
+Count 1415
+moveValidator(): All moves validated!
+93 moves present
+Count 1416
+moveValidator(): All moves validated!
+108 moves present
+Count 1417
+moveValidator(): All moves validated!
+56 moves present
+Count 1418
+moveValidator(): All moves validated!
+101 moves present
+Count 1419
+moveValidator(): All moves validated!
+71 moves present
+Count 1420
+moveValidator(): All moves validated!
+95 moves present
+Count 1421
+moveValidator(): All moves validated!
+65 moves present
+Count 1422
+moveValidator(): All moves validated!
+116 moves present
+Count 1423
+moveValidator(): All moves validated!
+96 moves present
+Count 1424
+moveValidator(): All moves validated!
+160 moves present
+Count 1425
+moveValidator(): All moves validated!
+127 moves present
+Count 1426
+moveValidator(): All moves validated!
+188 moves present
+Count 1427
+moveValidator(): All moves validated!
+57 moves present
+Count 1428
+moveValidator(): All moves validated!
+100 moves present
+Count 1429
+moveValidator(): All moves validated!
+112 moves present
+Count 1430
+moveValidator(): All moves validated!
+117 moves present
+Count 1431
+moveValidator(): All moves validated!
+97 moves present
+Count 1432
+moveValidator(): All moves validated!
+68 moves present
+Count 1433
+moveValidator(): All moves validated!
+123 moves present
+Count 1434
+moveValidator(): All moves validated!
+55 moves present
+Count 1435
+moveValidator(): All moves validated!
+126 moves present
+Count 1436
+moveValidator(): All moves validated!
+81 moves present
+Count 1437
+moveValidator(): All moves validated!
+7 moves present
+Count 1438
+moveValidator(): All moves validated!
+127 moves present
+Count 1439
+moveValidator(): All moves validated!
+70 moves present
+Count 1440
+moveValidator(): All moves validated!
+85 moves present
+Count 1441
+moveValidator(): All moves validated!
+166 moves present
+Count 1442
+moveValidator(): All moves validated!
+110 moves present
+Count 1443
+moveValidator(): All moves validated!
+58 moves present
+Count 1444
+moveValidator(): All moves validated!
+132 moves present
+Count 1445
+moveValidator(): All moves validated!
+66 moves present
+Count 1446
+moveValidator(): All moves validated!
+124 moves present
+Count 1447
+moveValidator(): All moves validated!
+96 moves present
+Count 1448
+moveValidator(): All moves validated!
+85 moves present
+Count 1449
+moveValidator(): All moves validated!
+32 moves present
+Count 1450
+moveValidator(): All moves validated!
+118 moves present
+Count 1451
+moveValidator(): All moves validated!
+96 moves present
+Count 1452
+moveValidator(): All moves validated!
+69 moves present
+Count 1453
+moveValidator(): All moves validated!
+49 moves present
+Count 1454
+moveValidator(): All moves validated!
+49 moves present
+Count 1455
+moveValidator(): All moves validated!
+89 moves present
+Count 1456
+moveValidator(): All moves validated!
+95 moves present
+Count 1457
+moveValidator(): All moves validated!
+51 moves present
+Count 1458
+moveValidator(): All moves validated!
+99 moves present
+Count 1459
+moveValidator(): All moves validated!
+57 moves present
+Count 1460
+moveValidator(): All moves validated!
+84 moves present
+Count 1461
+moveValidator(): All moves validated!
+68 moves present
+Count 1462
+moveValidator(): All moves validated!
+203 moves present
+Count 1463
+moveValidator(): All moves validated!
+126 moves present
+Count 1464
+moveValidator(): All moves validated!
+104 moves present
+Count 1465
+moveValidator(): All moves validated!
+119 moves present
+Count 1466
+moveValidator(): All moves validated!
+84 moves present
+Count 1467
+moveValidator(): All moves validated!
+61 moves present
+Count 1468
+moveValidator(): All moves validated!
+51 moves present
+Count 1469
+moveValidator(): All moves validated!
+188 moves present
+Count 1470
+moveValidator(): All moves validated!
+46 moves present
+Count 1471
+moveValidator(): All moves validated!
+110 moves present
+Count 1472
+moveValidator(): All moves validated!
+80 moves present
+Count 1473
+moveValidator(): All moves validated!
+94 moves present
+Count 1474
+moveValidator(): All moves validated!
+44 moves present
+Count 1475
+moveValidator(): All moves validated!
+129 moves present
+Count 1476
+moveValidator(): All moves validated!
+92 moves present
+Count 1477
+moveValidator(): All moves validated!
+82 moves present
+Count 1478
+moveValidator(): All moves validated!
+91 moves present
+Count 1479
+moveValidator(): All moves validated!
+91 moves present
+Count 1480
+moveValidator(): All moves validated!
+77 moves present
+Count 1481
+moveValidator(): All moves validated!
+82 moves present
+Count 1482
+moveValidator(): All moves validated!
+85 moves present
+Count 1483
+moveValidator(): All moves validated!
+47 moves present
+Count 1484
+moveValidator(): All moves validated!
+87 moves present
+Count 1485
+moveValidator(): All moves validated!
+71 moves present
+Count 1486
+moveValidator(): All moves validated!
+91 moves present
+Count 1487
+moveValidator(): All moves validated!
+69 moves present
+Count 1488
+moveValidator(): All moves validated!
+58 moves present
+Count 1489
+moveValidator(): All moves validated!
+109 moves present
+Count 1490
+moveValidator(): All moves validated!
+44 moves present
+Count 1491
+moveValidator(): All moves validated!
+61 moves present
+Count 1492
+moveValidator(): All moves validated!
+105 moves present
+Count 1493
+moveValidator(): All moves validated!
+93 moves present
+Count 1494
+moveValidator(): All moves validated!
+65 moves present
+Count 1495
+moveValidator(): All moves validated!
+90 moves present
+Count 1496
+moveValidator(): All moves validated!
+89 moves present
+Count 1497
+moveValidator(): All moves validated!
+101 moves present
+Count 1498
+moveValidator(): All moves validated!
+95 moves present
+Count 1499
+moveValidator(): All moves validated!
+87 moves present
+Count 1500
+moveValidator(): All moves validated!
+113 moves present
+Count 1501
+moveValidator(): All moves validated!
+63 moves present
+Count 1502
+moveValidator(): All moves validated!
+97 moves present
+Count 1503
+moveValidator(): All moves validated!
+63 moves present
+Count 1504
+moveValidator(): All moves validated!
+52 moves present
+Count 1505
+moveValidator(): All moves validated!
+80 moves present
+Count 1506
+moveValidator(): All moves validated!
+57 moves present
+Count 1507
+moveValidator(): All moves validated!
+62 moves present
+Count 1508
+moveValidator(): All moves validated!
+73 moves present
+Count 1509
+moveValidator(): All moves validated!
+105 moves present
+Count 1510
+moveValidator(): All moves validated!
+92 moves present
+Count 1511
+moveValidator(): All moves validated!
+77 moves present
+Count 1512
+moveValidator(): All moves validated!
+48 moves present
+Count 1513
+moveValidator(): All moves validated!
+74 moves present
+Count 1514
+moveValidator(): All moves validated!
+64 moves present
+Count 1515
+moveValidator(): All moves validated!
+173 moves present
+Count 1516
+moveValidator(): All moves validated!
+72 moves present
+Count 1517
+moveValidator(): All moves validated!
+137 moves present
+Count 1518
+moveValidator(): All moves validated!
+98 moves present
+Count 1519
+moveValidator(): All moves validated!
+92 moves present
+Count 1520
+moveValidator(): All moves validated!
+85 moves present
+Count 1521
+moveValidator(): All moves validated!
+87 moves present
+Count 1522
+moveValidator(): All moves validated!
+64 moves present
+Count 1523
+moveValidator(): All moves validated!
+127 moves present
+Count 1524
+moveValidator(): All moves validated!
+122 moves present
+Count 1525
+moveValidator(): All moves validated!
+125 moves present
+Count 1526
+moveValidator(): All moves validated!
+94 moves present
+Count 1527
+moveValidator(): All moves validated!
+136 moves present
+Count 1528
+moveValidator(): All moves validated!
+59 moves present
+Count 1529
+moveValidator(): All moves validated!
+69 moves present
+Count 1530
+moveValidator(): All moves validated!
+65 moves present
+Count 1531
+moveValidator(): All moves validated!
+107 moves present
+Count 1532
+moveValidator(): All moves validated!
+82 moves present
+Count 1533
+moveValidator(): All moves validated!
+48 moves present
+Count 1534
+moveValidator(): All moves validated!
+118 moves present
+Count 1535
+moveValidator(): All moves validated!
+58 moves present
+Count 1536
+moveValidator(): All moves validated!
+211 moves present
+Count 1537
+moveValidator(): All moves validated!
+79 moves present
+Count 1538
+moveValidator(): All moves validated!
+60 moves present
+Count 1539
+moveValidator(): All moves validated!
+92 moves present
+Count 1540
+moveValidator(): All moves validated!
+65 moves present
+Count 1541
+moveValidator(): All moves validated!
+154 moves present
+Count 1542
+moveValidator(): All moves validated!
+107 moves present
+Count 1543
+moveValidator(): All moves validated!
+101 moves present
+Count 1544
+moveValidator(): All moves validated!
+96 moves present
+Count 1545
+moveValidator(): All moves validated!
+147 moves present
+Count 1546
+moveValidator(): All moves validated!
+125 moves present
+Count 1547
+moveValidator(): All moves validated!
+21 moves present
+Count 1548
+moveValidator(): All moves validated!
+103 moves present
+Count 1549
+moveValidator(): All moves validated!
+101 moves present
+Count 1550
+moveValidator(): All moves validated!
+79 moves present
+Count 1551
+moveValidator(): All moves validated!
+35 moves present
+Count 1552
+moveValidator(): All moves validated!
+71 moves present
+Count 1553
+moveValidator(): All moves validated!
+47 moves present
+Count 1554
+moveValidator(): All moves validated!
+51 moves present
+Count 1555
+moveValidator(): All moves validated!
+55 moves present
+Count 1556
+moveValidator(): All moves validated!
+175 moves present
+Count 1557
+moveValidator(): All moves validated!
+80 moves present
+Count 1558
+moveValidator(): All moves validated!
+57 moves present
+Count 1559
+moveValidator(): All moves validated!
+93 moves present
+Count 1560
+moveValidator(): All moves validated!
+122 moves present
+Count 1561
+moveValidator(): All moves validated!
+69 moves present
+Count 1562
+moveValidator(): All moves validated!
+51 moves present
+Count 1563
+moveValidator(): All moves validated!
+69 moves present
+Count 1564
+moveValidator(): All moves validated!
+62 moves present
+Count 1565
+moveValidator(): All moves validated!
+174 moves present
+Count 1566
+moveValidator(): All moves validated!
+102 moves present
+Count 1567
+moveValidator(): All moves validated!
+49 moves present
+Count 1568
+moveValidator(): All moves validated!
+100 moves present
+Count 1569
+moveValidator(): All moves validated!
+81 moves present
+Count 1570
+moveValidator(): All moves validated!
+114 moves present
+Count 1571
+moveValidator(): All moves validated!
+141 moves present
+Count 1572
+moveValidator(): All moves validated!
+110 moves present
+Count 1573
+moveValidator(): All moves validated!
+83 moves present
+Count 1574
+moveValidator(): All moves validated!
+102 moves present
+Count 1575
+moveValidator(): All moves validated!
+77 moves present
+Count 1576
+moveValidator(): All moves validated!
+103 moves present
+Count 1577
+moveValidator(): All moves validated!
+123 moves present
+Count 1578
+moveValidator(): All moves validated!
+115 moves present
+Count 1579
+moveValidator(): All moves validated!
+125 moves present
+Count 1580
+moveValidator(): All moves validated!
+103 moves present
+Count 1581
+moveValidator(): All moves validated!
+79 moves present
+Count 1582
+moveValidator(): All moves validated!
+70 moves present
+Count 1583
+moveValidator(): All moves validated!
+127 moves present
+Count 1584
+moveValidator(): All moves validated!
+113 moves present
+Count 1585
+moveValidator(): All moves validated!
+94 moves present
+Count 1586
+moveValidator(): All moves validated!
+90 moves present
+Count 1587
+moveValidator(): All moves validated!
+72 moves present
+Count 1588
+moveValidator(): All moves validated!
+104 moves present
+Count 1589
+moveValidator(): All moves validated!
+54 moves present
+Count 1590
+moveValidator(): All moves validated!
+81 moves present
+Count 1591
+moveValidator(): All moves validated!
+112 moves present
+Count 1592
+moveValidator(): All moves validated!
+29 moves present
+Count 1593
+moveValidator(): All moves validated!
+74 moves present
+Count 1594
+moveValidator(): All moves validated!
+106 moves present
+Count 1595
+moveValidator(): All moves validated!
+56 moves present
+Count 1596
+moveValidator(): All moves validated!
+88 moves present
+Count 1597
+moveValidator(): All moves validated!
+173 moves present
+Count 1598
+moveValidator(): All moves validated!
+73 moves present
+Count 1599
+moveValidator(): All moves validated!
+146 moves present
+Count 1600
+moveValidator(): All moves validated!
+102 moves present
+Count 1601
+moveValidator(): All moves validated!
+127 moves present
+Count 1602
+moveValidator(): All moves validated!
+46 moves present
+Count 1603
+moveValidator(): All moves validated!
+90 moves present
+Count 1604
+moveValidator(): All moves validated!
+100 moves present
+Count 1605
+moveValidator(): All moves validated!
+158 moves present
+Count 1606
+moveValidator(): All moves validated!
+81 moves present
+Count 1607
+moveValidator(): All moves validated!
+96 moves present
+Count 1608
+moveValidator(): All moves validated!
+169 moves present
+Count 1609
+moveValidator(): All moves validated!
+121 moves present
+Count 1610
+moveValidator(): All moves validated!
+151 moves present
+Count 1611
+moveValidator(): All moves validated!
+139 moves present
+Count 1612
+moveValidator(): All moves validated!
+71 moves present
+Count 1613
+moveValidator(): All moves validated!
+137 moves present
+Count 1614
+moveValidator(): All moves validated!
+77 moves present
+Count 1615
+moveValidator(): All moves validated!
+124 moves present
+Count 1616
+moveValidator(): All moves validated!
+63 moves present
+Count 1617
+moveValidator(): All moves validated!
+67 moves present
+Count 1618
+moveValidator(): All moves validated!
+75 moves present
+Count 1619
+moveValidator(): All moves validated!
+78 moves present
+Count 1620
+moveValidator(): All moves validated!
+95 moves present
+Count 1621
+moveValidator(): All moves validated!
+131 moves present
+Count 1622
+moveValidator(): All moves validated!
+116 moves present
+Count 1623
+moveValidator(): All moves validated!
+66 moves present
+Count 1624
+moveValidator(): All moves validated!
+92 moves present
+Count 1625
+moveValidator(): All moves validated!
+123 moves present
+Count 1626
+moveValidator(): All moves validated!
+63 moves present
+Count 1627
+moveValidator(): All moves validated!
+69 moves present
+Count 1628
+moveValidator(): All moves validated!
+78 moves present
+Count 1629
+moveValidator(): All moves validated!
+106 moves present
+Count 1630
+moveValidator(): All moves validated!
+171 moves present
+Count 1631
+moveValidator(): All moves validated!
+123 moves present
+Count 1632
+moveValidator(): All moves validated!
+77 moves present
+Count 1633
+moveValidator(): All moves validated!
+112 moves present
+Count 1634
+moveValidator(): All moves validated!
+129 moves present
+Count 1635
+moveValidator(): All moves validated!
+75 moves present
+Count 1636
+moveValidator(): All moves validated!
+77 moves present
+Count 1637
+moveValidator(): All moves validated!
+110 moves present
+Count 1638
+moveValidator(): All moves validated!
+68 moves present
+Count 1639
+moveValidator(): All moves validated!
+133 moves present
+Count 1640
+moveValidator(): All moves validated!
+90 moves present
+Count 1641
+moveValidator(): All moves validated!
+68 moves present
+Count 1642
+moveValidator(): All moves validated!
+61 moves present
+Count 1643
+moveValidator(): All moves validated!
+115 moves present
+Count 1644
+moveValidator(): All moves validated!
+73 moves present
+Count 1645
+moveValidator(): All moves validated!
+83 moves present
+Count 1646
+moveValidator(): All moves validated!
+126 moves present
+Count 1647
+moveValidator(): All moves validated!
+102 moves present
+Count 1648
+moveValidator(): All moves validated!
+92 moves present
+Count 1649
+moveValidator(): All moves validated!
+70 moves present
+Count 1650
+moveValidator(): All moves validated!
+81 moves present
+Count 1651
+moveValidator(): All moves validated!
+37 moves present
+Count 1652
+moveValidator(): All moves validated!
+113 moves present
+Count 1653
+moveValidator(): All moves validated!
+65 moves present
+Count 1654
+moveValidator(): All moves validated!
+28 moves present
+Count 1655
+moveValidator(): All moves validated!
+94 moves present
+Count 1656
+moveValidator(): All moves validated!
+45 moves present
+Count 1657
+moveValidator(): All moves validated!
+144 moves present
+Count 1658
+moveValidator(): All moves validated!
+150 moves present
+Count 1659
+moveValidator(): All moves validated!
+81 moves present
+Count 1660
+moveValidator(): All moves validated!
+140 moves present
+Count 1661
+moveValidator(): All moves validated!
+99 moves present
+Count 1662
+moveValidator(): All moves validated!
+52 moves present
+Count 1663
+moveValidator(): All moves validated!
+118 moves present
+Count 1664
+moveValidator(): All moves validated!
+98 moves present
+Count 1665
+moveValidator(): All moves validated!
+85 moves present
+Count 1666
+moveValidator(): All moves validated!
+80 moves present
+Count 1667
+moveValidator(): All moves validated!
+94 moves present
+Count 1668
+moveValidator(): All moves validated!
+140 moves present
+Count 1669
+moveValidator(): All moves validated!
+96 moves present
+Count 1670
+moveValidator(): All moves validated!
+86 moves present
+Count 1671
+moveValidator(): All moves validated!
+53 moves present
+Count 1672
+moveValidator(): All moves validated!
+48 moves present
+Count 1673
+moveValidator(): All moves validated!
+62 moves present
+Count 1674
+moveValidator(): All moves validated!
+49 moves present
+Count 1675
+moveValidator(): All moves validated!
+125 moves present
+Count 1676
+moveValidator(): All moves validated!
+113 moves present
+Count 1677
+moveValidator(): All moves validated!
+117 moves present
+Count 1678
+moveValidator(): All moves validated!
+80 moves present
+Count 1679
+moveValidator(): All moves validated!
+71 moves present
+Count 1680
+moveValidator(): All moves validated!
+67 moves present
+Count 1681
+moveValidator(): All moves validated!
+53 moves present
+Count 1682
+moveValidator(): All moves validated!
+65 moves present
+Count 1683
+moveValidator(): All moves validated!
+71 moves present
+Count 1684
+moveValidator(): All moves validated!
+74 moves present
+Count 1685
+moveValidator(): All moves validated!
+22 moves present
+Count 1686
+moveValidator(): All moves validated!
+69 moves present
+Count 1687
+moveValidator(): All moves validated!
+81 moves present
+Count 1688
+moveValidator(): All moves validated!
+73 moves present
+Count 1689
+moveValidator(): All moves validated!
+77 moves present
+Count 1690
+moveValidator(): All moves validated!
+98 moves present
+Count 1691
+moveValidator(): All moves validated!
+59 moves present
+Count 1692
+moveValidator(): All moves validated!
+130 moves present
+Count 1693
+moveValidator(): All moves validated!
+93 moves present
+Count 1694
+moveValidator(): All moves validated!
+105 moves present
+Count 1695
+moveValidator(): All moves validated!
+66 moves present
+Count 1696
+moveValidator(): All moves validated!
+61 moves present
+Count 1697
+moveValidator(): All moves validated!
+129 moves present
+Count 1698
+moveValidator(): All moves validated!
+107 moves present
+Count 1699
+moveValidator(): All moves validated!
+107 moves present
+Count 1700
+moveValidator(): All moves validated!
+65 moves present
+Count 1701
+moveValidator(): All moves validated!
+58 moves present
+Count 1702
+moveValidator(): All moves validated!
+102 moves present
+Count 1703
+moveValidator(): All moves validated!
+93 moves present
+Count 1704
+moveValidator(): All moves validated!
+90 moves present
+Count 1705
+moveValidator(): All moves validated!
+60 moves present
+Count 1706
+moveValidator(): All moves validated!
+88 moves present
+Count 1707
+moveValidator(): All moves validated!
+94 moves present
+Count 1708
+moveValidator(): All moves validated!
+117 moves present
+Count 1709
+moveValidator(): All moves validated!
+59 moves present
+Count 1710
+moveValidator(): All moves validated!
+65 moves present
+Count 1711
+moveValidator(): All moves validated!
+82 moves present
+Count 1712
+moveValidator(): All moves validated!
+76 moves present
+Count 1713
+moveValidator(): All moves validated!
+100 moves present
+Count 1714
+moveValidator(): All moves validated!
+146 moves present
+Count 1715
+moveValidator(): All moves validated!
+45 moves present
+Count 1716
+moveValidator(): All moves validated!
+98 moves present
+Count 1717
+moveValidator(): All moves validated!
+87 moves present
+Count 1718
+moveValidator(): All moves validated!
+91 moves present
+Count 1719
+moveValidator(): All moves validated!
+77 moves present
+Count 1720
+moveValidator(): All moves validated!
+86 moves present
+Count 1721
+moveValidator(): All moves validated!
+212 moves present
+Count 1722
+moveValidator(): All moves validated!
+141 moves present
+Count 1723
+moveValidator(): All moves validated!
+138 moves present
+Count 1724
+moveValidator(): All moves validated!
+96 moves present
+Count 1725
+moveValidator(): All moves validated!
+48 moves present
+Count 1726
+moveValidator(): All moves validated!
+52 moves present
+Count 1727
+moveValidator(): All moves validated!
+157 moves present
+Count 1728
+moveValidator(): All moves validated!
+66 moves present
+Count 1729
+moveValidator(): All moves validated!
+89 moves present
+Count 1730
+moveValidator(): All moves validated!
+97 moves present
+Count 1731
+moveValidator(): All moves validated!
+141 moves present
+Count 1732
+moveValidator(): All moves validated!
+148 moves present
+Count 1733
+moveValidator(): All moves validated!
+64 moves present
+Count 1734
+moveValidator(): All moves validated!
+83 moves present
+Count 1735
+moveValidator(): All moves validated!
+85 moves present
+Count 1736
+moveValidator(): All moves validated!
+70 moves present
+Count 1737
+moveValidator(): All moves validated!
+65 moves present
+Count 1738
+moveValidator(): All moves validated!
+75 moves present
+Count 1739
+moveValidator(): All moves validated!
+160 moves present
+Count 1740
+moveValidator(): All moves validated!
+155 moves present
+Count 1741
+moveValidator(): All moves validated!
+132 moves present
+Count 1742
+moveValidator(): All moves validated!
+106 moves present
+Count 1743
+moveValidator(): All moves validated!
+117 moves present
+Count 1744
+moveValidator(): All moves validated!
+160 moves present
+Count 1745
+moveValidator(): All moves validated!
+89 moves present
+Count 1746
+moveValidator(): All moves validated!
+154 moves present
+Count 1747
+moveValidator(): All moves validated!
+148 moves present
+Count 1748
+moveValidator(): All moves validated!
+64 moves present
+Count 1749
+moveValidator(): All moves validated!
+97 moves present
+Count 1750
+moveValidator(): All moves validated!
+148 moves present
+Count 1751
+moveValidator(): All moves validated!
+150 moves present
+Count 1752
+moveValidator(): All moves validated!
+107 moves present
+Count 1753
+moveValidator(): All moves validated!
+99 moves present
+Count 1754
+moveValidator(): All moves validated!
+73 moves present
+Count 1755
+moveValidator(): All moves validated!
+45 moves present
+Count 1756
+moveValidator(): All moves validated!
+21 moves present
+Count 1757
+moveValidator(): All moves validated!
+112 moves present
+Count 1758
+moveValidator(): All moves validated!
+118 moves present
+Count 1759
+moveValidator(): All moves validated!
+133 moves present
+Count 1760
+moveValidator(): All moves validated!
+63 moves present
+Count 1761
+moveValidator(): All moves validated!
+75 moves present
+Count 1762
+moveValidator(): All moves validated!
+78 moves present
+Count 1763
+moveValidator(): All moves validated!
+97 moves present
+Count 1764
+moveValidator(): All moves validated!
+138 moves present
+Count 1765
+moveValidator(): All moves validated!
+113 moves present
+Count 1766
+moveValidator(): All moves validated!
+88 moves present
+Count 1767
+moveValidator(): All moves validated!
+86 moves present
+Count 1768
+moveValidator(): All moves validated!
+97 moves present
+Count 1769
+moveValidator(): All moves validated!
+92 moves present
+Count 1770
+moveValidator(): All moves validated!
+58 moves present
+Count 1771
+moveValidator(): All moves validated!
+88 moves present
+Count 1772
+moveValidator(): All moves validated!
+98 moves present
+Count 1773
+moveValidator(): All moves validated!
+53 moves present
+Count 1774
+moveValidator(): All moves validated!
+89 moves present
+Count 1775
+moveValidator(): All moves validated!
+80 moves present
+Count 1776
+moveValidator(): All moves validated!
+101 moves present
+Count 1777
+moveValidator(): All moves validated!
+97 moves present
+Count 1778
+moveValidator(): All moves validated!
+78 moves present
+Count 1779
+moveValidator(): All moves validated!
+36 moves present
+Count 1780
+moveValidator(): All moves validated!
+132 moves present
+Count 1781
+moveValidator(): All moves validated!
+125 moves present
+Count 1782
+moveValidator(): All moves validated!
+89 moves present
+Count 1783
+moveValidator(): All moves validated!
+100 moves present
+Count 1784
+moveValidator(): All moves validated!
+219 moves present
+Count 1785
+moveValidator(): All moves validated!
+80 moves present
+Count 1786
+moveValidator(): All moves validated!
+112 moves present
+Count 1787
+moveValidator(): All moves validated!
+87 moves present
+Count 1788
+moveValidator(): All moves validated!
+153 moves present
+Count 1789
+moveValidator(): All moves validated!
+92 moves present
+Count 1790
+moveValidator(): All moves validated!
+104 moves present
+Count 1791
+moveValidator(): All moves validated!
+82 moves present
+Count 1792
+moveValidator(): All moves validated!
+71 moves present
+Count 1793
+moveValidator(): All moves validated!
+129 moves present
+Count 1794
+moveValidator(): All moves validated!
+70 moves present
+Count 1795
+moveValidator(): All moves validated!
+146 moves present
+Count 1796
+moveValidator(): All moves validated!
+71 moves present
+Count 1797
+moveValidator(): All moves validated!
+114 moves present
+Count 1798
+moveValidator(): All moves validated!
+93 moves present
+Count 1799
+moveValidator(): All moves validated!
+73 moves present
+Count 1800
+moveValidator(): All moves validated!
+81 moves present
+Count 1801
+moveValidator(): All moves validated!
+82 moves present
+Count 1802
+moveValidator(): All moves validated!
+60 moves present
+Count 1803
+moveValidator(): All moves validated!
+67 moves present
+Count 1804
+moveValidator(): All moves validated!
+82 moves present
+Count 1805
+moveValidator(): All moves validated!
+62 moves present
+Count 1806
+moveValidator(): All moves validated!
+81 moves present
+Count 1807
+moveValidator(): All moves validated!
+60 moves present
+Count 1808
+moveValidator(): All moves validated!
+71 moves present
+Count 1809
+moveValidator(): All moves validated!
+168 moves present
+Count 1810
+moveValidator(): All moves validated!
+71 moves present
+Count 1811
+moveValidator(): All moves validated!
+91 moves present
+Count 1812
+moveValidator(): All moves validated!
+128 moves present
+Count 1813
+moveValidator(): All moves validated!
+61 moves present
+Count 1814
+moveValidator(): All moves validated!
+69 moves present
+Count 1815
+moveValidator(): All moves validated!
+92 moves present
+Count 1816
+moveValidator(): All moves validated!
+103 moves present
+Count 1817
+moveValidator(): All moves validated!
+132 moves present
+Count 1818
+moveValidator(): All moves validated!
+67 moves present
+Count 1819
+moveValidator(): All moves validated!
+80 moves present
+Count 1820
+moveValidator(): All moves validated!
+81 moves present
+Count 1821
+moveValidator(): All moves validated!
+111 moves present
+Count 1822
+moveValidator(): All moves validated!
+89 moves present
+Count 1823
+moveValidator(): All moves validated!
+68 moves present
+Count 1824
+moveValidator(): All moves validated!
+83 moves present
+Count 1825
+moveValidator(): All moves validated!
+81 moves present
+Count 1826
+moveValidator(): All moves validated!
+95 moves present
+Count 1827
+moveValidator(): All moves validated!
+112 moves present
+Count 1828
+moveValidator(): All moves validated!
+103 moves present
+Count 1829
+moveValidator(): All moves validated!
+78 moves present
+Count 1830
+moveValidator(): All moves validated!
+107 moves present
+Count 1831
+moveValidator(): All moves validated!
+95 moves present
+Count 1832
+moveValidator(): All moves validated!
+81 moves present
+Count 1833
+moveValidator(): All moves validated!
+105 moves present
+Count 1834
+moveValidator(): All moves validated!
+111 moves present
+Count 1835
+moveValidator(): All moves validated!
+82 moves present
+Count 1836
+moveValidator(): All moves validated!
+116 moves present
+Count 1837
+moveValidator(): All moves validated!
+84 moves present
+Count 1838
+moveValidator(): All moves validated!
+78 moves present
+Count 1839
+moveValidator(): All moves validated!
+78 moves present
+Count 1840
+moveValidator(): All moves validated!
+211 moves present
+Count 1841
+moveValidator(): All moves validated!
+87 moves present
+Count 1842
+moveValidator(): All moves validated!
+82 moves present
+Count 1843
+moveValidator(): All moves validated!
+133 moves present
+Count 1844
+moveValidator(): All moves validated!
+97 moves present
+Count 1845
+moveValidator(): All moves validated!
+157 moves present
+Count 1846
+moveValidator(): All moves validated!
+64 moves present
+Count 1847
+moveValidator(): All moves validated!
+82 moves present
+Count 1848
+moveValidator(): All moves validated!
+80 moves present
+Count 1849
+moveValidator(): All moves validated!
+127 moves present
+Count 1850
+moveValidator(): All moves validated!
+100 moves present
+Count 1851
+moveValidator(): All moves validated!
+84 moves present
+Count 1852
+moveValidator(): All moves validated!
+107 moves present
+Count 1853
+moveValidator(): All moves validated!
+74 moves present
+Count 1854
+moveValidator(): All moves validated!
+121 moves present
+Count 1855
+moveValidator(): All moves validated!
+110 moves present
+Count 1856
+moveValidator(): All moves validated!
+156 moves present
+Count 1857
+moveValidator(): All moves validated!
+52 moves present
+Count 1858
+moveValidator(): All moves validated!
+84 moves present
+Count 1859
+moveValidator(): All moves validated!
+115 moves present
+Count 1860
+moveValidator(): All moves validated!
+73 moves present
+Count 1861
+moveValidator(): All moves validated!
+7 moves present
+Count 1862
+moveValidator(): All moves validated!
+80 moves present
+Count 1863
+moveValidator(): All moves validated!
+88 moves present
+Count 1864
+moveValidator(): All moves validated!
+85 moves present
+Count 1865
+moveValidator(): All moves validated!
+59 moves present
+Count 1866
+moveValidator(): All moves validated!
+106 moves present
+Count 1867
+moveValidator(): All moves validated!
+60 moves present
+Count 1868
+moveValidator(): All moves validated!
+85 moves present
+Count 1869
+moveValidator(): All moves validated!
+166 moves present
+Count 1870
+moveValidator(): All moves validated!
+78 moves present
+Count 1871
+moveValidator(): All moves validated!
+45 moves present
+Count 1872
+moveValidator(): All moves validated!
+136 moves present
+Count 1873
+moveValidator(): All moves validated!
+60 moves present
+Count 1874
+moveValidator(): All moves validated!
+45 moves present
+Count 1875
+moveValidator(): All moves validated!
+53 moves present
+Count 1876
+moveValidator(): All moves validated!
+51 moves present
+Count 1877
+moveValidator(): All moves validated!
+77 moves present
+Count 1878
+moveValidator(): All moves validated!
+131 moves present
+Count 1879
+moveValidator(): All moves validated!
+76 moves present
+Count 1880
+moveValidator(): All moves validated!
+71 moves present
+Count 1881
+moveValidator(): All moves validated!
+70 moves present
+Count 1882
+moveValidator(): All moves validated!
+80 moves present
+Count 1883
+moveValidator(): All moves validated!
+119 moves present
+Count 1884
+moveValidator(): All moves validated!
+96 moves present
+Count 1885
+moveValidator(): All moves validated!
+124 moves present
+Count 1886
+moveValidator(): All moves validated!
+98 moves present
+Count 1887
+moveValidator(): All moves validated!
+108 moves present
+Count 1888
+moveValidator(): All moves validated!
+73 moves present
+Count 1889
+moveValidator(): All moves validated!
+109 moves present
+Count 1890
+moveValidator(): All moves validated!
+86 moves present
+Count 1891
+moveValidator(): All moves validated!
+89 moves present
+Count 1892
+moveValidator(): All moves validated!
+89 moves present
+Count 1893
+moveValidator(): All moves validated!
+44 moves present
+Count 1894
+moveValidator(): All moves validated!
+71 moves present
+Count 1895
+moveValidator(): All moves validated!
+73 moves present
+Count 1896
+moveValidator(): All moves validated!
+91 moves present
+Count 1897
+moveValidator(): All moves validated!
+80 moves present
+Count 1898
+moveValidator(): All moves validated!
+74 moves present
+Count 1899
+moveValidator(): All moves validated!
+58 moves present
+Count 1900
+moveValidator(): All moves validated!
+93 moves present
+Count 1901
+moveValidator(): All moves validated!
+72 moves present
+Count 1902
+moveValidator(): All moves validated!
+121 moves present
+Count 1903
+moveValidator(): All moves validated!
+104 moves present
+Count 1904
+moveValidator(): All moves validated!
+97 moves present
+Count 1905
+moveValidator(): All moves validated!
+52 moves present
+Count 1906
+moveValidator(): All moves validated!
+72 moves present
+Count 1907
+moveValidator(): All moves validated!
+87 moves present
+Count 1908
+moveValidator(): All moves validated!
+45 moves present
+Count 1909
+moveValidator(): All moves validated!
+71 moves present
+Count 1910
+moveValidator(): All moves validated!
+83 moves present
+Count 1911
+moveValidator(): All moves validated!
+45 moves present
+Count 1912
+moveValidator(): All moves validated!
+56 moves present
+Count 1913
+moveValidator(): All moves validated!
+81 moves present
+Count 1914
+moveValidator(): All moves validated!
+119 moves present
+Count 1915
+moveValidator(): All moves validated!
+64 moves present
+Count 1916
+moveValidator(): All moves validated!
+167 moves present
+Count 1917
+moveValidator(): All moves validated!
+83 moves present
+Count 1918
+moveValidator(): All moves validated!
+62 moves present
+Count 1919
+moveValidator(): All moves validated!
+164 moves present
+Count 1920
+moveValidator(): All moves validated!
+76 moves present
+Count 1921
+moveValidator(): All moves validated!
+171 moves present
+Count 1922
+moveValidator(): All moves validated!
+65 moves present
+Count 1923
+moveValidator(): All moves validated!
+58 moves present
+Count 1924
+moveValidator(): All moves validated!
+73 moves present
+Count 1925
+moveValidator(): All moves validated!
+33 moves present
+Count 1926
+moveValidator(): All moves validated!
+59 moves present
+Count 1927
+moveValidator(): All moves validated!
+115 moves present
+Count 1928
+moveValidator(): All moves validated!
+56 moves present
+Count 1929
+moveValidator(): All moves validated!
+57 moves present
+Count 1930
+moveValidator(): All moves validated!
+115 moves present
+Count 1931
+moveValidator(): All moves validated!
+74 moves present
+Count 1932
+moveValidator(): All moves validated!
+197 moves present
+Count 1933
+moveValidator(): All moves validated!
+111 moves present
+Count 1934
+moveValidator(): All moves validated!
+51 moves present
+Count 1935
+moveValidator(): All moves validated!
+120 moves present
+Count 1936
+moveValidator(): All moves validated!
+39 moves present
+Count 1937
+moveValidator(): All moves validated!
+93 moves present
+Count 1938
+moveValidator(): All moves validated!
+62 moves present
+Count 1939
+moveValidator(): All moves validated!
+102 moves present
+Count 1940
+moveValidator(): All moves validated!
+107 moves present
+Count 1941
+moveValidator(): All moves validated!
+89 moves present
+Count 1942
+moveValidator(): All moves validated!
+58 moves present
+Count 1943
+moveValidator(): All moves validated!
+7 moves present
+Count 1944
+moveValidator(): All moves validated!
+87 moves present
+Count 1945
+moveValidator(): All moves validated!
+80 moves present
+Count 1946
+moveValidator(): All moves validated!
+78 moves present
+Count 1947
+moveValidator(): All moves validated!
+62 moves present
+Count 1948
+moveValidator(): All moves validated!
+37 moves present
+Count 1949
+moveValidator(): All moves validated!
+79 moves present
+Count 1950
+moveValidator(): All moves validated!
+101 moves present
+Count 1951
+moveValidator(): All moves validated!
+74 moves present
+Count 1952
+moveValidator(): All moves validated!
+109 moves present
+Count 1953
+moveValidator(): All moves validated!
+108 moves present
+Count 1954
+moveValidator(): All moves validated!
+190 moves present
+Count 1955
+moveValidator(): All moves validated!
+80 moves present
+Count 1956
+moveValidator(): All moves validated!
+96 moves present
+Count 1957
+moveValidator(): All moves validated!
+61 moves present
+Count 1958
+moveValidator(): All moves validated!
+154 moves present
+Count 1959
+moveValidator(): All moves validated!
+46 moves present
+Count 1960
+moveValidator(): All moves validated!
+79 moves present
+Count 1961
+moveValidator(): All moves validated!
+98 moves present
+Count 1962
+moveValidator(): All moves validated!
+129 moves present
+Count 1963
+moveValidator(): All moves validated!
+117 moves present
+Count 1964
+moveValidator(): All moves validated!
+81 moves present
+Count 1965
+moveValidator(): All moves validated!
+150 moves present
+Count 1966
+moveValidator(): All moves validated!
+85 moves present
+Count 1967
+moveValidator(): All moves validated!
+76 moves present
+Count 1968
+moveValidator(): All moves validated!
+158 moves present
+Count 1969
+moveValidator(): All moves validated!
+73 moves present
+Count 1970
+moveValidator(): All moves validated!
+146 moves present
+Count 1971
+moveValidator(): All moves validated!
+74 moves present
+Count 1972
+moveValidator(): All moves validated!
+95 moves present
+Count 1973
+moveValidator(): All moves validated!
+115 moves present
+Count 1974
+moveValidator(): All moves validated!
+83 moves present
+Count 1975
+moveValidator(): All moves validated!
+74 moves present
+Count 1976
+moveValidator(): All moves validated!
+53 moves present
+Count 1977
+moveValidator(): All moves validated!
+65 moves present
+Count 1978
+moveValidator(): All moves validated!
+83 moves present
+Count 1979
+moveValidator(): All moves validated!
+37 moves present
+Count 1980
+moveValidator(): All moves validated!
+97 moves present
+Count 1981
+moveValidator(): All moves validated!
+58 moves present
+Count 1982
+moveValidator(): All moves validated!
+60 moves present
+Count 1983
+moveValidator(): All moves validated!
+93 moves present
+Count 1984
+moveValidator(): All moves validated!
+95 moves present
+Count 1985
+moveValidator(): All moves validated!
+87 moves present
+Count 1986
+moveValidator(): All moves validated!
+74 moves present
+Count 1987
+moveValidator(): All moves validated!
+89 moves present
+Count 1988
+moveValidator(): All moves validated!
+163 moves present
+Count 1989
+moveValidator(): All moves validated!
+90 moves present
+Count 1990
+moveValidator(): All moves validated!
+77 moves present
+Count 1991
+moveValidator(): All moves validated!
+75 moves present
+Count 1992
+moveValidator(): All moves validated!
+79 moves present
+Count 1993
+moveValidator(): All moves validated!
+180 moves present
+Count 1994
+moveValidator(): All moves validated!
+69 moves present
+Count 1995
+moveValidator(): All moves validated!
+94 moves present
+Count 1996
+moveValidator(): All moves validated!
+65 moves present
+Count 1997
+moveValidator(): All moves validated!
+136 moves present
+Count 1998
+moveValidator(): All moves validated!
+67 moves present
+Count 1999
+moveValidator(): All moves validated!
+42 moves present
+Count 2000
+moveValidator(): All moves validated!
+107 moves present
+Count 2001
+moveValidator(): All moves validated!
+75 moves present
+Count 2002
+moveValidator(): All moves validated!
+103 moves present
+Count 2003
+moveValidator(): All moves validated!
+79 moves present
+Count 2004
+moveValidator(): All moves validated!
+71 moves present
+Count 2005
+moveValidator(): All moves validated!
+60 moves present
+Count 2006
+moveValidator(): All moves validated!
+96 moves present
+Count 2007
+moveValidator(): All moves validated!
+127 moves present
+Count 2008
+moveValidator(): All moves validated!
+70 moves present
+Count 2009
+moveValidator(): All moves validated!
+34 moves present
+Count 2010
+moveValidator(): All moves validated!
+44 moves present
+Count 2011
+moveValidator(): All moves validated!
+93 moves present
+Count 2012
+moveValidator(): All moves validated!
+91 moves present
+Count 2013
+moveValidator(): All moves validated!
+98 moves present
+Count 2014
+moveValidator(): All moves validated!
+53 moves present
+Count 2015
+moveValidator(): All moves validated!
+96 moves present
+Count 2016
+moveValidator(): All moves validated!
+46 moves present
+Count 2017
+moveValidator(): All moves validated!
+49 moves present
+Count 2018
+moveValidator(): All moves validated!
+75 moves present
+Count 2019
+moveValidator(): All moves validated!
+74 moves present
+Count 2020
+moveValidator(): All moves validated!
+74 moves present
+Count 2021
+moveValidator(): All moves validated!
+124 moves present
+Count 2022
+moveValidator(): All moves validated!
+61 moves present
+Count 2023
+moveValidator(): All moves validated!
+59 moves present
+Count 2024
+moveValidator(): All moves validated!
+63 moves present
+Count 2025
+moveValidator(): All moves validated!
+85 moves present
+Count 2026
+moveValidator(): All moves validated!
+67 moves present
+Count 2027
+moveValidator(): All moves validated!
+71 moves present
+Count 2028
+moveValidator(): All moves validated!
+50 moves present
+Count 2029
+moveValidator(): All moves validated!
+128 moves present
+Count 2030
+moveValidator(): All moves validated!
+60 moves present
+Count 2031
+moveValidator(): All moves validated!
+76 moves present
+Count 2032
+moveValidator(): All moves validated!
+35 moves present
+Count 2033
+moveValidator(): All moves validated!
+96 moves present
+Count 2034
+moveValidator(): All moves validated!
+118 moves present
+Count 2035
+moveValidator(): All moves validated!
+94 moves present
+Count 2036
+moveValidator(): All moves validated!
+75 moves present
+Count 2037
+moveValidator(): All moves validated!
+107 moves present
+Count 2038
+moveValidator(): All moves validated!
+72 moves present
+Count 2039
+moveValidator(): All moves validated!
+63 moves present
+Count 2040
+moveValidator(): All moves validated!
+67 moves present
+Count 2041
+moveValidator(): All moves validated!
+73 moves present
+Count 2042
+moveValidator(): All moves validated!
+107 moves present
+Count 2043
+moveValidator(): All moves validated!
+103 moves present
+Count 2044
+moveValidator(): All moves validated!
+61 moves present
+Count 2045
+moveValidator(): All moves validated!
+115 moves present
+Count 2046
+moveValidator(): All moves validated!
+55 moves present
+Count 2047
+moveValidator(): All moves validated!
+129 moves present
+Count 2048
+moveValidator(): All moves validated!
+27 moves present
+Count 2049
+moveValidator(): All moves validated!
+61 moves present
+Count 2050
+moveValidator(): All moves validated!
+107 moves present
+Count 2051
+moveValidator(): All moves validated!
+61 moves present
+Count 2052
+moveValidator(): All moves validated!
+67 moves present
+Count 2053
+moveValidator(): All moves validated!
+108 moves present
+Count 2054
+moveValidator(): All moves validated!
+59 moves present
+Count 2055
+moveValidator(): All moves validated!
+60 moves present
+Count 2056
+moveValidator(): All moves validated!
+45 moves present
+Count 2057
+moveValidator(): All moves validated!
+58 moves present
+Count 2058
+moveValidator(): All moves validated!
+75 moves present
+Count 2059
+moveValidator(): All moves validated!
+92 moves present
+Count 2060
+moveValidator(): All moves validated!
+159 moves present
+Count 2061
+moveValidator(): All moves validated!
+58 moves present
+Count 2062
+moveValidator(): All moves validated!
+70 moves present
+Count 2063
+moveValidator(): All moves validated!
+65 moves present
+Count 2064
+moveValidator(): All moves validated!
+76 moves present
+Count 2065
+moveValidator(): All moves validated!
+137 moves present
+Count 2066
+moveValidator(): All moves validated!
+39 moves present
+Count 2067
+moveValidator(): All moves validated!
+112 moves present
+Count 2068
+moveValidator(): All moves validated!
+77 moves present
+Count 2069
+moveValidator(): All moves validated!
+65 moves present
+Count 2070
+moveValidator(): All moves validated!
+127 moves present
+Count 2071
+moveValidator(): All moves validated!
+35 moves present
+Count 2072
+moveValidator(): All moves validated!
+112 moves present
+Count 2073
+moveValidator(): All moves validated!
+63 moves present
+Count 2074
+moveValidator(): All moves validated!
+67 moves present
+Count 2075
+moveValidator(): All moves validated!
+110 moves present
+Count 2076
+moveValidator(): All moves validated!
+74 moves present
+Count 2077
+moveValidator(): All moves validated!
+51 moves present
+Count 2078
+moveValidator(): All moves validated!
+92 moves present
+Count 2079
+moveValidator(): All moves validated!
+88 moves present
+Count 2080
+moveValidator(): All moves validated!
+70 moves present
+Count 2081
+moveValidator(): All moves validated!
+66 moves present
+Count 2082
+moveValidator(): All moves validated!
+63 moves present
+Count 2083
+moveValidator(): All moves validated!
+82 moves present
+Count 2084
+moveValidator(): All moves validated!
+51 moves present
+Count 2085
+moveValidator(): All moves validated!
+55 moves present
+Count 2086
+moveValidator(): All moves validated!
+46 moves present
+Count 2087
+moveValidator(): All moves validated!
+97 moves present
+Count 2088
+moveValidator(): All moves validated!
+101 moves present
+Count 2089
+moveValidator(): All moves validated!
+131 moves present
+Count 2090
+moveValidator(): All moves validated!
+63 moves present
+Count 2091
+moveValidator(): All moves validated!
+85 moves present
+Count 2092
+moveValidator(): All moves validated!
+45 moves present
+Count 2093
+moveValidator(): All moves validated!
+73 moves present
+Count 2094
+moveValidator(): All moves validated!
+65 moves present
+Count 2095
+moveValidator(): All moves validated!
+94 moves present
+Count 2096
+moveValidator(): All moves validated!
+62 moves present
+Count 2097
+moveValidator(): All moves validated!
+87 moves present
+Count 2098
+moveValidator(): All moves validated!
+124 moves present
+Count 2099
+moveValidator(): All moves validated!
+120 moves present
+Count 2100
+moveValidator(): All moves validated!
+68 moves present
+Count 2101
+moveValidator(): All moves validated!
+19 moves present
+Count 2102
+moveValidator(): All moves validated!
+84 moves present
+Count 2103
+moveValidator(): All moves validated!
+46 moves present
+Count 2104
+moveValidator(): All moves validated!
+74 moves present
+Count 2105
+moveValidator(): All moves validated!
+84 moves present
+Count 2106
+moveValidator(): All moves validated!
+80 moves present
+Count 2107
+moveValidator(): All moves validated!
+92 moves present
+Count 2108
+moveValidator(): All moves validated!
+143 moves present
+Count 2109
+moveValidator(): All moves validated!
+102 moves present
+Count 2110
+moveValidator(): All moves validated!
+107 moves present
+Count 2111
+moveValidator(): All moves validated!
+72 moves present
+Count 2112
+moveValidator(): All moves validated!
+57 moves present
+Count 2113
+moveValidator(): All moves validated!
+77 moves present
+Count 2114
+moveValidator(): All moves validated!
+136 moves present
+Count 2115
+moveValidator(): All moves validated!
+116 moves present

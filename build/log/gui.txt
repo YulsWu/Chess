@@ -1,0 +1,10 @@
+First determine GUI requirements, what does it need to be playable
+    Consider different functionality (play game, watch replay, browse database, read and save pgns as games, main menu??)
+    Research on current chess games/chess databases?
+Then determine method of implementation of these gui elements
+    Consider interfacing requirements with engine in terms of information and events
+Finalize interfacing requirements, build facade(?) of engine for gui, on engine-side
+
+Determine interfacing requirements
+
+Learn FXML separation of GUI and logic elements
