@@ -319,3 +319,12 @@ Blob blob = resultSet.getBlob("moves");
 
 Now nothing displays wtf
 also fix scrolling function for a non-full page in playerCountLoop
+
+New commit:
+Implement Memento pattern for board history
+Affected attributes:
+- bitStateHistory/ bitState
+- boardHistory
+- stateHistory
+- playedMoves
+-- Additional work for Played moves as updateState uses playedMoves.pop();

@@ -1,0 +1,23 @@
+Board history:
+NOT using memento - Not all attributes relating to history are strictly for history, many are for game logic as well.
+because of this it wouldn't make sense to use a memento:
+
+1. If I split the attributes up between board and memento, then both board and memento would have to have methods
+for restoring state from history, fragmenting the responsiblity between two classes
+
+2. If I put ALL attributes into memento, then I would have to use memento and caretaker at each step of the game
+loop to update the state of the board, again fragmenting the game logic responsiblity between these two
+
+3. I don't need a deep history, for chess games we only go forward or back once, and if I want to go back to a specific
+point (or if I want to fast forward a replay), I would just invoke forward or back n times until I get there. Game logic
+right now is very fast and this wouldn't incur significant time cost
+
+Board logic related histories:
+Many attributes only used the most recent object in the history, but still it doesn't make sense to Duplicate
+these attributes with "XHistory" in memento, and then "lastX" in board.
+- playedMoves is tied to board state updating
+- boardHistory tied to move type recognition after the move has been played
+- stateHistory to determine valid moves depending on board state (if player is in CHECK)
+- zobristHistory for repeated position draws
+- epHashHistory for zobrist hash generation
+- 

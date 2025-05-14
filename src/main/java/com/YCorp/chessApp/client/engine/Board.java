@@ -62,38 +62,15 @@ public class Board {
     put(5, "\u265B");
     put(6, "\u265A");
     }};
-    // 0 - empty
-    // 1 - Pawn
-    // 2 - Knight
-    // 3 - Bishop
-    // 4 - Rook
-    // 5 - Queen
-    // 6 - King
 
     //#region Board state variables
-    /*
-     * Game loop:
-     * - Initialize
-     * - Check board state (Check, checkmate, turn, Insuff. Mat., 50 move rule, 
-     * - Play move
-     * - Check board state
-     * - Play move, etc
-     * 
-     * Insufficient Material:
-     * - King vs King
-     * - King, Knight vs King
-     * - King, Bishop vs King
-     * - King, knight vs King, knight
-     */
-    
-
     private long bitState; // Current occupancy map for the whole board
     private int[][] board; // True board representation
     
+    private ArrayDeque<Move> playedMoves;
     private ArrayDeque<Long> bitStateHistory;
     private ArrayDeque<int[][]> boardHistory;
     private ArrayDeque<BOARD_STATE> stateHistory;
-    private ArrayDeque<Move> playedMoves;
     private ArrayDeque<Long> zobristHistory;
     private ArrayDeque<Long> epHashHistory;
     private ArrayDeque<boolean[]> castlingHistory;
