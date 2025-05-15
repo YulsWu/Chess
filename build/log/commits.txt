@@ -326,5 +326,26 @@ Affected attributes:
 - bitStateHistory/ bitState
 - boardHistory
 - stateHistory
+- algebraicHistory
+- halfClockHistory
+- 
+
+Histories tied to game logic:
+- epHashHistory
 - playedMoves
--- Additional work for Played moves as updateState uses playedMoves.pop();
+- zobristHistory
+- 
+
+playedMoves is tied to board, less so history
+
+CHANGING TO SQLITE:
+Begin with changing writeDB and DDL, Queries
+- Change ID to 64 bit INTEGER, for now just truncate or h1 ^ h2, can change hashing algo later
+- Change DATE to long (time since epoch)
+- Change all VARCHAR to TEXT
+- round float to REAL
+- Change MEDIUMBLOBs to BLOBs
+
+Remember to change removeDuplicateGames()
+
+Deleted mysql service related methods from RegexDatabase.java

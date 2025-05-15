@@ -216,8 +216,6 @@ public class LanternaChess {
                         terminal.flush();
                         drawLoadingScreen(textGraphics, terminal);
                         playerCountLoop(textGraphics, errorGraphics, highlightGraphics, terminal);
-                            
-
                     }
                 }
               
@@ -686,6 +684,7 @@ public class LanternaChess {
 
     public static int playerCountLoop(TextGraphics textGraphics, TextGraphics errorGraphics, TextGraphics highlightGraphics, Terminal terminal){        
         ArrayList<Map.Entry<String, Integer>> players = RegexDatabase.readPlayerCounts();
+        //sSystem.out.println("List entries: " + players.size());
         safeClear(terminal);
         
         // Create list of all posititions the entries go into

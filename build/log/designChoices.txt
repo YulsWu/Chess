@@ -21,3 +21,7 @@ these attributes with "XHistory" in memento, and then "lastX" in board.
 - zobristHistory for repeated position draws
 - epHashHistory for zobrist hash generation
 - 
+
+SQLite migration
+- Will need a lot of work to change current database methods to fit
+- BINARY(128) is no longer the fastest primary key for SQLite, Integer(64) is best

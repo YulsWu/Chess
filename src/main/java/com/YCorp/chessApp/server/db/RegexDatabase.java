@@ -55,7 +55,7 @@ public class RegexDatabase {
     );
 
     public static final String SQL_GAMES_TABLE_DDL = 
-    "CREATE TABLE pgn_database.games (" + 
+    "CREATE TABLE games (" + 
     "id BINARY(16) PRIMARY KEY," +	
     "chess_event VARCHAR(50)," +
     "site VARCHAR(50)," +
@@ -77,12 +77,16 @@ public class RegexDatabase {
 
     //#region Database Credentials
 
-    public static final String SERVER_URL = "jdbc:mysql://localhost:3306";
-    public static final String DB_NAME = "pgn_database";
-    public static final String DB_URL = SERVER_URL + "/" + DB_NAME;
-    public static final String DB_USERNAME = "root";
-    public static final String DB_PASSWORD = "fUZ8&ejS4]";
+    // public static final String SERVER_URL = "jdbc:mysql://localhost:3306";
+    // public static final String DB_NAME = "pgn_database";
+    // public static final String DB_URL = SERVER_URL + "/" + DB_NAME;
+    // public static final String DB_USERNAME = "root";
+    // public static final String DB_PASSWORD = "fUZ8&ejS4]";
+    
     public static final String DB_TABLE_NAME = "games";
+    public static final String DB_PATH = "jdbc:sqlite:C:/Users/yulun/AppData/Local/Programs/Java/Chess/src/main/resources/database/games.sqlite";
+    public static final String DB_QUERY_TABLE = "SELECT name FROM sqlite_master WHERE type='table' AND name='games'";
+    public static final String USER_PATH = System.getenv("USERPROFILE");
 
     //#endregion
 
@@ -91,7 +95,7 @@ public class RegexDatabase {
 
         PreparedStatement stmt;
 
-        try(Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD))
+        try(Connection conn = DriverManager.getConnection(DB_PATH))
         {   // Ensure successful connection
             if (!(conn == null)){
                 System.out.println("writeDB(): Connection successful");
@@ -99,6 +103,15 @@ public class RegexDatabase {
             else {
                 System.out.println("writeDB() ERROR: Null connection detected, returning.");
                 return unwrittenGames;
+            }
+
+            // Determine if table exists, create if not
+            if (conn.createStatement().executeQuery(RegexDatabase.DB_QUERY_TABLE).next()){
+                System.out.println("writeDB(): Existing games table found");
+            }
+            else {
+                System.out.println("writeDB(): Creating new table \'games\'");
+                conn.createStatement().executeUpdate(RegexDatabase.SQL_GAMES_TABLE_DDL);
             }
 
             // Remove duplicates from games list
@@ -211,7 +224,7 @@ public class RegexDatabase {
     
     private static int removeDuplicateGames(ArrayList<RegexGameData> rgd, Connection conn){
         int initSize = rgd.size();
-        String q = "SELECT id FROM pgn_database.games";
+        String q = "SELECT id FROM games";
         ResultSet results;
         Set<ByteBuffer> resultSet = new HashSet<>();
 
@@ -241,187 +254,12 @@ public class RegexDatabase {
         return 1;
     }
 
-    public static boolean startService(String serviceName) {
-        if (!doesServiceExist(serviceName)){
-            System.out.println("ERROR: Attempting to start a non-existent service.");
-            return false;
-        }
-        
-        try {
-            Process process = new ProcessBuilder("sc", "start", serviceName).start();
-            
-            while (!isServiceRunning(serviceName)){};
-            
-            int exitCode = process.waitFor();
-
-            if (exitCode == 0){
-                return true;
-            }
-            // Service already running
-            else if (exitCode == 1056){
-                return true;
-            }
-        }
-        catch (Exception e){ 
-            System.out.println("ERROR: Attempt to start " + serviceName + " has failed.");
-            return false;
-        }
-        return true;
-    }
-
-    public static boolean doesServiceExist(String serviceName){
-        try {
-            Process myProcess = new ProcessBuilder("sc", "query", serviceName).start();
-            int exitCode = myProcess.waitFor();
-
-            if (exitCode == 0){
-                System.out.println("Successfully started service " + serviceName);
-                return true;
-            }
-            else if (exitCode == 1060){
-                return false;
-            }
-            else {
-                System.out.println("Unexpected error code returned from services query");
-                return false;
-            }
-        
-        }
-        catch (IOException e){
-            System.out.println("Error creating process to query services:");
-            return false;
-        }
-        catch (InterruptedException ex){
-            System.out.println("Error: Service interrupted while waiting to finish execution");
-            return false;
-        }
-
-    }
-
-    public static boolean isServiceRunning(String serviceName) throws ChessServiceDoesNotExistException{
-            try{
-                Process myProcess = new ProcessBuilder("sc", "query", serviceName).start();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(myProcess.getInputStream()));
-                StringBuilder sb  = new StringBuilder();
-                String line;
-
-                while ((line = reader.readLine()) != null){
-                    sb.append(line + '\n');
-                }
-
-                int exitCode = myProcess.waitFor();
-
-                if (exitCode == 0){
-                    if (sb.toString().contains("RUNNING")){
-                        return true;
-                    }
-                }
-                else if (exitCode == 1060){
-                    throw new ChessServiceDoesNotExistException("Service does not exist.");
-                }
-                else{
-                    System.out.println("Unexpected exit code from querying services");
-                    return false;
-                }
-            }
-            catch(IOException e){
-                System.out.println("Error reading data from service query");
-                return false;
-            }
-            catch (InterruptedException ex) {
-                System.out.println("Error: Service interrupted while waiting to finish execution");
-                return false;
-            }
-        return false;
-    }
-
-    public static boolean doesDatabaseExist(){
-        try(Connection conn = DriverManager.getConnection(SERVER_URL, DB_USERNAME, DB_PASSWORD)){
-            String query = "SHOW DATABASES";
-            PreparedStatement statement = conn.prepareStatement(query);
-            ResultSet rs = statement.executeQuery();
-
-            while(rs.next()){
-                String db = rs.getString("Database");
-                if (db.equals(DB_NAME)){
-                    return true;
-                }
-            }
-            return false;
-
-        }
-        catch (SQLException e){
-            // Do something else??
-            return false;
-        }
-    }
-
-    public static boolean doesTableExist(){
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)){
-            String query = "SHOW TABLES from pgn_database";
-            PreparedStatement statement = conn.prepareStatement(query);
-            ResultSet results = statement.executeQuery();
-
-            while (results.next()){
-                String table = results.getString("Tables_in_pgn_database");
-                if (table.equals(DB_TABLE_NAME)){
-                    return true;
-                }
-            }
-            return false;
-        }
-        catch (Exception e){
-            System.out.println("Error checking table existence in database" + e);
-            return false;
-        }
-    }
-
-    public static boolean createDatabase(){
-        try (Connection conn = DriverManager.getConnection(SERVER_URL, DB_USERNAME, DB_PASSWORD)){
-            PreparedStatement statement = conn.prepareStatement("CREATE DATABASE " + DB_NAME);
-
-            // Return value is always 0 and is therefore useless
-            statement.executeUpdate();
-
-            return true;
-        }
-        catch (Exception e){
-            System.out.println("Error encountered while creating new database \"" + DB_NAME + "\": " + e);
-            return false;
-        }
-    }
-
-    public static boolean createTable(){
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)){
-            PreparedStatement statement = conn.prepareStatement(SQL_GAMES_TABLE_DDL);
-            // Return value always 0 for DDL statements
-            statement.executeUpdate();
-            return true;
-        }
-        catch (SQLException e){
-            System.out.println("Error encountered while creating new table \"" + DB_TABLE_NAME + "\": " + e);
-            return false;
-        }
-    }
-
-    public static boolean dropDatabase(){
-        try(Connection conn = DriverManager.getConnection(SERVER_URL, DB_USERNAME, DB_PASSWORD)){
-            PreparedStatement statement = conn.prepareStatement("DROP DATABASE " + DB_NAME);
-            statement.executeUpdate();
-            return true;
-        }
-        catch (Exception e){
-            System.out.println("Error encountered while attempting to drop database \"" + DB_NAME + "\": " + e);
-            return false;
-        }
-    }
-
     public static HashMap<byte[], String[]> queryGames(){
         HashMap<byte[], String[]> retMap = new HashMap<>();
-        String statement = "SELECT id, white_player, black_player, game_date FROM pgn_database.games";
+        String statement = "SELECT id, white_player, black_player, game_date FROM games";
 
         try (
-            Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+            Connection conn = DriverManager.getConnection(DB_PATH);
             PreparedStatement stmt = conn.prepareStatement(statement);
             ResultSet results = stmt.executeQuery();
             )
@@ -445,16 +283,16 @@ public class RegexDatabase {
         ArrayList<Map.Entry<String, Integer>> retArray = new ArrayList<Map.Entry<String, Integer>>();
         String query = 
         "WITH all_players AS (\n" + 
-            "\tSELECT white_player AS player FROM pgn_database.games\n"+
+            "\tSELECT white_player AS player FROM games\n"+
             "\tUNION ALL\n"+
-            "\tSELECT black_player FROM pgn_database.games\n"+
+            "\tSELECT black_player FROM games\n"+
         ")\n" +
         "SELECT player, COUNT(*) AS appearances\n"+
         "FROM all_players\n" + 
         "GROUP BY player\n";
 
         try(
-            Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+            Connection conn = DriverManager.getConnection(DB_PATH);
             PreparedStatement statement = conn.prepareStatement(query);
             ResultSet rs = statement.executeQuery();
             ){
@@ -479,10 +317,10 @@ public class RegexDatabase {
     public static ArrayList<String[]> readDBPlayer(String player){
         ArrayList<String[]> retArray = new ArrayList<>();
 
-        String query = "SELECT chess_event, game_date, white_player, black_player, result FROM " + DB_NAME + "." + DB_TABLE_NAME + " WHERE white_player = \"" + player + "\" OR black_player = \"" + player + "\"";
+        String query = "SELECT chess_event, game_date, white_player, black_player, result FROM " + DB_TABLE_NAME + " WHERE white_player = \"" + player + "\" OR black_player = \"" + player + "\"";
 
         try(
-            Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+            Connection conn = DriverManager.getConnection(DB_PATH);
             PreparedStatement statement = conn.prepareStatement(query);
             ResultSet resultSet = statement.executeQuery();
         ){

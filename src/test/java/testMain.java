@@ -1,55 +1,34 @@
-import db.RegexDatabase;
-import parser.RegexParser;
-import db.RegexGameData;
+import com.YCorp.chessApp.server.db.RegexDatabase;
+import com.YCorp.chessApp.client.parser.RegexParser;
+import com.YCorp.chessApp.server.db.RegexGameData;
 import java.util.ArrayList;
-import db.databaseTests;
 import java.util.Map;
 import java.io.PrintStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class testMain {
     public static void main(String[] args){
-
-        int batch_size = 100;
-
-        String mysqlServer = "jdbc:mysql://localhost:3306";
-        
-        String url = "jdbc:mysql://localhost:3306";
-        String DBName = "pgn_database";
-        String database = url + "/" + DBName;
-        String tableName = "games";
-        String serviceName = "mysql84";
-        String username = "root";
-        String password = "fUZ8&ejS4]";
-        String dirPath = "pgn/";
-        
-        
-        RegexDatabase.dropDatabase();
         writeAllGames();
         
     }
     
     public static void writeAllGames(){
-        String filePath = "pgn/";
+        String filePath = "C:/Users/Yulun/AppData/Local/Programs/Java/Chess/src/main/resources/pgn/";
         
         String[] players = new String[]{
             "andreikin.pgn", "aronian.pgn", "ashley.pgn", "carlsen.pgn",
             "ding.pgn", "nakamura.pgn", "polgarj.pgn", "tatamast25.pgn"
         };
 
-        if (!RegexDatabase.doesDatabaseExist()){
-            RegexDatabase.createDatabase();
-        }
-        if (!(RegexDatabase.doesTableExist())){
-            RegexDatabase.createTable();
-        }
-        
         ArrayList<RegexGameData> gdArray;
         for (String p : players){
             System.out.println("Writing " + p);
             gdArray = RegexParser.extractPGN(filePath + p);
-            RegexDatabase.writeDB(gdArray, 50);
+            RegexDatabase.writeDB(gdArray, 500);
             System.out.println("DONE");
         }
         

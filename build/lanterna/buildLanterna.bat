@@ -1,17 +1,19 @@
 @echo off
 
 
-javac -d bin\ -cp C:\Users\yulun\AppData\Local\Programs\Java\Chess\src\main\resources\lib\lanterna-3.1.3.jar;C:\Users\yulun\AppData\Local\Programs\Java\Chess\src\main\resources\lib\commons-codec-1.16.0.jar;C:\Users\yulun\AppData\Local\Programs\Java\Chess\src\main\resources\lib\mysql-connector-j-9.1.0.jar C:\Users\yulun\AppData\Local\Programs\Java\Chess\src\main\java\com\YCorp\chessApp\Entry.java C:\Users\yulun\AppData\Local\Programs\Java\Chess\src\main\java\com\YCorp\chessApp\client\engine\Move.java C:\Users\yulun\AppData\Local\Programs\Java\Chess\src\main\java\com\YCorp\chessApp\client\engine\Board.java C:\Users\yulun\AppData\Local\Programs\Java\Chess\src\main\java\com\YCorp\chessApp\client\exceptions\AlgebraicParseException.java C:\Users\yulun\AppData\Local\Programs\Java\Chess\src\main\java\com\YCorp\chessApp\client\exceptions\ChessServiceException.java C:\Users\yulun\AppData\Local\Programs\Java\Chess\src\main\java\com\YCorp\chessApp\client\exceptions\ChessServiceDoesNotExistException.java C:\Users\yulun\AppData\Local\Programs\Java\Chess\src\main\java\com\YCorp\chessApp\client\parser\RegexParser.java C:\Users\yulun\AppData\Local\Programs\Java\Chess\src\main\java\com\YCorp\chessApp\server\db\RegexGameData.java C:\Users\yulun\AppData\Local\Programs\Java\Chess\src\main\java\com\YCorp\chessApp\server\db\RegexDatabase.java C:\Users\yulun\AppData\Local\Programs\Java\Chess\src\main\java\com\YCorp\chessApp\client\lanterna\LanternaChess.java
+javac -d bin\ -cp C:\Users\yulun\AppData\Local\Programs\Java\Chess\src\main\resources\lib\lanterna-3.1.3.jar;C:\Users\yulun\AppData\Local\Programs\Java\Chess\src\main\resources\lib\commons-codec-1.16.0.jar;C:\Users\yulun\AppData\Local\Programs\Java\Chess\src\main\resources\lib\sqlite-jdbc-3.49.1.0.jar C:\Users\yulun\AppData\Local\Programs\Java\Chess\src\main\java\com\YCorp\chessApp\Entry.java C:\Users\yulun\AppData\Local\Programs\Java\Chess\src\main\java\com\YCorp\chessApp\client\engine\Move.java C:\Users\yulun\AppData\Local\Programs\Java\Chess\src\main\java\com\YCorp\chessApp\client\engine\Board.java C:\Users\yulun\AppData\Local\Programs\Java\Chess\src\main\java\com\YCorp\chessApp\client\exceptions\AlgebraicParseException.java C:\Users\yulun\AppData\Local\Programs\Java\Chess\src\main\java\com\YCorp\chessApp\client\exceptions\ChessServiceException.java C:\Users\yulun\AppData\Local\Programs\Java\Chess\src\main\java\com\YCorp\chessApp\client\exceptions\ChessServiceDoesNotExistException.java C:\Users\yulun\AppData\Local\Programs\Java\Chess\src\main\java\com\YCorp\chessApp\client\parser\RegexParser.java C:\Users\yulun\AppData\Local\Programs\Java\Chess\src\main\java\com\YCorp\chessApp\server\db\RegexGameData.java C:\Users\yulun\AppData\Local\Programs\Java\Chess\src\main\java\com\YCorp\chessApp\server\db\RegexDatabase.java C:\Users\yulun\AppData\Local\Programs\Java\Chess\src\main\java\com\YCorp\chessApp\client\lanterna\LanternaChess.java
 
 (
 echo Manifest-Version: 1.0
 echo Main-Class: com.YCorp.chessApp.Entry
-echo Class-Path: lib\lanterna-3.1.3.jar lib\commons-codec-1.16.0.jar lib\mysql-connector-j-9.1.0.jar
+echo Class-Path: lib\lanterna-3.1.3.jar lib\commons-codec-1.16.0.jar lib\sqlite-jdbc-3.49.1.0.jar
 echo.
 ) > manifest.txt
 
 jar cfvm LanternaChess.jar manifest.txt -C bin .
 
+rmdir /s /q bin
 if "%~1"=="nopause" goto skip
 pause
 :skip  
+
