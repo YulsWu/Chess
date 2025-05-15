@@ -3,3 +3,4 @@
 /build/lanterna/manifest.txt
 /build/lanterna/LanternaChess.jar
 directedCmd.bat
+/src/main/resources/database/*
