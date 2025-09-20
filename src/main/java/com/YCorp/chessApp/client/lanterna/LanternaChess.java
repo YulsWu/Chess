@@ -1,6 +1,10 @@
 package com.YCorp.chessApp.client.lanterna;
 
 import com.googlecode.lanterna.TerminalSize;
+import com.YCorp.chessApp.client.engine.*;
+import com.YCorp.chessApp.client.exceptions.AlgebraicParseException;
+import com.YCorp.chessApp.client.parser.RegexParser;
+import com.YCorp.chessApp.server.db.RegexDatabase;
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.screen.Screen;
@@ -26,11 +30,6 @@ import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFrame;
-
-import com.YCorp.chessApp.client.engine.*;
-import com.YCorp.chessApp.client.parser.RegexParser;
-import com.YCorp.chessApp.client.exceptions.AlgebraicParseException;
-import com.YCorp.chessApp.server.db.RegexDatabase;
 
 public class LanternaChess {
     public static final Map<Integer, String> CHESS_EMOJI = new HashMap<>(){{
@@ -216,8 +215,6 @@ public class LanternaChess {
                         terminal.flush();
                         drawLoadingScreen(textGraphics, terminal);
                         playerCountLoop(textGraphics, errorGraphics, highlightGraphics, terminal);
-                            
-
                     }
                 }
               
@@ -686,6 +683,7 @@ public class LanternaChess {
 
     public static int playerCountLoop(TextGraphics textGraphics, TextGraphics errorGraphics, TextGraphics highlightGraphics, Terminal terminal){        
         ArrayList<Map.Entry<String, Integer>> players = RegexDatabase.readPlayerCounts();
+        //sSystem.out.println("List entries: " + players.size());
         safeClear(terminal);
         
         // Create list of all posititions the entries go into

@@ -1,0 +1,4 @@
+Sep 17, 2025 5:08:06 P.M. com.sun.javafx.application.PlatformImpl startup
+WARNING: Unsupported JavaFX configuration: classes were loaded from 'unnamed module @31fe8ea4'
+Sep 17, 2025 5:08:06 P.M. javafx.fxml.FXMLLoader$ValueElement processValue
+WARNING: Loading FXML document with JavaFX API of version 23.0.1 by JavaFX runtime of version 21

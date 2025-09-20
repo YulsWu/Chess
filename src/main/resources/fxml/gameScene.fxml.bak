@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.TextFlow?>
+
+<Pane fx:id="gamePane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.YCorp.chessApp.client.javafx.scratchFX">
+   <children>
+      <GridPane fx:id="gridBoard" alignment="CENTER" gridLinesVisible="true" layoutX="230.0" layoutY="20.0" prefHeight="500.0" prefWidth="500.0">
+        <columnConstraints>
+            <ColumnConstraints halignment="CENTER" hgrow="NEVER" maxWidth="0.0" minWidth="0.0" percentWidth="12.5" prefWidth="0.0" />
+            <ColumnConstraints halignment="CENTER" hgrow="NEVER" maxWidth="0.0" minWidth="0.0" percentWidth="12.5" prefWidth="0.0" />
+          <ColumnConstraints halignment="CENTER" hgrow="NEVER" maxWidth="0.0" minWidth="0.0" percentWidth="12.5" prefWidth="0.0" />
+          <ColumnConstraints halignment="CENTER" hgrow="NEVER" maxWidth="0.0" minWidth="0.0" percentWidth="12.5" prefWidth="0.0" />
+            <ColumnConstraints halignment="CENTER" hgrow="NEVER" maxWidth="0.0" minWidth="0.0" percentWidth="12.5" prefWidth="0.0" />
+            <ColumnConstraints halignment="CENTER" hgrow="NEVER" maxWidth="0.0" minWidth="0.0" percentWidth="12.5" prefWidth="0.0" />
+            <ColumnConstraints halignment="CENTER" hgrow="NEVER" maxWidth="0.0" minWidth="0.0" percentWidth="12.5" prefWidth="0.0" />
+            <ColumnConstraints halignment="CENTER" hgrow="NEVER" maxWidth="0.0" minWidth="0.0" percentWidth="12.5" prefWidth="0.0" />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints maxHeight="0.0" minHeight="0.0" percentHeight="12.5" prefHeight="0.0" valignment="CENTER" vgrow="NEVER" />
+            <RowConstraints maxHeight="0.0" minHeight="0.0" percentHeight="12.5" prefHeight="0.0" valignment="CENTER" vgrow="NEVER" />
+            <RowConstraints maxHeight="0.0" minHeight="0.0" percentHeight="12.5" prefHeight="0.0" valignment="CENTER" vgrow="NEVER" />
+            <RowConstraints maxHeight="0.0" minHeight="0.0" percentHeight="12.5" prefHeight="0.0" valignment="CENTER" vgrow="NEVER" />
+          <RowConstraints maxHeight="0.0" minHeight="0.0" percentHeight="12.5" prefHeight="0.0" valignment="CENTER" vgrow="NEVER" />
+          <RowConstraints maxHeight="0.0" minHeight="0.0" percentHeight="12.5" prefHeight="0.0" valignment="CENTER" vgrow="NEVER" />
+          <RowConstraints maxHeight="0.0" minHeight="0.0" percentHeight="12.5" prefHeight="0.0" valignment="CENTER" vgrow="NEVER" />
+            <RowConstraints maxHeight="0.0" minHeight="0.0" percentHeight="12.5" prefHeight="0.0" valignment="CENTER" vgrow="NEVER" />
+        </rowConstraints>
+         <children>
+            <StackPane fx:id="square0" prefHeight="150.0" prefWidth="200.0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="7" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+            <StackPane fx:id="square1" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+            <StackPane fx:id="square2" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="7" />
+            <StackPane fx:id="square3" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="7" />
+            <StackPane fx:id="square4" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="4" GridPane.rowIndex="7" />
+            <StackPane fx:id="square5" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="5" GridPane.rowIndex="7" />
+            <StackPane fx:id="square6" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="6" GridPane.rowIndex="7" />
+            <StackPane fx:id="square7" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="7" GridPane.rowIndex="7" />
+            <StackPane fx:id="square8" prefHeight="150.0" prefWidth="200.0" GridPane.rowIndex="6" />
+            <StackPane fx:id="square9" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+            <StackPane fx:id="square10" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="6" />
+            <StackPane fx:id="square11" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="6" />
+            <StackPane fx:id="square12" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="4" GridPane.rowIndex="6" />
+            <StackPane fx:id="square13" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="5" GridPane.rowIndex="6" />
+            <StackPane fx:id="square14" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="6" GridPane.rowIndex="6" />
+            <StackPane fx:id="square15" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="7" GridPane.rowIndex="6" />
+            <StackPane fx:id="square16" prefHeight="150.0" prefWidth="200.0" GridPane.rowIndex="5" />
+            <StackPane fx:id="square17" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            <StackPane fx:id="square18" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+            <StackPane fx:id="square19" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="5" />
+            <StackPane fx:id="square20" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="4" GridPane.rowIndex="5" />
+            <StackPane fx:id="square21" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="5" GridPane.rowIndex="5" />
+            <StackPane fx:id="square22" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="6" GridPane.rowIndex="5" />
+            <StackPane fx:id="square23" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="7" GridPane.rowIndex="5" />
+            <StackPane fx:id="square24" prefHeight="150.0" prefWidth="200.0" GridPane.rowIndex="4" />
+            <StackPane fx:id="square25" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <StackPane fx:id="square26" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+            <StackPane fx:id="square27" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="4" />
+            <StackPane fx:id="square28" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="4" GridPane.rowIndex="4" />
+            <StackPane fx:id="square29" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="5" GridPane.rowIndex="4" />
+            <StackPane fx:id="square30" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="6" GridPane.rowIndex="4" />
+            <StackPane fx:id="square31" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="7" GridPane.rowIndex="4" />
+            <StackPane fx:id="square32" prefHeight="150.0" prefWidth="200.0" GridPane.rowIndex="3" />
+            <StackPane fx:id="square33" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <StackPane fx:id="square34" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+            <StackPane fx:id="square35" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+            <StackPane fx:id="square36" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="4" GridPane.rowIndex="3" />
+            <StackPane fx:id="square37" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="5" GridPane.rowIndex="3" />
+            <StackPane fx:id="square38" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="6" GridPane.rowIndex="3" />
+            <StackPane fx:id="square39" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="7" GridPane.rowIndex="3" />
+            <StackPane fx:id="square40" prefHeight="150.0" prefWidth="200.0" GridPane.rowIndex="2" />
+            <StackPane fx:id="square41" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <StackPane fx:id="square42" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+            <StackPane fx:id="square43" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+            <StackPane fx:id="square44" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="4" GridPane.rowIndex="2" />
+            <StackPane fx:id="square45" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="5" GridPane.rowIndex="2" />
+            <StackPane fx:id="square46" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="6" GridPane.rowIndex="2" />
+            <StackPane fx:id="square47" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="7" GridPane.rowIndex="2" />
+            <StackPane fx:id="square48" prefHeight="150.0" prefWidth="200.0" GridPane.rowIndex="1" />
+            <StackPane fx:id="square49" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <StackPane fx:id="square50" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <StackPane fx:id="square51" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+            <StackPane fx:id="square52" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+            <StackPane fx:id="square53" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="5" GridPane.rowIndex="1" />
+            <StackPane fx:id="square54" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="6" GridPane.rowIndex="1" />
+            <StackPane fx:id="square55" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="7" GridPane.rowIndex="1" />
+            <StackPane fx:id="square56" prefHeight="150.0" prefWidth="200.0" />
+            <StackPane fx:id="square57" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="1" />
+            <StackPane fx:id="square58" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="2" />
+            <StackPane fx:id="square59" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="3" />
+            <StackPane fx:id="square60" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="4" />
+            <StackPane fx:id="square61" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="5" />
+            <StackPane fx:id="square62" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="6" />
+            <StackPane fx:id="square63" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="7" />
+         </children>
+      </GridPane>
+      <TextFlow fx:id="playerTextFlow" layoutX="103.0" layoutY="458.0" prefHeight="62.0" prefWidth="127.0" />
+      <TextFlow fx:id="opponentTextFlow" layoutX="103.0" layoutY="20.0" prefHeight="63.0" prefWidth="127.0" />
+   </children>
+</Pane>

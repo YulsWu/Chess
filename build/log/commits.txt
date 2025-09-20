@@ -326,5 +326,391 @@ Affected attributes:
 - bitStateHistory/ bitState
 - boardHistory
 - stateHistory
+- algebraicHistory
+- halfClockHistory
+- 
+
+Histories tied to game logic:
+- epHashHistory
 - playedMoves
--- Additional work for Played moves as updateState uses playedMoves.pop();
+- zobristHistory
+- 
+
+playedMoves is tied to board, less so history
+
+CHANGING TO SQLITE:
+Begin with changing writeDB and DDL, Queries
+- Change ID to 64 bit INTEGER, for now just truncate or h1 ^ h2, can change hashing algo later
+- Change DATE to long (time since epoch)
+- Change all VARCHAR to TEXT
+- round float to REAL
+- Change MEDIUMBLOBs to BLOBs
+
+Remember to change removeDuplicateGames()
+
+Deleted mysql service related methods from RegexDatabase.java
+
+Ran into issue where I cannot define the resources source path with VSCode's launcher as getResources() searches the classpath of the built project (in temp folder) rather than
+the actual src/main/resources=
+
+
+JAVAFX
+
+MousePress:
+- Clicking on a Square
+    - Have Selections
+        - Square == selectedSquare
+            - Set selections (Same)
+            - Set piece pos (same)
+            - Set parenthood to anchor (same)
+        - Square != selected Square
+            - Attempt MOVE
+    - Do not have selections
+        - Square is empty
+            - Nothing
+        - Square is occupied
+            - Set selections
+            - Set piece pos
+            - Set parenthood to Anchor
+- Clicking on NOT square
+    - Clear selections
+    - clearSelectionsFlag = false;
+
+Mouse Release:
+- Have selections
+    - Square == selectedSquare
+        - Snap piece back to square
+        - clearSelectionsFlag == true
+            - Clear selections
+            - Toggle flag
+        - clearSelectionsFlag == false
+            - Toggle flag
+    - Square != selectedSquare
+        - IF I still have selections at this point, it means I've dragged the piece here
+        - Attempt move
+        - Clear selections
+- NO selections
+    - Nothing happens
+
+getBoardStatus():
+- All 4 castling rights
+- Halfclock count
+- nFoldRepeat count
+- Zobrist hash length
+- Current BoardState
+- Current turn
+
+Create new restorePiece() method and replace instances of movePiece being used to restore, 
+rather than making an actual move!
+
+--
+GUIEngine.attemptMove() return codes integration with game ending GUI elements
+
+--
+Currently figuring out GUI-TIMER-ENGINE communication using concurrently running timer,
+- TIMER->GUI callbacks for clock tick and timeouts
+- ENGINE->TIMER callbacks for increment/game end conditions
+
+Direct method calls:
+GUI->Engine game end due to timeout
+
+
+Timer seems to work, more precision timing required
+
+TODO - Implement callbacks between clock and gui
+I think really the only callbacks needed are:
+    1. clock->gui clock tick
+    2. clock->gui Timeout
+
+- toggle/increment can be called by GUIEngine directly and then directly on clock
+- gameEndConditions from board-> GUI and board->clock direct calls
+
+Sept 8th - 
+Add clock field to GUI Engine
+- Added clock to GUIEngine attemptMove(), checks if clock exists and if so acts accordingly
+- Added non-FX thread methods to GameSceneController to change clock displays
+- We DO NOT need events, just run changes to GUI elements from other threads through Platform.runLater()
+
+- Need to link callback targets for ChessClock
+    - Link tick calls to non-FX methods on Controller
+    - Link timeout calls to both? Board and Controller
+        - Board saves game as PGN, and other stuff
+        - Controller freezes clocks and displays game over, and reason
+            - probably better to propagate to Controller directly rather than -> board -> controller
+            - Other game-end conditions are still initiated by the FX thread, but timeout would be from the clock thread
+            - ChessClock is already set up to send callbacks
+
+** Fix chess clock to use consistent time increment for timer (millis vs nanos);
+- Increments and Tick rate is provided in seconds
+    - both are converted to ms, increment is added to timer, tick is provided to system.sleep()
+
+- Added callback methods to ChessClock
+    - Reformatted callbacks to be stored as an array of Callback, fits the observer pattern and futureproofs in case I want to callback to additional objects
+    - Fixed callbacks in the chess timers themselves
+- Added callback setting method to GUIEngine
+- Actually set callbacks in ScratchFX
+
+Overloaded GUIEngine constructor with an additional constructor taking clock time, increment and ticks, and a target for clock tick callbacks
+automatically adds GUIEngine's board as a timeout target for ChessClock
+
+ChessClock callbacks:
+- ChessClock is created with empty lists for callbacks
+- If GUIEngine is created using constructor with clocks, GUIEngine will automatically
+add its Board as a timeout target
+- Additonal timeout and tick targets can be added through GUIEngine.addTimeoutCallTarget() and GUIEngine.addTickCallTarget()
+
+Controller and GUIEngine setup:
+1. Load FXML, get controller reference from FXML loader
+2. Create new scene, set as root (Might change with the addition of scenes)
+3. Create GUIEngine (either with clock or without)
+    - if with clock, also set Controller as Timeout and Tick target
+4. Assign guiEngine object as the Controller's GUIEngine
+
+
+Second ticks won't work well, need higher granularity - change ticks back to milliseconds and do like 500 or smth
+
+9/10
+In order to kill ChessClock threads, we must attach a listener to the stage to listen for window close event, and 
+in response execute the ChessClock stop methods to prevent undead timer threads
+
+Killing non-FX background threads:
+- Create closeable interface for all controllers for scenes, implement and create cleanup() methods for non-fx threads or other cleanup duties
+- Load all controllers and scenes at startup, keep list of references for controllers (maybe keep active controller as well)
+    - ArrayList<Closeable>
+- Create onWindowClose handler for main Stage to listen for window closes and either:
+    1. Call cleanup method on CURRENT controller or
+    2. Iterate through ArrayList<Closeable> and call cleanup on ALL controllers
+
+Added - 
+- Closeable interface - implemented by GameSceneController
+- GameSceneController implementation of cleanup()
+- cleanup() method in GUIEngine NOT related to Closeable interface (since Scenemanager would interact with controller, which then interacts with GUIEngine)
+    - This method simply invokes ChessClock.stop() - which kills timer threads
+- Rudimentary SceneManager Class - currently basic but may be good for future functionality
+    - Simply an ArrayList<Closeable>
+    - has cleanup() method that iterates through ArrayList<Closeable> and invokes Closeable.cleanup() on those classes
+- ScratchFX.onWindowClose() - Attach to stage through stage.addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, this::onWindowClose)
+    - Invokes SceneManager.cleanup() - Again useful since each controller can do its own custom Closeable.cleanup() implementation.
+
+Works! :)
+
+Fire tick call right at toggle? - Doesn't make sense when tick rate is small enough
+- Timers don't pause until they exit the tick sleep period anyway, and immediately after
+
+ChessClock.toggle() first pauses timer, then adds increment to the player's time - However this increment is reflected in the last tick 
+sent by the timer before its pausing which is strage because the timer is paused first, then the increment is added.
+- Likely because when ChessTimer.pause() is invoked, the thread is still sleeping for the time specified by the tick parameter, so 
+    the main thread continues execution, and when the timer thread wakes it sees the incremented time, and sends that in the callback
+- At what ms value for tick does this no longer guarantee that the increment is added first? and would I ever use that level of granularity for
+    the chess timer?
+
+Answer: 100ms is good, its only around ~10ms that race conditions may occur
+- ChessClock is definitely overengineered but it works
+- Next time just use timestamp differences! (System.nanotime()) - No thread spawning, just the thread running ChessClock
+
+FXML initialize()
+- I was overriding initialize() and adding some init tasks to it, but realized there is no point to doing so
+- It is NOT SAFE to get dimensions in initialize() so might as well do every initialization task in a custom method
+- Removed override of FXML initialize() in GameSceneController, moved code into init()
+
+Added 'game over' screen in controller, invisible and mouse transparent until game ends
+
+9/13
+Get GUI Controller to recognize different game end codes, display different game-end screens
+- Added overloaded GUIEngine constructor for when white and black have different times
+- Added accessor methods for time left in ChessClock and GUIEngine
+- GameSceneController.init() now checks if the GUIEngine has a clock through:
+    - GUIEngine.isTimed() -> checks if GUIEngine.clock is null or not, returns boolean
+    - if (timed) {set player clock initial times} else {set clocks as non-visible}
+
+issue: After white's first move the clock does not reflect the first increment until it is white's turn again.
+- Likely because white's first move "starts" the clock, so there is no sleeping thread to 'wake' and send the tick call
+    before the other timer is toggled
+- Instead of changing ChessClock and ChessTimer, will just read the time left on the player's clock through GUIEngine.getTimeMillis()
+    after the player plays a move.
+Done
+- Added GameSceneController.updateClock(), which updates both player's clock
+- Inserted updateClock() into onMouseRelease() in to the case where the move is valid and is played on the board
+
+Back on task: 
+1. Configure controller to respond to game-end conditions
+2. Test all game end conditions
+    - White/Black timeout - works
+    - White/black checkmate - Works
+    - stalemate
+    - 75 move draw - works
+    - 5 fold repetition draw - works
+    - Insufficient material - works for KvK
+3. Work on end game conditions not already accounted for:
+    - Mutual draw
+    - Resignation
+    - Claiming 50 move / 3 fold repetition draw
+4. Test everything to date from Black's perspective as well
+
+
+issue: Multiple end game evaluations occur at game-end, starts as checkmate, evaluates again and ends up as stalemate
+- Caused by Board.evaulateGameEndConditions() being executed twice, once in GUIEngine.attemptMove(), and once in Board.updateState()
+    - evaluateGameEndConditions() sets Board.state depending on current state, moves, and turn
+    - First execution: validMoves.size() == 0 + Board.state == CHECK --> Board.State = CheckMate
+    - Second execution: validMoves.size() == 0 + Board.state != CHECK (== Checkmate) --> Board.State = Stalemate
+    - Method sets current state based on previous state, so multiple executions will change state without any other changes
+
+Fix:
+Take the call to evaluateGameEndConditions() out of updateState, as its initial purpose there was to emulate gameplay, which is now
+being handled by the JavaFX GUI
+- Also added a condition in where stalemate is only evaluated for board states not equal to CHECK, or any MATE (Basically just IN_PLAY, we can only reach stalemate from normal play obiously not from checkmate or ended game state)
+
+Issue: Thought turn wasn't being tracked, forgot there's a flag in Board that tracks it.
+fix: Created a getter Board.getTurnBool() to return Board.whitesTurn, created GUIEngine.isWhitesTurn()
+
+Facade pattern/Wrapper methods
+- Seems redundant to write so many methods just to keep up encapsulation and pass data to the outer most object
+- However this supports encapsulation and is similar to a Facade pattern, thats why it feels strange/wrong, its because I am in fact making
+    a tradeoff between efficiency/effectiveness for readability/maintainability
+        - I pay for readability with tedium/redundancy
+
+Tested Checkmate, forced repetition and move count draw, King v King insuff. mat.
+- Implement timeoutCallback() calling endGame() through Platform.runLater()
+
+finshed restart and exit
+
+Added quick restart button to in-game screen 
+
+9/14
+
+Task: Still want to keep testing, but need the ability to initialize from black perspective. This would require changing
+how I create the GUIEngine, so may as well start working on a title screen and the transition from title to in-game through
+a game-setting screen - which would also allow me to change the settings and test from different perspectives
+- Create and implement menu screen
+- Figure out scene transitions/Scene loading/unloading
+    - Create game using settings from scene transition
+- Figure out a way to test everything programmatically rather than manually
+
+future idea: Create a "TestEngine" for Board to read public PGNs and play them out using Board, which would
+test functionality for board
+- Ensure same outcome 
+- Ensure no errors for any moves (curate complete games from PGN)
+- Many PGN games would end in resignation or mutual draw
+    - Code for these inputs? or just use games as-is and ensure validity up until the ending move?
+    - Mutual draws and resignations aren't really a part of the game logic, its more to do with User interaction
+        with the UI and relaying data between clients and the server in multiplayer
+
+issue:
+Using properties + listeners vs propagating custom events in order to get a signal out from the controller?
+- Properties is controller-specific, would have to re-attach all listeners at each scene recreation
+    - Something like an int property, with 0 being no change, and other numbers corresponding to the scenes to change to
+- Propagate event from UI, listener on Stage
+    - Event could contain the target destination
+    - Requires custom events
+
+Decided just to have specific properties on each controller for possible navigation 
+- Listeners listening to Controller properties are attached when the scene is loaded
+- Stage listeners (listening for ON WINDOW CLOSE) are attached in start() on the initial run
+
+Gym and Laundry break - Todo after:
+- Game creation from settings
+- Test game win conditions, functioning UI from Black's perspective
+
+issue: slight issue with pop-in loading of nodes when loading game scene
+- Likely due to node manupulation on a scene while that scene is the root of the (already showing) stage
+- Must finish modifying nodes BEFORE invoking stage.show()
+    - However I need the scene reference to be used IN init to set the right click filter
+    - But I can't get the scene through root.getScene() since the scene hasn't been set
+fix: create new temporary scene object so we can associate the root to the scene before setting the stage
+works! no pop in left, although a bit of a delay between hitting restart/play game and the game rendering
+- Perhaps turn off background rendering for the GUIPieces?
+
+new issue: Slight lag when restarting - Likely due to reparsing FXML
+- Not a big deal, it'd just be nice to have to more responsive
+- Could reset controller state and scene instead of re-loading 
+fix:
+- Not crucial, fix later
+
+Settings screen - 
+- White time
+- black time
+- white increment
+- black increment
+- player's perspective
+
+issue:
+Passing information between controllers, when controllers only live as long as each scene
+    Delves into larger issue: Dynamically kill and load scenes? or store them with the ability to "reset" them and switch between?
+        - "Resetting" the game screen would require 2 base states, one for each player perspective
+        - Other scenes can be much more easily reset
+        - "Reset and Switch" method will also solve previous 'lag' issue incurred by the FXML loader
+    Possible solutions
+        - Controllers are aware of other controllers, not super compatible with "Discard and reload" method of scene transitions
+        - Custom JavaFX events which have both notification and payload capacity, would solve everything but lots of upfront work
+        - Global singleton "state" containing "current" game states?
+            - I don't love this as the singleton state is only currently useful for the game screen
+        - PROBABLY BEST, JUST THOUGHT OF THIS - Ask for game details at game start screen?
+            - So its technically the same "Scene", and I wouldn't have to transfer information between scenes
+            - GameSceneController flag to denote whether to ask for settings or not
+                - Entering from game screen --> Ask for settings!
+                - Restarting same game --> don't ask
+                - Restarting game with new settings --> ask!
+                - May be a bit weird with multiplayer......? two copies of controllers asking
+                    - but then again most things WILL break when implementing multiplayer (Didn't design ahead of time)
+
+After some thought realising that moving the setting screen to the game controller doesn't matter, as we swap out the controller with a newly created
+one in order to "reset" the game scene, so there are no persistent variables that can be used.
+- Just go with Custom FX events with a dummy event node to "fire" said event, and then at the stage level attach a listener to perform the scene transitions
+    - Replace current property-centric stage transition mechanisms to this
+    - Benefits
+        - Usable on any controller pretty easily, just dummy node, one time setup of custom events
+        - The same stage is used throughout the lifecycle of the program, so we only attach ONE handler ONCE to the stage as FILTER, all controllers can use that handler
+        - Stays de-coupled within the FX environment
+        - "Makes sense", logic is easily followed if familar with FX events
+todo:
+1. Create custom events
+2. Replace current scene transition properties
+    - Add dummy nodes
+    - Configure handlers to fire event with payload instead
+3. Implement setting screen and menu -> game transition.
+
+Created new event
+Now just implementing it into gamescenecontroller
+- Detach "settings screen" from menu scene specifically, create a new overlay scene at the stage level for it.
+- This way the settings can be saved stage-level, and at the start of each game we can either use those settings or ask for new ones
+
+ScratchFX:
+- Attached new listener for scene transitions on Stage
+- Removed property listener for loadGameScene(Still need to do for loadMenu)
+- Created sceneTransitionHandler, only accounts for TO_GAME atm
+
+Now I need the settings scene + controller
+
+Scene transitions done, now finish the initial task of testing from both white + black perspectives
+
+Back on task: 
+1. Configure controller to respond to game-end conditions
+2. Test all game end conditions
+    - White/Black timeout - works
+    - White/black checkmate - Works
+    - stalemate - works
+    - 75 move draw - works
+    - 5 fold repetition draw - works
+    - Insufficient material - works for KvK
+3. Work on end game conditions not already accounted for:
+    - Mutual draw
+    - Resignation
+    - Claiming 50 move / 3 fold repetition draw
+4. Test everything to date from Black's perspective as well
+
+Tested as much as I could with current framework for black + white, whats left to test is:
+- All Insuf.Mat. cases for both sides
+    - Figure out a way to do this programmatically, with a moveset as input?
+    - May have to just implement replay functionality to do this, or at least begin work on it
+- Mutual draw
+    - Requires 2 real players
+- Resignation
+    - Implementation depends on use case
+        - Saving PGN afterwards
+        - 1 player vs BOT or pvp
+- Optional draws at 3 fold repeat and 50 moves
+    - Really only relevant for PvP and online play
+
+Todo
+- Fix git merge and branches, get better at branching
+- Fix initial time displays, they are initially from white perspective always
