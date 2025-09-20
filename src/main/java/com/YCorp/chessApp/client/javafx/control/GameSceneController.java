@@ -292,10 +292,6 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
     private String opponent;
     private String opponentElo;
 
-    // // Restart trigger
-    // SimpleBooleanProperty restart = new SimpleBooleanProperty(false);
-    // public SimpleBooleanProperty restartProperty() {return restart;};
-
     // Dummy node
     Pane dummy = new Pane();
 
@@ -483,8 +479,18 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
 
         // Set visibility and initial values on player clocks, depending on if its a timed game
         if (this.guiEngine.isTimed()){
-            this.playerClock.setText(formatTimeMillis(this.guiEngine.getTimeMillis(true)));
-            this.opponentClock.setText(formatTimeMillis(this.guiEngine.getTimeMillis(false)));
+            String white = formatTimeMillis(this.guiEngine.getTimeMillis(true));
+            String black = formatTimeMillis(this.guiEngine.getTimeMillis(false));
+
+            if (this.whitePlayer){
+                this.playerClock.setText(white);
+                this.opponentClock.setText(black);
+            }
+            else {
+                this.playerClock.setText(black);
+                this.opponentClock.setText(white);
+            }
+
         }
         else {
             this.playerClock.setVisible(false);
