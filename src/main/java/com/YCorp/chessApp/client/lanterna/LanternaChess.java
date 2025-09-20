@@ -1,6 +1,10 @@
 package com.YCorp.chessApp.client.lanterna;
 
 import com.googlecode.lanterna.TerminalSize;
+import com.YCorp.chessApp.client.engine.*;
+import com.YCorp.chessApp.client.exceptions.AlgebraicParseException;
+import com.YCorp.chessApp.client.parser.RegexParser;
+import com.YCorp.chessApp.server.db.RegexDatabase;
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.screen.Screen;
@@ -26,11 +30,6 @@ import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFrame;
-
-import com.YCorp.chessApp.client.engine.*;
-import com.YCorp.chessApp.client.parser.RegexParser;
-import com.YCorp.chessApp.client.exceptions.AlgebraicParseException;
-import com.YCorp.chessApp.server.db.RegexDatabase;
 
 public class LanternaChess {
     public static final Map<Integer, String> CHESS_EMOJI = new HashMap<>(){{

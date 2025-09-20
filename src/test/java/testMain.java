@@ -1,8 +1,10 @@
-import com.YCorp.chessApp.server.db.RegexDatabase;
-import com.YCorp.chessApp.client.parser.RegexParser;
-import com.YCorp.chessApp.server.db.RegexGameData;
 import java.util.ArrayList;
 import java.util.Map;
+
+import com.YCorp.chessApp.client.parser.RegexParser;
+import com.YCorp.chessApp.server.db.RegexDatabase;
+import com.YCorp.chessApp.server.db.RegexGameData;
+
 import java.io.PrintStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -10,9 +12,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import clockTests.ChessClockTests;
+
 public class testMain {
     public static void main(String[] args){
-        writeAllGames();
+        ChessClockTests.toggleConsistencyTest();
         
     }
     
@@ -43,3 +47,4 @@ public class testMain {
         }
     }
 }
+ 

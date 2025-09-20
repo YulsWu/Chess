@@ -1,12 +1,13 @@
 package com.YCorp.chessApp.client.loop;
 
 import java.util.Scanner;
-import java.util.ArrayList;
 
-import com.YCorp.chessApp.client.exceptions.AlgebraicParseException;
-import com.YCorp.chessApp.client.parser.RegexParser;
 import com.YCorp.chessApp.client.engine.Board;
 import com.YCorp.chessApp.client.engine.Move;
+import com.YCorp.chessApp.client.exceptions.AlgebraicParseException;
+import com.YCorp.chessApp.client.parser.RegexParser;
+
+import java.util.ArrayList;
 
 public class TerminalLoop {
     public static void startTerminalLoop(){

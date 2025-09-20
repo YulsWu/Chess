@@ -1,12 +1,13 @@
 package com.YCorp.chessApp.client.engine;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayDeque;
 import java.util.concurrent.ThreadLocalRandom;
 
-
 import com.YCorp.chessApp.client.engine.Move.MOVE_TYPE;
+import com.YCorp.chessApp.client.engine.callback.TimeoutCall;
 import com.YCorp.chessApp.client.parser.RegexParser;
 
 /**
@@ -40,7 +41,7 @@ import com.YCorp.chessApp.client.parser.RegexParser;
  * Thus the first 8 bits 0b0000 0000... would be 0b'a1''b1''c1''d1' 'e1''f1''g1''h1'
  * </p>
  */
-public class Board {
+public class Board implements TimeoutCall {
     // Any state with W_ or B_ signifies they LOST due to the reason
     // ie W_MATE means that White was Mated
     public enum BOARD_STATE {
@@ -61,6 +62,22 @@ public class Board {
     put(4, "\u265C");
     put(5, "\u265B");
     put(6, "\u265A");
+    }};
+
+    public static final Map<Integer, String> INT_TO_FEN = new HashMap<>(){{
+        put(-6, "k");
+        put(-5, "q");
+        put(-4, "r");
+        put(-3, "b");
+        put(-2, "n");
+        put(-1, "p");
+        put(1, "P");
+        put(2, "N");
+        put(3, "B");
+        put(4, "R");
+        put(5, "Q");
+        put(6, "K");
+
     }};
 
     //#region Board state variables
@@ -1537,6 +1554,10 @@ public class Board {
 
         return retArray;
     }
+    public ArrayList<int[]> generateValidMoves(){
+        return generateValidMoves(this.whitesTurn ? 1 : -1);
+    }
+
 
     // Returns valid castling based on:
     //  - Board.white/blackCanCastle boolean (King or rooks have moved);
@@ -1590,6 +1611,8 @@ public class Board {
         long shortCastleMask;   // King's path for short castle
         long longCastleMask; // King's path for long castle
         long longRookMask; // Represents the square to the right of the long rook, needs to be unoccupied but not invisible
+        boolean longCastleFlag; // Long castling availablility for specified player
+        boolean shortCastleFlag; // Short castling availability for specified player
         // Set values based on player sign
         if (playerSign > 0){
             opponentSign = -1;
@@ -1603,6 +1626,8 @@ public class Board {
             shortCastleMask = W_CASTLE_SHORT;
             longCastleMask = W_CASTLE_LONG;
             longRookMask = (1L << (63 - 1));
+            longCastleFlag = this.whiteLong;
+            shortCastleFlag = this.whiteShort;
         }
         else {
             opponentSign = 1;
@@ -1616,18 +1641,21 @@ public class Board {
             shortCastleMask = B_CASTLE_SHORT;
             longCastleMask = B_CASTLE_LONG;
             longRookMask = (1L << (63 - 57));
+            longCastleFlag = this.blackLong;
+            shortCastleFlag = this.blackShort;
         }
 
 
         // Check short castle validity
         long opponentVision = generatePieceVision(opponentSign);
         // Determine long/short castling validity
-        // Check ROOK IS ON SQUARE && CASTLING PATH NOT IN OPPONENT VISION && CASTLING PATH NOT BLOCKED && KING ON PROPER SQUARE   
+        // Check ROOK IS ON SQUARE && CASTLING PATH NOT IN OPPONENT VISION && CASTLING PATH NOT BLOCKED && KING ON PROPER SQUARE && SHORT CASTLE FLAG
         boolean canShortCastle = (
             (this.board[shortRookSquare / 8][shortRookSquare % 8] == friendlyRook) && 
             ((opponentVision & shortCastleMask) == 0) && 
             ((this.bitState & shortCastleMask) == 0) &&
-            (kingSquare == kingBitPos)
+            (kingSquare == kingBitPos) &&
+            (shortCastleFlag)
         );
         
         // Long castle must check also that the square to the right of the Long rook is NOT occupied by pieces
@@ -1636,7 +1664,8 @@ public class Board {
             (this.board[longRookSquare / 8][longRookSquare % 8] == friendlyRook) && 
             ((opponentVision & longCastleMask) == 0) && 
             ((this.bitState & (longCastleMask | longRookMask)) == 0) &&
-            (kingSquare == kingBitPos)
+            (kingSquare == kingBitPos) &&
+            (longCastleFlag)
         );
 
         if (canShortCastle) {retArray.add(new int[]{kingPiece, kingBitPos, shortCastleDest});}
@@ -2662,6 +2691,94 @@ public class Board {
         this.algebraicHistory.add(sb.toString());
     }
 
+    private String bitPositionToSquare(int pos){
+        //                              int file =                  int rank = 
+        return RegexParser.FILE_LABEL.get(pos % 8) + String.valueOf((pos / 8) + 1);
+    }
+
+    private String piecesToFEN(){
+        StringBuilder sb = new StringBuilder();
+        int empty = 0;
+        for (int rank = 7; rank >= 0; rank--){
+            for (int file = 0; file < 8; file++){
+                
+                if (board[rank][file] == 0){
+                    empty++;
+                    
+                    if (file == 7){
+                        sb.append(empty);
+                        empty = 0;
+                    }
+                    
+                }
+                else {
+                    if (empty > 0){
+                        sb.append(empty);
+                        empty = 0;
+                    }
+                    
+                    // append INT_TO_FEN.get(board[rank][file]);
+                    sb.append(INT_TO_FEN.get(board[rank][file]));
+                }
+            }
+            
+            if (rank > 0){
+                sb.append("/");
+            }
+        }
+        return sb.toString();
+    }
+
+    public String boardToFEN(){
+        StringBuilder sb = new StringBuilder();
+        // Pieces string
+        sb.append(piecesToFEN() + " ");
+        // Turn
+        sb.append((this.whitesTurn ? "w" : "b") + " ");        
+        // Castling rights
+        if (this.whiteShort || this.whiteLong || this.blackShort || this.blackLong){
+            if (this.whiteShort){
+                sb.append("K");
+            }
+            if (this.whiteLong){
+                sb.append("Q");
+            }
+            if (this.blackShort){
+                sb.append("k");
+            }
+            if (this.blackLong){
+                sb.append("q");
+            }
+        }
+        else {
+            sb.append("-");
+        }
+        sb.append(" ");
+
+        // En Passent
+        long epMask = getPlayerEPMask(getTurnInt());
+        
+        if (epMask > 0){
+            // First get index of available en passent square, then translate that to the square label in algebraic notation
+            sb.append(bitPositionToSquare(getSetBitPositions(epMask).get(0)) + " ");
+        }
+        else {
+            sb.append("- ");
+        }
+
+        // Halfclock
+        sb.append(String.valueOf(this.halfClock + " "));
+        
+        // Full moves
+        // Zobrist history size as a proxy for full move count
+        // Zsize starts at 1 and increments, but FEN starts at 1 and doesn't increment until black moves
+        sb.append(String.valueOf(this.zobristHistory.size() == 1 ? 1 : this.zobristHistory.size() - 1));
+
+        return sb.toString();
+
+    }
+    
+
     //#endregion--------------------------------------------------------------------------------------------------------------------------------------
 
     //#region Bit utility
@@ -2956,6 +3073,10 @@ public class Board {
     public int getTurnInt(){
         return whitesTurn ? 1 : -1;
     }
+
+    public boolean getTurnBool(){
+        return this.whitesTurn;
+    }
    
     public long getZobrist(){
         return this.zobristHash;
@@ -2992,6 +3113,30 @@ public class Board {
         return copy;
     }
     
+    public ArrayList<String[]> getBoardStatus(){
+        String turn = this.whitesTurn ? "White" : "Black";
+        String state = this.state.toString();
+        String wsc = String.valueOf(this.whiteShort);
+        String wlc = String.valueOf(this.whiteLong);
+        String bsc = String.valueOf(this.blackShort);
+        String blc = String.valueOf(this.blackLong);
+        String halfClock = String.valueOf(this.halfClock);
+        String posRepeat = String.valueOf(Collections.frequency(this.zobristHistory, this.zobristHash));
+        String zobristLength = String.valueOf(this.zobristHistory.size());
+        String fen = this.boardToFEN();
+
+        String[] keys = new String[]{"Player turn", "Board state", "WhiteShortCastle", "WhiteLongCastle", "BlackShortCastle", "BlackLongCastle", "Halfclock", "CurrentPosRepeatedCount", "ZobristHistoryLength", "FEN"};
+        String[] values = new String[]{turn, state, wsc, wlc, bsc, blc, halfClock, posRepeat, zobristLength, fen};
+
+        ArrayList<String[]> retArray = new ArrayList<>();
+
+        for (int i = 0; i < keys.length; i++){
+            retArray.add(new String[]{keys[i], values[i]});
+        }
+
+        return retArray;
+    }
+
     // TEST FUNCTION REMOVE AFTER
     public void setBoard(int[][] newBoard){
         this.board = newBoard;
@@ -3222,13 +3367,19 @@ public class Board {
         // At this point board state reflects the starting state for the next player
         ArrayList<int[]> newValidMoves = generateValidMoves(getTurnInt());
         // We execute this here so that Board.state is set properly for algebraic move generation
-        evaluateGameEndConditions(newValidMoves);
+        // This method call to evaluateGameEndConditions interferes with GUIEngine's functionality
+        // I believe this was here initially to emulate gameplay/game ending, but now we have GUI so we delegate there
+        // evaluateGameEndConditions(newValidMoves);
         // Record algebraic move, must occur after board.state is updated
         recordAlgebraicMove(lastValidMoves);
 
         return newValidMoves;
     }
     
+    public ArrayList<int[]> updateState(ArrayList<int[]> lastValidMoves){
+        return updateState((this.whitesTurn ? 1 : -1), lastValidMoves);
+    }
+
     // We can generate valid moves for the next player before this method runs
     // Since all the state is done changing by this time, now we're just evaluating the state + moves
     // exit code == 0 : game on
@@ -3278,7 +3429,7 @@ public class Board {
                 this.state = turn > 0 ? BOARD_STATE.B_MATE : BOARD_STATE.W_MATE;
                 return 1;
             }
-            else {
+            else if (this.state == BOARD_STATE.IN_PLAY) {
                 System.out.println("Stalemate!");
                 this.state = BOARD_STATE.STALEMATE;
                 return 2;
@@ -3303,6 +3454,15 @@ public class Board {
         }
         // If function exits without ending the game, then we can give control to next player
         return 0;
+    }
+
+    // Placeholder for callback method, will invoke gameOver()
+    public void timeoutCall(boolean whitePlayer){
+        
+    }
+    // Placeholder for game-over method, transcribe movelist and player info to PGN, store in DB
+    public void gameOver(){
+
     }
 
     public void undoLastMove(){

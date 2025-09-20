@@ -14,6 +14,10 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
+
+import com.YCorp.chessApp.client.exceptions.ChessServiceDoesNotExistException;
+import com.YCorp.chessApp.server.db.RegexGameData;
+
 import java.util.HashSet;
 import java.util.Collections;
 
@@ -25,12 +29,6 @@ import java.sql.Types;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.Blob;
-
-import com.YCorp.chessApp.server.db.RegexGameData;
-
-
-
-import com.YCorp.chessApp.client.exceptions.ChessServiceDoesNotExistException;
 
 public class RegexDatabase {
     //#region Static SQL class attributes

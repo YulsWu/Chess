@@ -1,7 +1,5 @@
 package com.YCorp.chessApp.client.javafx;
 
-import com.YCorp.chessApp.client.engine.Board;
-
 import javafx.application.Application;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
@@ -38,6 +36,9 @@ import javafx.event.Event;
 
 import java.util.ArrayList;
 import java.util.Map;
+
+import com.YCorp.chessApp.client.engine.Board;
+
 import java.util.HashMap;
 import java.util.Arrays;
 

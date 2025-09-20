@@ -4,3 +4,5 @@
 /build/lanterna/LanternaChess.jar
 directedCmd.bat
 /src/main/resources/database/*
+/src/main/java/com/YCorp/chessApp/scratchMain.java
+/src/main/java/com/YCorp/chessApp/client/javafx/scratchFX.java
