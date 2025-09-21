@@ -8,4 +8,4 @@ directedCmd.bat
 /src/main/java/com/YCorp/chessApp/client/javafx/scratchFX.java
 /target/
 /src/main/resources/database/*
-
+fxdebug.txt

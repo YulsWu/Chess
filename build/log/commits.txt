@@ -714,3 +714,5 @@ Tested as much as I could with current framework for black + white, whats left t
 Todo
 - Fix git merge and branches, get better at branching
 - Fix initial time displays, they are initially from white perspective always
+
+Stockfish UCI commands:
