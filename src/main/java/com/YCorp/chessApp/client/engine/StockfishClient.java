@@ -7,6 +7,8 @@ import java.io.OutputStreamWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import com.YCorp.chessApp.client.parser.UciParser;
+
 public class StockfishClient {
 
     private Process stockfish;
@@ -118,13 +120,14 @@ public class StockfishClient {
     }
 
     // Returns null in case of no data found, otherwise best move
+    // Moves are returned as algebraic square labels, however internally squares are numbered based on perspective.
+    // Must convert moves to the player's perspective of the board blackSquareIndex = 63 - whiteSquareIndex;
     public int[] getBestMove(){
         String line;
         String move;
         try{
             while ((line = reader.readLine()) != null){
                 if ((move = UciParser.extractBestMove(line)) != null){
-                    System.out.println("found line: " + line);
                     return UciParser.convertMove(move);
                 };
             }
@@ -135,5 +138,33 @@ public class StockfishClient {
         }
 
         return null;
+    }
+
+    public boolean sendUciNewGameAndWait(){
+        sendCommand("ucinewgame");
+        sendCommand("isready");
+
+        if (readOutputLine("readyok")){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    public boolean readOutputLine(String line){
+        String readLine;
+        try{
+            while ((readLine = reader.readLine()) != null){
+                if (readLine.equals(line)){
+                    return true;
+                }
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+        return false;
     }
 }

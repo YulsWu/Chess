@@ -67,5 +67,6 @@ public class GUIPiece extends ImageView {
     public int getPieceInt(){
         return this.piece;
     }
+
     
 }

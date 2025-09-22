@@ -9,6 +9,7 @@ import java.util.ResourceBundle;
 
 import javax.swing.event.HyperlinkEvent.EventType;
 
+import com.YCorp.chessApp.client.engine.StockfishClient;
 import com.YCorp.chessApp.client.engine.callback.TickCall;
 import com.YCorp.chessApp.client.engine.callback.TimeoutCall;
 import com.YCorp.chessApp.client.javafx.classes.GUIEngine;
@@ -259,6 +260,7 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
 
     private Scene scene;
     private GUIEngine guiEngine;
+    private StockfishClient opponent = null;
 
     // 
     private TextFlow[] rankLabels;
@@ -287,9 +289,9 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
     private boolean clearSelectionsOnRelease = false;
 
     // Player info
-    private String player;
+    private String playerName;
     private String playerElo;
-    private String opponent;
+    private String opponentName;
     private String opponentElo;
 
     // Dummy node
@@ -298,9 +300,12 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
     
     // Init StackPane squares, labels, arrange squares in array, set labels, depending on player perspective, eventNode, event handlers
     // Sets initial time on clocks if they exist
-    public void init(boolean whitePerspective){
-        // Migrated from initialize()
+    public void init(boolean whitePerspective, boolean hasOpponent){
+        if (hasOpponent){
+            this.opponent = new StockfishClient();
+        }
 
+        //#region Board Square Setup
         squareDim = boardPane.getPrefHeight()/8;
 
         double cellDim = boardPane.getPrefHeight() / 8;
@@ -314,25 +319,14 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
             System.out.println("initBoard(): No GUIEngine assigned to controller");
             return;
         }
-        
-    
-
-        this.player = "Player";
-        this.playerElo = "1";
-        this.opponent = "Opponent";
-        this.opponentElo = "9999";
-
-        playerTextFlow.getChildren().add(new Text(this.player));
-        playerTextFlow.getChildren().add(new Text("\n" + this.playerElo));
-        opponentTextFlow.getChildren().add(new Text(this.opponent));
-        opponentTextFlow.getChildren().add(new Text("\n" + this.opponentElo));
-
+       
+        // Perspective-based board drawing
         if (whitePerspective){
             this.whitePlayer = true;
-
+            
             rankLabels = new TextFlow[]{rankLabel0, rankLabel1, rankLabel2, rankLabel3, rankLabel4, rankLabel5, rankLabel6, rankLabel7};
             fileLabels = new TextFlow[]{fileLabel0, fileLabel1, fileLabel2, fileLabel3, fileLabel4, fileLabel5, fileLabel6, fileLabel7};
-    
+            
             StackPane[] temp = new StackPane[]{
                 square0, square1, square2, square3, square4, square5, square6, square7,
                 square8, square9, square10, square11, square12, square13, square14, square15,
@@ -343,12 +337,12 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
                 square48, square49, square50, square51, square52, square53, square54, square55,
                 square56, square57, square58, square59, square60, square61, square62, square63
             };
-
+            
             allSquares = new ArrayList<StackPane>(Arrays.asList(temp));
         }
         else {
             this.whitePlayer = false;
-
+            
             rankLabels = new TextFlow[]{
                 rankLabel7, rankLabel6, rankLabel5, rankLabel4,
                 rankLabel3, rankLabel2, rankLabel1, rankLabel0
@@ -372,6 +366,22 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
             
             allSquares = new ArrayList<StackPane>(Arrays.asList(temp));
         }
+
+        // Draw light and dark squares
+        drawBoard();
+        //#endregion
+
+        //#region Node Set-up
+
+        this.playerName = "Player";
+        this.playerElo = "1";
+        this.opponentName = "Opponent";
+        this.opponentElo = "9999";
+
+        playerTextFlow.getChildren().add(new Text(this.playerName));
+        playerTextFlow.getChildren().add(new Text("\n" + this.playerElo));
+        opponentTextFlow.getChildren().add(new Text(this.opponentName));
+        opponentTextFlow.getChildren().add(new Text("\n" + this.opponentElo));
         
         // Migrate node element initialization to separate method and invoke here?
         // Create in-game buttons first so they're rendered behind the game over screens
@@ -383,7 +393,7 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
         inGameRestartButton.setLayoutX(gamePane.getPrefWidth()/8 - inGameRestartButton.getPrefWidth()/2);
         inGameRestartButton.setLayoutY(3*gamePane.getPrefHeight()/4);
         inGameRestartButton.addEventHandler(ActionEvent.ACTION, this::restartButtonHandler);
-
+        
         inGameExitButton = new Button("Exit");
         gamePane.getChildren().add(inGameExitButton);
         inGameExitButton.setAlignment(Pos.CENTER);
@@ -391,8 +401,7 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
         inGameExitButton.setLayoutX(gamePane.getPrefWidth()/8 - inGameExitButton.getPrefWidth()/2);
         inGameExitButton.setLayoutY(3 * gamePane.getPrefHeight()/4 + inGameRestartButton.getPrefHeight());
         inGameExitButton.addEventHandler(ActionEvent.ACTION, this::exitButtonHandler);
-
-
+        
         // Format game over screen
         // Format cover
         gameOverCover = new Pane();
@@ -456,27 +465,7 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
         gamePane.getChildren().add(dummy);
         dummy.setVisible(false);
         dummy.setMouseTransparent(true);
-
-        // Draw light and dark squares
-        drawBoard();
-
-        // Attach handlers to squares
-        for (StackPane sq : allSquares){
-            sq.setOnMousePressed(this::mousePressHandler);
-            sq.setOnMouseDragged(this::mouseDragHandler);
-            sq.setOnMouseReleased(this::mouseReleaseHandler);
-        }
-
-        scene = gamePane.getScene();
-        // Add Event filter to catch right click before it propagates down, for cancelling moves
-        scene.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-            if (event.getButton() == MouseButton.SECONDARY){
-                clearSelections();
-            }
-        });
-
-        updateInfo();
-
+        
         // Set visibility and initial values on player clocks, depending on if its a timed game
         if (this.guiEngine.isTimed()){
             String white = formatTimeMillis(this.guiEngine.getTimeMillis(true));
@@ -496,9 +485,40 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
             this.playerClock.setVisible(false);
             this.opponentClock.setVisible(false);
         }
+        
+        //#endregion
+
+        //#region Events
+        
+        // Attach handlers to squares
+        for (StackPane sq : allSquares){
+            sq.setOnMousePressed(this::mousePressHandler);
+            sq.setOnMouseDragged(this::mouseDragHandler);
+            sq.setOnMouseReleased(this::mouseReleaseHandler);
+        }
+
+        scene = gamePane.getScene();
+        // Add Event filter to catch right click before it propagates down, for cancelling moves
+        scene.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+            if (event.getButton() == MouseButton.SECONDARY){
+                clearSelections();
+            }
+        });
+
+        //#endregion
+
+        //#region Debug
+        updateInfo();
+        //#endregion
+
 
         // Force a layout pass before stage.show() to prevent pop-in UI elements
         gamePane.layout();
+
+        // If there is stockfish, and stockfish is white, stockfish plays first
+        if (!this.whitePlayer){
+            playOpponentMove();
+        }
     }
 
     //#region GUI
@@ -527,16 +547,23 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
                     
                     // If move is valid, play the move, highlight the squares that were just played, and update board info
                     int endCode = this.guiEngine.attemptMove(new int[]{origin, destination});
+                    // Endcode >= 0 ==> valid move
                     if (endCode >= 0){
-                        movePiece(square, this.selectedPiece, true);
-                        highlightMove(origin, destination);
-                        updateInfo();
-                        updateClock();
+                        // movePiece(square, this.selectedPiece, true);
+                        // highlightMove(origin, destination);
+                        // updateInfo();
+                        // updateClock();
 
+                        // this.selectedPiece referenced internally
+                        executeGUIMove(square, origin, destination);
+                        
+                        // endcode > 0 ==> game ended in response to move, play move then display game end
                         if (endCode > 0){
                             endGame(endCode);
                             return;
                         }
+
+                        playOpponentMove();
                     }
                     // If not valid move, snap piece back to origin and clear selections
                     else {
@@ -549,10 +576,19 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
             else {
                 // Square is occupied
                 if (square.getChildren().size() == 1){
-                    setSelections(square, (GUIPiece) square.getChildren().get(0));
-                    snapPieceToMouse(this.selectedPiece, e);
-                }
-                else {
+                    GUIPiece candidatePiece = (GUIPiece) square.getChildren().get(0);
+                    // Ensure player owns the piece before selection, in opponent games
+                    if (this.opponent == null){
+                        setSelections(square, candidatePiece);
+                        snapPieceToMouse(this.selectedPiece, e);
+                    }
+                    // Else if there is an opponent, ensure this piece is yours, otherwise do nothing
+                    else {
+                        if ((candidatePiece.getPieceInt() > 0 && this.whitePlayer) || (candidatePiece.getPieceInt() < 0 && !this.whitePlayer)){
+                            setSelections(square, candidatePiece);
+                            snapPieceToMouse(this.selectedPiece, e);
+                        }
+                    }
                 }
             }
         }
@@ -606,15 +642,20 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
                         // if valid move, execute move on to new square
                         int endCode = this.guiEngine.attemptMove(new int[]{origin, newSquareInd});
                         if (endCode >= 0){
-                            movePiece(square, this.selectedPiece, true);
-                            highlightMove(origin, newSquareInd);
-                            updateInfo();
-                            updateClock();
+                            // movePiece(square, this.selectedPiece, true);
+                            // highlightMove(origin, newSquareInd);
+                            // updateInfo();
+                            // updateClock();
+
+                            // this.selectedPiece is referenced internally
+                            executeGUIMove(square, origin, newSquareInd);
 
                             if (endCode > 0){
                                 endGame(endCode);
                                 return;
                             }
+
+                            playOpponentMove();
 
                         }
                         // if invalid move snap back to original square
@@ -918,6 +959,62 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
         // No-settings constructor for SceneTransitionEvent
         this.dummy.fireEvent(new SceneTransitionEvent(SceneTransitionEvent.TO_GAME));
     }
+   
+    private void executeGUIMove(StackPane square, int origin, int newSquareInd){
+        movePiece(square, this.selectedPiece, true);
+        highlightMove(origin, newSquareInd);
+        updateInfo();
+        updateClock();
+    }
+
+    private void playOpponentMove(){
+        if (this.opponent == null){
+            return;
+        }
+
+        String fen = this.guiEngine.getFEN();
+        this.opponent.sendCommand("position fen " + fen);
+        this.opponent.sendCommand("go depth 5");
+
+        int[] move = this.opponent.getBestMove();
+
+        System.out.println("playOpponentMove() Recieved move: " + Arrays.toString(move));
+
+        int endCode = this.guiEngine.attemptMove(move);
+
+        if (endCode >= 0){
+            // Convert to player's gui perspective
+            if (!this.whitePlayer){
+                move[0] = 63 - move[0];
+                move[1] = 63 - move[1];
+            }
+
+            System.out.println("playOpponentMove() Converted move: " + Arrays.toString(move));
+    
+            // Get references to square and piece in question
+            GUIPiece originPiece = (GUIPiece) allSquares.get(move[0]).getChildren().get(0);
+            StackPane destinationSquare = (StackPane) allSquares.get(move[1]);
+    
+    
+            // Normal move playing and UI updating
+            movePiece(destinationSquare, originPiece, true);
+            highlightMove(move[0], move[1]);
+            updateInfo();
+            updateClock();
+
+            if (endCode > 0){
+                endGame(endCode);
+            }
+        }
+        else {
+            System.out.println("playOpponentMove(): Invalid move recieved from StockfishClient.getBestMove()");
+        }
+        
+
+
+    };
+
+
     //#endregion
 
     //#region Utility
@@ -978,6 +1075,9 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
         this.guiEngine = guiEngine;
     }
 
+    public void setOpponent(StockfishClient client){
+        this.opponent = client;
+    };
     //#endregion
 
     //#region Re/Drawing
@@ -1126,6 +1226,9 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
     // Essentally propagates ON_WINDOW_CLOSE to back-end non-FX threads so they can shutdown gracefully, with no hanging threads
     public void cleanup(){
         this.guiEngine.cleanup();
+        if (this.opponent != null){
+            this.opponent.sendCommand("quit");
+        }
     }
     //#endregion
 }

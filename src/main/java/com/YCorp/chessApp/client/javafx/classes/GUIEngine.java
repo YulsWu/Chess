@@ -132,4 +132,9 @@ public class GUIEngine{
     public boolean isWhitesTurn(){
         return this.board.getTurnBool();
     }
+
+    
+    public String getFEN(){
+        return this.board.boardToFEN();
+    }
 }

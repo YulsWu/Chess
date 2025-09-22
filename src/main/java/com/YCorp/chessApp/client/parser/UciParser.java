@@ -1,9 +1,7 @@
-package com.YCorp.chessApp.client.engine;
+package com.YCorp.chessApp.client.parser;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.YCorp.chessApp.client.parser.RegexParser;
 
 public class UciParser {
     public static final Pattern BEST_MOVE;

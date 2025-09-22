@@ -26,7 +26,10 @@ public class SceneBuilder {
         VBox settingsPanel;
         RadioButton whitePlayerRadio;
         RadioButton blackPlayerRadio;
+        RadioButton vsRadio;
+        RadioButton freePlayRadio;
         ToggleGroup playerToggleGroup;
+        ToggleGroup gameTypeToggleGroup;
         TextField whiteHours;
         TextField whiteMinutes;
         TextField whiteSeconds;
@@ -38,7 +41,8 @@ public class SceneBuilder {
         Label settingsTitle;
         Button playButton;
         Button cancelButton;
-        HBox radioBox;
+        HBox playerRadioBox;
+        HBox gameTypeRadioBox;
         HBox whiteTimeBox;
         HBox blackTimeBox;
         HBox buttonHbox;
@@ -75,11 +79,21 @@ public class SceneBuilder {
         playerToggleGroup = new ToggleGroup();
         whitePlayerRadio.setToggleGroup(playerToggleGroup);
         blackPlayerRadio.setToggleGroup(playerToggleGroup);
+        // Radio button toggle group
+        playerRadioBox = new HBox();
+        playerRadioBox.setAlignment(Pos.CENTER);
+        playerRadioBox.getChildren().addAll(whitePlayerRadio, blackPlayerRadio);
 
-        
-        radioBox = new HBox();
-        radioBox.setAlignment(Pos.CENTER);
-        radioBox.getChildren().addAll(whitePlayerRadio, blackPlayerRadio);
+        // Game type radio buttons
+        vsRadio = new RadioButton("vs");
+        freePlayRadio = new RadioButton("freeplay");
+        freePlayRadio.setSelected(true);
+        gameTypeToggleGroup = new ToggleGroup();
+        vsRadio.setToggleGroup(gameTypeToggleGroup);
+        freePlayRadio.setToggleGroup(gameTypeToggleGroup);
+        gameTypeRadioBox = new HBox();
+        gameTypeRadioBox.setAlignment(Pos.CENTER);
+        gameTypeRadioBox.getChildren().addAll(vsRadio, freePlayRadio);
         
         // Player time settings
         whiteHours = new TextField();
@@ -109,11 +123,11 @@ public class SceneBuilder {
         buttonHbox.setAlignment(Pos.CENTER);
 
         // Add aligned children to panel
-        settingsPanel.getChildren().addAll(radioBox, whiteTimeBox, blackTimeBox, buttonHbox);
+        settingsPanel.getChildren().addAll(gameTypeRadioBox, playerRadioBox, whiteTimeBox, blackTimeBox, buttonHbox);
 
         // Set IDs for relevant nodes
         whitePlayerRadio.setId("whitePlayerRadio");
-        blackPlayerRadio.setId("blackPlayerRadio");
+        vsRadio.setId("vsRadio");
         whiteHours.setId("whiteHours");
         whiteMinutes.setId("whiteMinutes");
         whiteSeconds.setId("whiteSeconds");

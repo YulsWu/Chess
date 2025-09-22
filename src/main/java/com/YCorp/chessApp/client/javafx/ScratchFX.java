@@ -73,9 +73,6 @@ public class ScratchFX extends Application{
     }
 
     private void loadGameScene(){
-        // Could add step before to get settings of new game
-        // Kill previous game clock threads
-        
         if (this.recentSettings == null){
             System.out.println("No game settings found in " + Thread.currentThread().getStackTrace()[1].getMethodName());
             Platform.exit();
@@ -107,13 +104,13 @@ public class ScratchFX extends Application{
         
         // GUIENGINE INIT-------------------
         // Create GUIEngine, set clock callback targets (board is already set as tick callback recipient)
-        GUIEngine guiEngine = new GUIEngine(this.recentSettings[1], this.recentSettings[2], this.recentSettings[3], this.recentSettings[4], this.recentSettings[5], this.recentSettings[6], this.recentSettings[7], this.recentSettings[8], 100);
+        GUIEngine guiEngine = new GUIEngine(this.recentSettings[2], this.recentSettings[3], this.recentSettings[4], this.recentSettings[5], this.recentSettings[6], this.recentSettings[7], this.recentSettings[8], this.recentSettings[9], 100);
         guiEngine.addTickCallbackTarget(controller);
         guiEngine.addTimeoutCallbackTarget(controller);
         
         // Set guiEngine as Controller's GUIEngine
         controller.setGUIEngine(guiEngine);
-        controller.init(this.recentSettings[0] == 1 ? true : false);
+        controller.init(this.recentSettings[1] == 1 ? true : false, this.recentSettings[0] == 1 ? true : false);
 
         // Set root AFTER controller.init() since init() affects nodes
         this.stage.setScene(tempScene);

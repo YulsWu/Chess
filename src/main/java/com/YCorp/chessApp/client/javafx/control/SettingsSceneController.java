@@ -19,16 +19,16 @@ import javafx.scene.layout.Pane;
 public class SettingsSceneController implements Closeable {
     private Scene settingsScene;
 
-    RadioButton whitePlayerRadio;
-    ToggleGroup playerToggleGroup;
-    TextField whiteHours;
-    TextField whiteMinutes;
-    TextField whiteSeconds;
-    TextField blackHours;
-    TextField blackMinutes;
-    TextField blackSeconds;
-    TextField whiteIncrement;
-    TextField blackIncrement;
+    private RadioButton whitePlayerRadio;
+    private RadioButton vsRadio;
+    private TextField whiteHours;
+    private TextField whiteMinutes;
+    private TextField whiteSeconds;
+    private TextField blackHours;
+    private TextField blackMinutes;
+    private TextField blackSeconds;
+    private TextField whiteIncrement;
+    private TextField blackIncrement;
     Button playButton;
     Button cancelButton;
     Pane dummy;
@@ -38,6 +38,7 @@ public class SettingsSceneController implements Closeable {
         Parent root = settingsScene.getRoot();
 
         whitePlayerRadio = (RadioButton) root.lookup("#whitePlayerRadio");
+        vsRadio = (RadioButton) root.lookup("#vsRadio");
         whiteHours = (TextField) root.lookup("#whiteHours");
         whiteMinutes = (TextField) root.lookup("#whiteMinutes");
         whiteSeconds = (TextField) root.lookup("#whiteSeconds");
@@ -96,15 +97,15 @@ public class SettingsSceneController implements Closeable {
             return;
         }
 
-        int[] finalSettings = new int[9];
+        int[] finalSettings = new int[10];
         TextField[] timeFields = new TextField[] {whiteHours, whiteMinutes, whiteSeconds, whiteIncrement, blackHours, blackMinutes, blackSeconds, blackIncrement};
         
         for (int i = 0; i < timeFields.length; i++){
             if (timeFields[i].getText() == ""){
-                finalSettings[i + 1] = 0;
+                finalSettings[i + 2] = 0;
             }
             else {
-                finalSettings[i + 1] = Integer.valueOf(timeFields[i].getText());
+                finalSettings[i + 2] = Integer.valueOf(timeFields[i].getText());
             }
         }
 
@@ -118,12 +119,8 @@ public class SettingsSceneController implements Closeable {
         // int bs = Integer.valueOf(blackSeconds.getText());
         // int bi = Integer.valueOf(blackIncrement.getText());
 
-        if (whitePlayerRadio.isSelected()){
-            finalSettings[0] = 1;
-        }
-        else {
-            finalSettings[0] = 0;
-        }
+        finalSettings[0] = (vsRadio.isSelected()) ? 1 : 0;
+        finalSettings[1] = (whitePlayerRadio.isSelected()) ? 1 : 0;
 
         // Fire FX event with payload to trigger scene transition on Stage
         dummy.fireEvent(new SceneTransitionEvent(SceneTransitionEvent.TO_GAME, finalSettings));

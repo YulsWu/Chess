@@ -715,4 +715,60 @@ Todo
 - Fix git merge and branches, get better at branching
 - Fix initial time displays, they are initially from white perspective always
 
-Stockfish UCI commands:
+commit - 
+- Added few more test cases to StockfishTest, manual validation of output
+    - Automated validation would require replay functionality as move validity depends on board state
+        - "Replay" through a game with associated Board logic
+        - For each subsequent board position, feed FEN into stockfish and get best move
+        - Validate best move ensuring that it is legal for the Board state at that time for the given player
+    - In conjunction with PGN parsing, can test thousands of full length games
+        - This would make up a "Full test" testing all parts at once
+            - Game logic, PGN parsing to moveset, Input PGN validity, StockfishClient (stockfish is assumed valid) interactions, replay functionality
+
+now continue work on StockfishClient integration
+Integrating into existing game loop logic:
+    - Currently GUI moves are executed in onMouseRelease() and onMousePressed() in different circumstances
+    - Just add another method getOpponentMove() after attemptMove() and block until recieved
+        - getOpponentMove() can read the move from StockfishClient, and perform game logic in a similar way to the player
+        - Then execution unblocks and the player can move again
+        - Concurrency? 
+            - Make opponent pieces mouse transparent in this mode
+
+todo 
+- create getOpponentMove() and insert it appropriately
+    - Have it check for the existence of an opponent, if not the method does nothing
+- Add options to settings screen (freeplay + vs bot)
+    - Freeplay has no stockfish, all pieces are moveable
+    - vs has stockfish, opponent pieces/Squares are mouse transparent
+
+Where does stockfish reside?
+- To start with just create a new instance at each game instance
+- If too slow, add loading screen or keep persistent stockfish process at stage level
+- CLEANUP on both levels to be safe 
+
+GameSettings - May be a good idea to create a Settings object instead of using an int[]
+
+- Remove ability to move around opponent pieces
+- Modified code in both onMousePress and onMouseRelease to prevent dragging of opponent pieces if an opponent exists in the controller
+- done? - need test
+
+- Create wrapper method for everything required for a GUI Move (movePiece, highlightMove, updateClock, updateInfo, opponent move)
+    - Good to have it all in one place
+    - Currently there are 2 separate locations where moves are executed (onMousePress, onMouseRelease) in different circumstances
+    - Also ENSURES consistent move behaviour regardless of method of execution
+done
+
+During testing realized PROMOTION was not TESTED
+- Need a way to prompt user for promotion piece
+- Need to extract promotion out of stockfish
+ALSO CASTLING - Ensure proper formatting etc
+
+Also I need stockfish to make the first move if its white
+
+Before fixing promotion, test everything else first
+- Prevent clicking opponent pieces
+    - white DONE
+    - black DONE
+- Playing vs stockfish from both perspectives
+    - white DONE
+    - black DONE
