@@ -1025,7 +1025,16 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
 
         System.out.println("playOpponentMove() Recieved move: " + Arrays.toString(move));
 
-        int endCode = this.guiEngine.attemptMove(move);
+        int endCode;
+        if (move.length == 2){
+            endCode = this.guiEngine.attemptMove(move);
+        }
+        else {
+            // If player is white, then opponent is black, otherwise if player is black, opponent remains white
+            if (this.whitePlayer) move[2] *= -1;
+
+            endCode = this.guiEngine.attemptMove(new int[]{move[0], move[1]}, move[2]);
+        }
 
         if (endCode >= 0){
             // Get references to square and piece in question

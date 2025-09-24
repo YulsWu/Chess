@@ -51,11 +51,11 @@ public class GUIEngine{
     }
 
     public int attemptMove(int[] move){
-        if (move.length != 2) return -1;
-
-        int moveInd = findMove(move, this.currentValidMoves);
+        int moveInd = findMove(new int[]{move[0], move[1]}, this.currentValidMoves);
         if (moveInd >= 0){
-            board.playMove(board.createMove(this.currentValidMoves.get(moveInd)));
+            Move mv = board.createMove(this.currentValidMoves.get(moveInd));
+            if (move.length == 3) mv.setPromotionPiece(move[2]);
+            board.playMove(mv);
             this.currentValidMoves = board.updateState(this.currentValidMoves);
             int state = board.evaluateGameEndConditions(this.currentValidMoves);
 
