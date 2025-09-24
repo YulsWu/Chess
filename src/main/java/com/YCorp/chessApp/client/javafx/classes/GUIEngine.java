@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import com.YCorp.chessApp.client.engine.Board;
 import com.YCorp.chessApp.client.engine.ChessClock;
+import com.YCorp.chessApp.client.engine.Move;
 import com.YCorp.chessApp.client.engine.callback.TickCall;
 import com.YCorp.chessApp.client.engine.callback.TimeoutCall;
 
@@ -17,7 +18,7 @@ public class GUIEngine{
     // Creation of a game with no clock
     public GUIEngine(){
         board = new Board();
-        currentValidMoves = board.generateValidMoves();
+        currentValidMoves = board.generateValidMoves    ();
     }
 
 
@@ -37,12 +38,51 @@ public class GUIEngine{
         clock.addTimeoutCallbackTarget(board);
     }
 
+    // Determines whether a move is a valid promotion move
+    public boolean isPromotionMove(int[] move){
+        int ind;
+        if ((ind = findMove(move, this.currentValidMoves)) >= 0){
+            Move.MOVE_TYPE type = this.board.createMove(this.currentValidMoves.get(ind)).getType();
+            if (type == Move.MOVE_TYPE.PROMOTE_ATTACK || type == Move.MOVE_TYPE.PROMOTE_MOVE){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public int attemptMove(int[] move){
         if (move.length != 2) return -1;
 
         int moveInd = findMove(move, this.currentValidMoves);
         if (moveInd >= 0){
             board.playMove(board.createMove(this.currentValidMoves.get(moveInd)));
+            this.currentValidMoves = board.updateState(this.currentValidMoves);
+            int state = board.evaluateGameEndConditions(this.currentValidMoves);
+
+            // Toggle clock if game continues, otherwise stop it.
+            if (state == 0){
+                toggleClock();
+            }
+            else {
+                stopClock();
+            }
+
+            return state;
+        }
+        else {
+            System.out.println("attemptMove(): Bad move " + Arrays.toString(move));
+            return -1;
+        }
+
+
+    }
+
+    public int attemptMove(int[] move, int promotionPiece){
+        if (move.length != 2) return -1;
+
+        int moveInd = findMove(move, this.currentValidMoves);
+        if (moveInd >= 0){
+            board.playMove(board.createMove(this.currentValidMoves.get(moveInd)).setPromotionPiece(promotionPiece));
             this.currentValidMoves = board.updateState(this.currentValidMoves);
             int state = board.evaluateGameEndConditions(this.currentValidMoves);
 
@@ -74,10 +114,15 @@ public class GUIEngine{
     public int[][] getBoard(){
         return board.getBoard();
     }
+
     
     // DEBUG
     public ArrayList<String[]> getStatus(){
         return board.getBoardStatus();
+    }
+
+    public String boardVisualize(){
+        return board.boardVisualize();
     }
 
     private void printStatus(){

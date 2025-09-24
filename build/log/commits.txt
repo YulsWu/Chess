@@ -772,3 +772,31 @@ Before fixing promotion, test everything else first
 - Playing vs stockfish from both perspectives
     - white DONE
     - black DONE
+
+Taking break - hitting gym
+todo when back:
+    - Figure out why sometimes we get invalid index during moves
+        - May have to print debug lines for Board and scene graph (which squares have children);
+    - Add promotion implementation
+    - Ensure castling works properly
+
+Created debug method that traverses all chess square stackpane nodes and reads their child contents, and displays as a string represention of the chess board
+- Attempt to fix bug where .get(0) is invoked on the children of a childless stackpane square
+
+bug: highlighted white move from black's perspective is incorrect, highlights blacks squares instead
+
+Fixed faulty logic when playing white move from stockfish on black player perspective - remember allSquares is the 'true' position/board indices, which maps black's perspective
+to the true position
+
+Promotion options: 
+- Promotion detection logic in controller/gui, passed on to attempt move
+- Event/callback to Gui
+
+lotsa problems
+promotion
+- player almost done although it seems square 7 acts weird and chrashes when promoting onto it
+- haven't done stockfish promotion moves yet
+- need to also add promotion checking move to mouse press handler
+
+Fixed an issue where occassionally a promotion move would not register as a promotion move and skipped prompting for a promotion piece, resulting in a crash
+- Due to confusion about the sentinel values returned by GUIEngine.findMove() when invoked within GUIEngine.isPromotionMove(), was checking for > 0 when should have been >= 0

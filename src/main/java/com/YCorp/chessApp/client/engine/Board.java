@@ -1708,6 +1708,11 @@ public class Board implements TimeoutCall {
         int destOccPiece = this.board[destRank][destFile];
         int promotionRank = (piece > 0) ? 7 : 0;
 
+        // System.out.println("createMove Dump: ");
+        // for (int i : new int[] {piece, origin, originFile, dest, destRank, destFile, destOccPiece, promotionRank}){
+        //     System.out.println(i);
+        // }
+
         // IF piece is pawn AND its a pawn attack AND the destination square is empty, then EN PASSENT
         if ((Math.abs(piece) == 1) && (originFile != destFile) && (destOccPiece == 0)){
             return new Move(piece, origin, dest, MOVE_TYPE.EN_PASSENT);
@@ -1920,6 +1925,7 @@ public class Board implements TimeoutCall {
     }
 
     /**
+     * **OUT OF DATE** - returns string now
      * A non-static version of {@link Board#boardVisualize(int[][])}. Prints a visual representation of the<br>
      * associated {@link boardState} to System.out using UTF-8 chess emojis to symbolize pieces, chess board<br>
      * squares, and file and rank labels.
@@ -1930,7 +1936,7 @@ public class Board implements TimeoutCall {
      * executing 'chcp 65001' for UTF-8 (on windows).
      * </p>
      */
-    public void boardVisualize(){
+    public String boardVisualize(){
         StringBuilder sbInner = new StringBuilder();
         StringBuilder sbOuter = new StringBuilder();
 
@@ -1945,9 +1951,7 @@ public class Board implements TimeoutCall {
             sbOuter.insert(0, sbInner.toString());
         }
         sbOuter.append("   A   B   C   D   E   F   G   H");
-        System.out.println();
-        System.out.print(sbOuter.toString());
-        System.out.println();
+        return sbOuter.toString();
     }
 
     /**
@@ -2249,6 +2253,7 @@ public class Board implements TimeoutCall {
         else if (lastType == MOVE_TYPE.PROMOTE_ATTACK){
             int promotedPiece = this.board[dest/8][dest%8];
             int capturedPiece = lastBoard[dest/8][dest%8];
+        
             this.zobristHash ^= this.zobristTable.get(capturedPiece)[dest];// remove captured piece
             this.zobristHash ^= this.zobristTable.get(promotedPiece)[dest];// add newly promoted piece
         }

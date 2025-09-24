@@ -9,21 +9,21 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 
 public class GUIPiece extends ImageView {
-    private static Image whitePawn = new Image(GUIPiece.class.getResource("/graphics/icons/white-pawn.png").toExternalForm());
-    private Image whiteKnight = new Image(GUIPiece.class.getResource("/graphics/icons/white-knight.png").toExternalForm());
-    private Image whiteBishop = new Image(GUIPiece.class.getResource("/graphics/icons/white-bishop.png").toExternalForm());
-    private Image whiteRook = new Image(GUIPiece.class.getResource("/graphics/icons/white-rook.png").toExternalForm());
-    private Image whiteQueen = new Image(GUIPiece.class.getResource("/graphics/icons/white-queen.png").toExternalForm());
-    private Image whiteKing = new Image(GUIPiece.class.getResource("/graphics/icons/white-king.png").toExternalForm());
+    public static final Image whitePawn = new Image(GUIPiece.class.getResource("/graphics/icons/white-pawn.png").toExternalForm());
+    public static final Image whiteKnight = new Image(GUIPiece.class.getResource("/graphics/icons/white-knight.png").toExternalForm());
+    public static final Image whiteBishop = new Image(GUIPiece.class.getResource("/graphics/icons/white-bishop.png").toExternalForm());
+    public static final Image whiteRook = new Image(GUIPiece.class.getResource("/graphics/icons/white-rook.png").toExternalForm());
+    public static final Image whiteQueen = new Image(GUIPiece.class.getResource("/graphics/icons/white-queen.png").toExternalForm());
+    public static final Image whiteKing = new Image(GUIPiece.class.getResource("/graphics/icons/white-king.png").toExternalForm());
 
-    private Image blackPawn = new Image(GUIPiece.class.getResource("/graphics/icons/black-pawn.png").toExternalForm());
-    private Image blackKnight = new Image(GUIPiece.class.getResource("/graphics/icons/black-knight.png").toExternalForm());
-    private Image blackBishop = new Image(GUIPiece.class.getResource("/graphics/icons/black-bishop.png").toExternalForm());
-    private Image blackRook = new Image(GUIPiece.class.getResource("/graphics/icons/black-rook.png").toExternalForm());
-    private Image blackQueen = new Image(GUIPiece.class.getResource("/graphics/icons/black-queen.png").toExternalForm());
-    private Image blackKing = new Image(GUIPiece.class.getResource("/graphics/icons/black-king.png").toExternalForm());
+    public static final Image blackPawn = new Image(GUIPiece.class.getResource("/graphics/icons/black-pawn.png").toExternalForm());
+    public static final Image blackKnight = new Image(GUIPiece.class.getResource("/graphics/icons/black-knight.png").toExternalForm());
+    public static final Image blackBishop = new Image(GUIPiece.class.getResource("/graphics/icons/black-bishop.png").toExternalForm());
+    public static final Image blackRook = new Image(GUIPiece.class.getResource("/graphics/icons/black-rook.png").toExternalForm());
+    public static final Image blackQueen = new Image(GUIPiece.class.getResource("/graphics/icons/black-queen.png").toExternalForm());
+    public static final Image blackKing = new Image(GUIPiece.class.getResource("/graphics/icons/black-king.png").toExternalForm());
 
-    private final Map<Integer, Image> PIECE_TO_IMAGE = new HashMap<>(){{
+    public static final Map<Integer, Image> PIECE_TO_IMAGE = new HashMap<>(){{
         put(-6, blackKing);
         put(-5, blackQueen);
         put(-4, blackRook);

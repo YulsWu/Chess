@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import javax.swing.event.HyperlinkEvent.EventType;
 
+import com.YCorp.chessApp.client.engine.Board;
 import com.YCorp.chessApp.client.engine.StockfishClient;
 import com.YCorp.chessApp.client.engine.callback.TickCall;
 import com.YCorp.chessApp.client.engine.callback.TimeoutCall;
@@ -28,6 +30,9 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
@@ -51,6 +56,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.application.Platform;
+import javafx.scene.control.ButtonBar;
 
 
 public class GameSceneController implements TickCall, TimeoutCall, Closeable{
@@ -248,6 +254,8 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
 
     private Button inGameRestartButton;
     private Button inGameExitButton;
+
+    private TextFlow debugSceneTextFlow;
 
 
     // Class members
@@ -508,6 +516,11 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
         //#endregion
 
         //#region Debug
+        debugSceneTextFlow = new TextFlow(new Text("init value"));
+        debugSceneTextFlow.setPrefSize(200, 250);
+        gamePane.getChildren().add(debugSceneTextFlow);
+        debugSceneTextFlow.setLayoutX((gamePane.getPrefWidth() * 7 / 8) - debugSceneTextFlow.getPrefWidth()/2);
+        debugSceneTextFlow.setLayoutY((gamePane.getPrefHeight() * 1 / 2) - debugSceneTextFlow.getPrefHeight()/2);
         updateInfo();
         //#endregion
 
@@ -519,6 +532,8 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
         if (!this.whitePlayer){
             playOpponentMove();
         }
+
+
     }
 
     //#region GUI
@@ -544,9 +559,20 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
                 else {
                     int origin = this.allSquares.indexOf(this.selectedSquare);
                     int destination = this.allSquares.indexOf(square);
+                    int[] move = new int[]{origin, destination};
+                    int endCode;
+                 
+                    if (this.guiEngine.isPromotionMove(move)){
+                        System.out.println("MPH: Promotion move detected");
+                        endCode = this.guiEngine.attemptMove(move, this.promptPromotionPiece());
+                    }
+                    else {
+                        // if valid move, execute move on to new square
+                        System.out.println("MPH: Non-Promotion move detected");
+                        endCode = this.guiEngine.attemptMove(move);
+                    }
                     
-                    // If move is valid, play the move, highlight the squares that were just played, and update board info
-                    int endCode = this.guiEngine.attemptMove(new int[]{origin, destination});
+                   
                     // Endcode >= 0 ==> valid move
                     if (endCode >= 0){
                         // movePiece(square, this.selectedPiece, true);
@@ -638,9 +664,21 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
 
                     else {
                         int origin = this.allSquares.indexOf(this.selectedSquare);
+                        int endCode;
+                        int[] move = new int[]{origin, newSquareInd};
 
-                        // if valid move, execute move on to new square
-                        int endCode = this.guiEngine.attemptMove(new int[]{origin, newSquareInd});
+
+                        if (this.guiEngine.isPromotionMove(move)){
+                            System.out.println("MRH: Promotion move detected");
+                            endCode = this.guiEngine.attemptMove(move, this.promptPromotionPiece());
+                        }
+                        else {
+                            // if valid move, execute move on to new square
+                            System.out.println("MRH: Non-Promotion move detected");
+                            endCode = this.guiEngine.attemptMove(move);
+                        }
+
+                        
                         if (endCode >= 0){
                             // movePiece(square, this.selectedPiece, true);
                             // highlightMove(origin, newSquareInd);
@@ -972,6 +1010,13 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
             return;
         }
 
+        try{
+            Thread.sleep(50);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
         String fen = this.guiEngine.getFEN();
         this.opponent.sendCommand("position fen " + fen);
         this.opponent.sendCommand("go depth 5");
@@ -983,15 +1028,9 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
         int endCode = this.guiEngine.attemptMove(move);
 
         if (endCode >= 0){
-            // Convert to player's gui perspective
-            if (!this.whitePlayer){
-                move[0] = 63 - move[0];
-                move[1] = 63 - move[1];
-            }
-
-            System.out.println("playOpponentMove() Converted move: " + Arrays.toString(move));
-    
             // Get references to square and piece in question
+            // allSquares indices = true board index, allSquares elements = local UI elements
+            System.out.println("Square at index " + move[0] + " contains " + allSquares.get(move[0]).getChildren().size() + " children");
             GUIPiece originPiece = (GUIPiece) allSquares.get(move[0]).getChildren().get(0);
             StackPane destinationSquare = (StackPane) allSquares.get(move[1]);
     
@@ -1013,6 +1052,84 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
 
 
     };
+
+    private int promptPromotionPiece(){
+        Dialog<Integer> promotion = new Dialog<>();
+
+        promotion.setTitle("Select promotion piece");
+
+        ButtonType queen = new ButtonType("", ButtonData.OK_DONE);
+        ButtonType rook = new ButtonType("", ButtonData.OK_DONE);
+        ButtonType bishop = new ButtonType("", ButtonData.OK_DONE);
+        ButtonType knight = new ButtonType("", ButtonData.OK_DONE);
+
+        promotion.getDialogPane().getButtonTypes().addAll(queen, rook, bishop, knight);
+
+        Button q = (Button) promotion.getDialogPane().lookupButton(queen);
+        Button r = (Button) promotion.getDialogPane().lookupButton(rook);
+        Button b = (Button) promotion.getDialogPane().lookupButton(bishop);
+        Button k = (Button) promotion.getDialogPane().lookupButton(knight);
+
+        if (this.selectedPiece.getPieceInt() > 0){
+            ImageView temp = new ImageView(GUIPiece.whiteQueen);
+            temp.setFitHeight(32);
+            temp.setFitWidth(32);
+            q.setGraphic(temp);
+            temp = new ImageView(GUIPiece.whiteRook);
+            temp.setFitHeight(32);
+            temp.setFitWidth(32);
+            r.setGraphic(temp);
+            temp = new ImageView(GUIPiece.whiteBishop);
+            temp.setFitHeight(32);
+            temp.setFitWidth(32);
+            b.setGraphic(temp);
+            temp = new ImageView(GUIPiece.whiteKnight);
+            temp.setFitHeight(32);
+            temp.setFitWidth(32);
+            k.setGraphic(temp);
+        }
+        else {
+            ImageView temp = new ImageView(GUIPiece.blackQueen);
+            temp.setFitHeight(32);
+            temp.setFitWidth(32);
+            q.setGraphic(temp);
+            temp = new ImageView(GUIPiece.blackRook);
+            temp.setFitHeight(32);
+            temp.setFitWidth(32);
+            r.setGraphic(temp);
+            temp = new ImageView(GUIPiece.blackBishop);
+            temp.setFitHeight(32);
+            temp.setFitWidth(32);
+            b.setGraphic(temp);
+            temp = new ImageView(GUIPiece.blackKnight);
+            temp.setFitHeight(32);
+            temp.setFitWidth(32);
+            k.setGraphic(temp);
+        }
+
+        ButtonBar bBar = (ButtonBar) promotion.getDialogPane().lookup(".button-bar");
+        bBar.setStyle("-fx-alignment: center; -fx-spacing: 10px;");
+
+        promotion.setResultConverter(button -> {
+            if (this.selectedPiece.getPieceInt() > 0){
+                if (button == queen) return 5;
+                if (button == rook) return 4;
+                if (button == bishop) return 3;
+                if (button == knight) return 2;
+            }
+            else {
+                if (button == queen) return -5;
+                if (button == rook) return -4;
+                if (button == bishop) return -3;
+                if (button == knight) return -2;
+            }
+            return null;
+        });
+        
+        return promotion.showAndWait().orElse(0);
+
+
+    }
 
 
     //#endregion
@@ -1124,15 +1241,7 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
         }
     }
     // Update board based on Board object
-    // DEBUG INFO
-    private void updateInfo(){
-        this.infoTextFlow.getChildren().clear();
 
-        for (String[] strArr : this.guiEngine.getStatus()){
-            this.infoTextFlow.getChildren().add(new Text(strArr[0] + ": "));
-            this.infoTextFlow.getChildren().add(new Text(strArr[1] + "\n"));
-        }
-    }
     
     private void updateBoardPieces(){
         int[][] board = this.guiEngine.getBoard();
@@ -1229,6 +1338,130 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
         if (this.opponent != null){
             this.opponent.sendCommand("quit");
         }
+    }
+    //#endregion
+
+    //#region Debug
+    // DEBUG INFO
+    private void updateInfo(){
+        this.infoTextFlow.getChildren().clear();
+
+        for (String[] strArr : this.guiEngine.getStatus()){
+            this.infoTextFlow.getChildren().add(new Text(strArr[0] + ": "));
+            this.infoTextFlow.getChildren().add(new Text(strArr[1] + "\n"));
+        }
+
+        Text sceneText = new Text(sceneGraphToString());
+        sceneText.setFont(Font.font("Courier New", 14));
+
+        Text boardText = new Text(boardToString(guiEngine.getBoard()));
+        boardText.setFont(Font.font("Courier New", 12));
+
+
+        this.debugSceneTextFlow.getChildren().clear();
+        this.debugSceneTextFlow.getChildren().addAll(sceneText, boardText);
+    }
+
+    private String sceneGraphToString(){
+        StringBuilder sbRank = new StringBuilder();
+        StringBuilder sbFile = new StringBuilder();
+        if (this.whitePlayer){
+            for (int i = allSquares.size() - 1; i >= 0; i--){
+                
+                if (allSquares.get(i).getChildren().size() != 0){
+                    GUIPiece piece = (GUIPiece) allSquares.get(i).getChildren().get(0);
+                    int pieceInt = piece.getPieceInt();
+                    
+                    if (pieceInt < 0){
+                        sbFile.append(Board.INT_TO_FEN.get(pieceInt) + " ");
+                    }
+                    else {
+                        sbFile.append(Board.INT_TO_FEN.get(pieceInt) + " ");
+                    }
+                    
+                }
+                else {
+                    sbFile.append("0 ");
+                }
+
+                if (i % 8 == 0){       
+                    sbRank.append(sbFile.reverse().toString() + '\n');
+                    sbFile.setLength(0);
+                }
+            }
+        }
+        else {
+            for (int i = 0; i < allSquares.size(); i++){
+                
+                if (allSquares.get(i).getChildren().size() != 0){
+                    GUIPiece piece = (GUIPiece) allSquares.get(i).getChildren().get(0);
+                    int pieceInt = piece.getPieceInt();
+                    
+                    if (pieceInt < 0){
+                        sbFile.append(Board.INT_TO_FEN.get(pieceInt) + " ");
+                    }
+                    else {
+                        sbFile.append(Board.INT_TO_FEN.get(pieceInt) + " ");
+                    }
+                    
+                }
+                else {
+                    sbFile.append("0 ");
+                }
+                
+                if ((i + 1) % 8 == 0 && i != 0){
+                    sbRank.append(sbFile.reverse().toString() + '\n');
+                    sbFile.setLength(0);
+                }
+            }
+
+        }
+
+        return sbRank.toString();
+    }
+    private String boardToString(int[][] board){
+        StringBuilder sbInner = new StringBuilder();
+        StringBuilder sbOuter = new StringBuilder();
+
+        if (this.whitePlayer){
+            for (int i = 7; i >= 0; i--){
+                for (int j = 0; j < 8; j++){
+                    int piece;
+
+                    if ((piece = board[i][j]) >= 0){
+                        sbInner.append(" " + piece + " ");
+                    }
+                    else {
+                        sbInner.append(piece + " ");
+                    }
+                }
+
+                sbOuter.append(sbInner.toString() + '\n');
+                sbInner.setLength(0);
+
+            }
+        }
+        else {
+            for (int i = 0; i < 8; i++){
+                for (int j = 7; j >= 0; j--){
+                    int piece;
+
+                    if ((piece = board[i][j]) >= 0){
+                        sbInner.append(" " + piece + " ");
+                    }
+                    else {
+                        sbInner.append(piece + " ");
+                    }
+                }
+
+                sbOuter.append(sbInner.toString() + '\n');
+                sbInner.setLength(0);
+
+            }
+        }
+
+        return sbOuter.toString();
+
     }
     //#endregion
 }

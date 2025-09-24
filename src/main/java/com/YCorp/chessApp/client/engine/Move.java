@@ -62,6 +62,8 @@ public class Move {
         piece = pieceValue; 
 
         this.type = type;
+
+        System.out.println("Move created as " + type);
     };
 
     
@@ -79,6 +81,8 @@ public class Move {
         this.type = type;
 
         this.promotionPiece = promotionPiece;
+
+        
     }
 
     public int getOriginRank(){
@@ -124,13 +128,15 @@ public class Move {
         return this.promotionPiece;
     }
 
-    public void setPromotionPiece(int promotionPiece){
+    public Move setPromotionPiece(int promotionPiece){
         if (promotionPiece > 6 || promotionPiece < -6){
             System.out.println("setPromotionPiece(): Invalid piece identifier provided");
         }
         else {
             this.promotionPiece = promotionPiece;
         }
+
+        return this;
     }
 
     @Override
