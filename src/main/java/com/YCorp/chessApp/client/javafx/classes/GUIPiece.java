@@ -57,7 +57,7 @@ public class GUIPiece extends ImageView {
     public GUIPiece(int piece, double squareDim){
         this.piece = piece;
 
-        this.setImage(this.PIECE_TO_IMAGE.get(piece));
+        this.setImage(GUIPiece.PIECE_TO_IMAGE.get(piece));
         this.setPreserveRatio(true);
         this.setFitWidth(squareDim);
         this.setFitHeight(squareDim);

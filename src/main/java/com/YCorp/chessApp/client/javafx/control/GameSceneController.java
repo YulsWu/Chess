@@ -23,6 +23,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
@@ -55,6 +56,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.util.Duration;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.scene.control.ButtonBar;
 
@@ -304,6 +307,14 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
 
     // Dummy node
     Pane dummy = new Pane();
+
+    PauseTransition moveDelay = new PauseTransition(Duration.seconds(1.5));
+    
+    {
+        moveDelay.setOnFinished(event -> {
+            playOpponentMove();
+        });
+    }
 
     
     // Init StackPane squares, labels, arrange squares in array, set labels, depending on player perspective, eventNode, event handlers
@@ -589,7 +600,7 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
                             return;
                         }
 
-                        playOpponentMove();
+                        if (this.opponent != null) moveDelay.play();
                     }
                     // If not valid move, snap piece back to origin and clear selections
                     else {
@@ -693,7 +704,7 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
                                 return;
                             }
 
-                            playOpponentMove();
+                            if (this.opponent != null) moveDelay.play();
 
                         }
                         // if invalid move snap back to original square
@@ -1008,13 +1019,6 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
     private void playOpponentMove(){
         if (this.opponent == null){
             return;
-        }
-
-        try{
-            Thread.sleep(50);
-        }
-        catch (Exception e){
-            e.printStackTrace();
         }
 
         String fen = this.guiEngine.getFEN();
