@@ -21,7 +21,7 @@ import clockTests.ChessClockTests;
 
 public class testMain {
     public static void main(String[] args){
-        ReplayTest.test_0();
+        FXTestApp.launch(FXTestApp.class, args);
 
     }
 }

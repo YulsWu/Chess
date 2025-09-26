@@ -1348,6 +1348,7 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
     // Essentally propagates ON_WINDOW_CLOSE to back-end non-FX threads so they can shutdown gracefully, with no hanging threads
     public void cleanup(){
         this.guiEngine.cleanup();
+        
         if (this.opponent != null){
             this.opponent.sendCommand("quit");
         }
