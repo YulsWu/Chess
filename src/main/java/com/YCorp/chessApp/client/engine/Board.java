@@ -2469,6 +2469,7 @@ public class Board implements TimeoutCall {
         return this.board[bit/8][bit%8];
     }
 
+    // Uses lastValidMoves parameter to determine if a move requires disambiguation, if there are multiple pieces of the same type that can make the same move in lastValidMoves
     public void recordAlgebraicMove(ArrayList<int[]> lastValidMoves){
         //#region Extract move info and setup
         Move move = this.playedMoves.peek();
@@ -3249,10 +3250,8 @@ public class Board implements TimeoutCall {
 
         // At this point board state reflects the starting state for the next player
         ArrayList<int[]> newValidMoves = generateValidMoves(getTurnInt());
-        // We execute this here so that Board.state is set properly for algebraic move generation
-        // This method call to evaluateGameEndConditions interferes with GUIEngine's functionality
-        // I believe this was here initially to emulate gameplay/game ending, but now we have GUI so we delegate there
-        // evaluateGameEndConditions(newValidMoves);
+
+
         // Record algebraic move, must occur after board.state is updated
         recordAlgebraicMove(lastValidMoves);
 

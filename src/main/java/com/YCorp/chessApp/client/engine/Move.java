@@ -62,8 +62,6 @@ public class Move {
         piece = pieceValue; 
 
         this.type = type;
-
-        System.out.println("Move created as " + type);
     };
 
     

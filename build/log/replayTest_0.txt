@@ -1,0 +1,63 @@
+extractPGN(): Beginning PGN extraction from C:\Users\yulun\AppData\Local\Programs\Java\Chess\src\main\resources\pgn\Andreikin.pgn
+extractPGN(): Finished extracting 6357 games from C:\Users\yulun\AppData\Local\Programs\Java\Chess\src\main\resources\pgn\Andreikin.pgn in 0.514 seconds.
+Extracted 6357 games from PGN
+moveValidator(): All moves validated!
+GAME 1-----------------------------------------------------------------------------------------
+All moves played on Replay board 1
+moveValidator(): All moves validated!
+GAME 2-----------------------------------------------------------------------------------------
+All moves played on Replay board 2
+moveValidator(): All moves validated!
+GAME 3-----------------------------------------------------------------------------------------
+All moves played on Replay board 3
+moveValidator(): All moves validated!
+GAME 4-----------------------------------------------------------------------------------------
+All moves played on Replay board 4
+moveValidator(): All moves validated!
+GAME 5-----------------------------------------------------------------------------------------
+All moves played on Replay board 5
+moveValidator(): All moves validated!
+GAME 6-----------------------------------------------------------------------------------------
+All moves played on Replay board 6
+moveValidator(): All moves validated!
+GAME 7-----------------------------------------------------------------------------------------
+All moves played on Replay board 7
+moveValidator(): All moves validated!
+GAME 8-----------------------------------------------------------------------------------------
+All moves played on Replay board 8
+moveValidator(): All moves validated!
+GAME 9-----------------------------------------------------------------------------------------
+All moves played on Replay board 9
+moveValidator(): All moves validated!
+GAME 10-----------------------------------------------------------------------------------------
+All moves played on Replay board 10
+moveValidator(): All moves validated!
+GAME 11-----------------------------------------------------------------------------------------
+All moves played on Replay board 11
+moveValidator(): All moves validated!
+GAME 12-----------------------------------------------------------------------------------------
+All moves played on Replay board 12
+moveValidator(): All moves validated!
+GAME 13-----------------------------------------------------------------------------------------
+All moves played on Replay board 13
+moveValidator(): All moves validated!
+GAME 14-----------------------------------------------------------------------------------------
+All moves played on Replay board 14
+moveValidator(): All moves validated!
+GAME 15-----------------------------------------------------------------------------------------
+All moves played on Replay board 15
+moveValidator(): All moves validated!
+GAME 16-----------------------------------------------------------------------------------------
+All moves played on Replay board 16
+moveValidator(): All moves validated!
+GAME 17-----------------------------------------------------------------------------------------
+All moves played on Replay board 17
+moveValidator(): All moves validated!
+GAME 18-----------------------------------------------------------------------------------------
+All moves played on Replay board 18
+moveValidator(): All moves validated!
+GAME 19-----------------------------------------------------------------------------------------
+All moves played on Replay board 19
+moveValidator(): All moves validated!
+GAME 20-----------------------------------------------------------------------------------------
+All moves played on Replay board 20

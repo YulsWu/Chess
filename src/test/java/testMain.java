@@ -21,31 +21,7 @@ import clockTests.ChessClockTests;
 
 public class testMain {
     public static void main(String[] args){
-        ArrayList<int[]> moves = new ArrayList<>();
-        moves.add(new int[]{8, 24});
-        moves.add(new int[]{55, 39});
-        moves.add(new int[]{24, 32});
-        moves.add(new int[]{39, 31});
-        moves.add(new int[]{32, 40});
-        moves.add(new int[]{31, 23});
-        moves.add(new int[]{40, 49});
-        moves.add(new int[]{23, 14});
-        moves.add(new int[]{49, 56});
-        moves.add(new int[]{14, 7});
-
-        GUIEngine engine = new GUIEngine();
-
-        for (int[] mv : moves){
-            if (engine.isPromotionMove(mv)){
-                engine.attemptMove(mv, engine.isWhitesTurn() ? 5 : -5);
-            }
-            else {
-                engine.attemptMove(mv);
-            }
-
-            System.out.println(engine.boardVisualize());
-
-        }
+        ReplayTest.test_0();
 
     }
 }

@@ -116,7 +116,6 @@ public class RegexParser {
             int promotionPiece = 0;
             
             // Short castle
-            String debugMatch = matcher.group(0);
             if (matcher.group(0).equals("O-O")){
                 if (whitesTurn){
                     piece = 6;
@@ -286,6 +285,17 @@ public class RegexParser {
 
         System.out.println("moveValidator(): All moves validated!");
         return retArray;
+    }
+
+    public static ArrayList<Move> PGNMoveValidator(ArrayList<String> moves){
+        StringBuilder sb = new StringBuilder();
+
+        for (String m : moves){
+            sb.append(m);
+            sb.append(" ");
+        }
+
+        return PGNMoveValidator(sb.toString());
     }
 
     public static boolean moveInMoveset(int[] move, ArrayList<int[]> moveset){

@@ -803,3 +803,6 @@ Fixed an issue where occassionally a promotion move would not register as a prom
 
 Revisit Stockfish lifecycle:
 - Quite a noticable performance drop when comparing freeplay to 'vs' game mode - extra overhead from creating Stockfish process and waiting for uciok signal
+- Not sure if its worth it to keep a process alive at stage level, there was already a loading lag transitioning to the game scene, and the increase is significantly impactful due to that
+
+Overload PGNMoveValidator() to take an ArrayList<String> for already separated moves (from RegexGameData.moves)
