@@ -56,4 +56,16 @@ public class BrowserEntry {
     }
     //#endregion
     
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("White: " + white + " ");
+        sb.append("Black: " + black + " ");
+        sb.append("Site: " + site + " ");
+        sb.append("Event: " + event + " ");
+        sb.append("Date: " + date + " ");
+        sb.append("Round: " + round + " ");
+        sb.append("Result: " + result + " ");
+
+        return sb.toString();
+    }
 }

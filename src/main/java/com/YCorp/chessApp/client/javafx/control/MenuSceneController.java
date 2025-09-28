@@ -49,6 +49,7 @@ public class MenuSceneController implements Closeable{
         menuImage.setImage(mate);
         playButton.addEventHandler(ActionEvent.ACTION, this::playButtonHandler);
         exitButton.addEventHandler(ActionEvent.ACTION, this::exitButtonHandler);
+        replayButton.addEventHandler(ActionEvent.ACTION, this::replayButtonHandler);
 
         menuImage.setLayoutX(menuPane.getPrefWidth()/2 - menuImage.getBoundsInParent().getWidth()/2);
         menuImage.setLayoutY(menuPane.getPrefHeight()/4 - menuImage.getBoundsInParent().getHeight()/3);
@@ -64,8 +65,11 @@ public class MenuSceneController implements Closeable{
     }
 
     private void playButtonHandler(ActionEvent e){
-        System.out.println("Play button pressed");
         dummy.fireEvent(new SceneTransitionEvent(SceneTransitionEvent.TO_SETTINGS));
+    }
+
+    private void replayButtonHandler(ActionEvent e){
+        dummy.fireEvent(new SceneTransitionEvent(SceneTransitionEvent.TO_BROWSER));
     }
 
     public void cleanup(){

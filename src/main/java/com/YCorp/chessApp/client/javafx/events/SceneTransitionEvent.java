@@ -16,7 +16,7 @@ public class SceneTransitionEvent extends Event {
     public static final EventType<SceneTransitionEvent> TO_GAME = new EventType<>(SceneTransitionEvent.ANY, "TO_GAME");
     public static final EventType<SceneTransitionEvent> TO_SETTINGS = new EventType<>(SceneTransitionEvent.ANY, "TO_SETTINGS");
     public static final EventType<SceneTransitionEvent> TO_MENU = new EventType<>(SceneTransitionEvent.ANY, "TO_MENU");
-    public static final EventType<SceneTransitionEvent> TO_DB = new EventType<>(SceneTransitionEvent.ANY, "TO_DB");
+    public static final EventType<SceneTransitionEvent> TO_BROWSER = new EventType<>(SceneTransitionEvent.ANY, "TO_BROWSER");
 
     public SceneTransitionEvent(EventType<? extends SceneTransitionEvent> eventType){
         super(eventType);

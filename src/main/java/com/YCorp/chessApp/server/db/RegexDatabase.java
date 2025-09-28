@@ -298,10 +298,10 @@ public class RegexDatabase {
                     retArray.add(new AbstractMap.SimpleEntry<String, Integer>(rs.getString("player"), (int) rs.getInt("appearances")));
                 }
             }
-            catch (SQLException e){
-                System.out.println("readPlayerCounts() Error: Exception occurred while querying database " + e);
-                return new ArrayList<Map.Entry<String, Integer>>();
-            }
+        catch (SQLException e){
+            System.out.println("readPlayerCounts() Error: Exception occurred while querying database " + e);
+            return new ArrayList<Map.Entry<String, Integer>>();
+        }
 
 
 
@@ -342,5 +342,89 @@ public class RegexDatabase {
         return retArray;
     }
 
-    
+    public static ArrayList<String> getUniquePlayers(){
+        ArrayList<String> retArray = new ArrayList<>();
+        String query = "SELECT white_player as value FROM games UNION SELECT black_player as value FROM games";
+
+        try(
+            Connection conn = DriverManager.getConnection(DB_PATH);
+            PreparedStatement statement = conn.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
+            ){
+                while(rs.next()){
+                    retArray.add(rs.getString("value"));
+                }
+            }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return retArray;
+    }
+
+    public static ArrayList<String> getUniqueSites(){
+        ArrayList<String> retArray = new ArrayList<>();
+        String query = "SELECT DISTINCT site FROM games";
+
+        try(
+            Connection conn = DriverManager.getConnection(DB_PATH);
+            PreparedStatement statement = conn.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
+            ){
+                while(rs.next()){
+                    retArray.add(rs.getString("site"));
+                }
+            }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return retArray;
+    }
+
+    public static ArrayList<String> getUniqueEvents(){
+        ArrayList<String> retArray = new ArrayList<>();
+        String query = "SELECT DISTINCT chess_event FROM games";
+
+        try(
+            Connection conn = DriverManager.getConnection(DB_PATH);
+            PreparedStatement statement = conn.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
+            ){
+                while(rs.next()){
+                    retArray.add(rs.getString("chess_event"));
+                }
+            }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return retArray;
+    }
+
+    public static int countAll(){
+        String query = "SELECT COUNT(*) AS count FROM games";
+        try(
+            Connection conn = DriverManager.getConnection(DB_PATH);
+            PreparedStatement statement = conn.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
+            ){
+                while(rs.next()){
+                    return rs.getInt("count");
+                }
+            }
+        catch (Exception e){
+            e.printStackTrace();
+            return -1;
+        }
+
+        System.out.println("countAll(): ERROR");
+        return -1;
+    }
+
+    public static ResultSet executeQuery(String query) throws SQLException {
+        Connection conn = DriverManager.getConnection(DB_PATH);
+        PreparedStatement statement = conn.prepareStatement(query);
+        return statement.executeQuery();
+    }
 }

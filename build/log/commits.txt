@@ -806,3 +806,8 @@ Revisit Stockfish lifecycle:
 - Not sure if its worth it to keep a process alive at stage level, there was already a loading lag transitioning to the game scene, and the increase isn't significantly impactful due to that
 
 Overload PGNMoveValidator() to take an ArrayList<String> for already separated moves (from RegexGameData.moves)
+
+Working on pagination, removed TableView from scenegraph, create it as separate and provide it to the Pagination to display
+- Finish DatabaseClient and create method to act as page factory
+
+getPage() is done, currently only rudimentary 'newest' filter for DatabaseClient - Going to get it working with Pagination first, then add options to add filters for results

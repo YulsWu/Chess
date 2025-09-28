@@ -12,6 +12,7 @@ import java.io.IOException;
 
 import com.YCorp.chessApp.client.javafx.classes.GUIEngine;
 import com.YCorp.chessApp.client.javafx.classes.SceneManager;
+import com.YCorp.chessApp.client.javafx.control.BrowserSceneController;
 import com.YCorp.chessApp.client.javafx.control.GameSceneController;
 import com.YCorp.chessApp.client.javafx.control.MenuSceneController;
 import com.YCorp.chessApp.client.javafx.control.SettingsSceneController;
@@ -165,6 +166,27 @@ public class ScratchFX extends Application{
 
     }
 
+    private void loadBrowserScene(){
+        if (this.sceneManager.isActive()){
+            this.sceneManager.cleanup();
+        }
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/browserScene.fxml"));
+        
+        try {
+            Parent root = loader.load();
+            this.stage.setScene(new Scene(root));
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        
+        BrowserSceneController controller = loader.getController();
+
+        sceneManager.setActiveController(controller);
+        controller.init();
+        stage.show();
+    }
+
     private void sceneTransitionHandler(SceneTransitionEvent e){
         System.out.println("Event caught: " + e.getEventType());
         if (e.getEventType() == SceneTransitionEvent.TO_GAME){
@@ -183,7 +205,12 @@ public class ScratchFX extends Application{
         else if (e.getEventType() == SceneTransitionEvent.TO_MENU){
             loadMenuScene();
         }
+        else if (e.getEventType() == SceneTransitionEvent.TO_BROWSER){
+            loadBrowserScene();
+        }
         // Prevent unintended propagation of event
         e.consume();
     }
+
+    
 }

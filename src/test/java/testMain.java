@@ -5,6 +5,7 @@ import com.YCorp.chessApp.client.engine.Board;
 import com.YCorp.chessApp.client.engine.StockfishClient;
 import com.YCorp.chessApp.client.javafx.classes.GUIEngine;
 import com.YCorp.chessApp.client.parser.RegexParser;
+import com.YCorp.chessApp.server.db.DatabaseClient;
 import com.YCorp.chessApp.server.db.RegexDatabase;
 import com.YCorp.chessApp.server.db.RegexGameData;
 
@@ -21,8 +22,8 @@ import clockTests.ChessClockTests;
 
 public class testMain {
     public static void main(String[] args){
-        FXTestApp.launch(FXTestApp.class, args);
-
+        //FXTestApp.launch(FXTestApp.class, args);
+        //DatabaseTest.test_0();
     }
 }
     

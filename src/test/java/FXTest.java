@@ -32,7 +32,6 @@ public class FXTest {
 
         BrowserSceneController controller = loader.getController();
         controller.init();
-        controller.setTableData(testData);
 
 
         return new Scene(root);
