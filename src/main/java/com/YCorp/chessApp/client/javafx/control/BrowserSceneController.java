@@ -1,9 +1,11 @@
 package com.YCorp.chessApp.client.javafx.control;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 
 import com.YCorp.chessApp.client.javafx.classes.interfaces.Closeable;
+import com.YCorp.chessApp.client.javafx.events.SceneTransitionEvent;
 import com.YCorp.chessApp.server.db.BrowserEntry;
 import com.YCorp.chessApp.server.db.DatabaseClient;
 import com.YCorp.chessApp.server.db.RegexDatabase;
@@ -11,16 +13,21 @@ import com.YCorp.chessApp.server.db.RegexDatabase;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.layout.Pane;
 
 public class BrowserSceneController implements Closeable{
     //FXML Injection
-    
+
+    @FXML
+    private Pane root;
     @FXML
     private Button playButton;
     @FXML
@@ -43,12 +50,17 @@ public class BrowserSceneController implements Closeable{
     private ComboBox<String> eventComboBox;
     @FXML
     private Pagination resultsPagination;
+    @FXML
+    private Button applyButton;
 
+    private Pane dummy;
     private TableView<BrowserEntry> resultsTableView;
 
     private DatabaseClient client;
 
     private int entriesPerPage = 16;
+
+    ArrayList<ComboBox<String>> filters = new ArrayList<>();
 
     // Dynamically attach cellValueFactories for TableColumns
     // We lose TableColumn references this way but they are not expected to be required
@@ -62,10 +74,15 @@ public class BrowserSceneController implements Closeable{
         getters.add(BrowserEntry::getEvent);
         getters.add(BrowserEntry::getRound);
         getters.add(BrowserEntry::getResult);
+        getters.trimToSize();
     }
     
 
     public void init(){
+        dummy = new Pane();
+        dummy.setVisible(false);
+        root.getChildren().add(dummy);
+        
         resultsTableView = new TableView<BrowserEntry>();
         resultsTableView.setPrefSize(724, 24 * 17); // Set height to correspond to 16 (+ 1 header) rows of 24px height
         // Ordered list of column width units
@@ -108,11 +125,28 @@ public class BrowserSceneController implements Closeable{
         client = new DatabaseClient(this.entriesPerPage, resultsTableView);
         resultsPagination.setPageCount(client.getNumPages());
         resultsPagination.setPageFactory(client::getPage);
+        resultsPagination.setMaxPageIndicatorCount(8);
 
-        System.out.println(client.getNumPages());   
+        // Node setup
+        whitePlayerComboBox.setId("white_player");
+        blackPlayerComboBox.setId("black_player");
+        siteComboBox.setId("site");
+        eventComboBox.setId("chess_event");
+        dateComboBox.setId("game_date");
+        filters.add(whitePlayerComboBox);
+        filters.add(blackPlayerComboBox);
+        filters.add(siteComboBox);
+        filters.add(dateComboBox);
+        filters.add(eventComboBox);
+        filters.trimToSize();
+
+        //Handlers
+        applyButton.addEventHandler(ActionEvent.ACTION, this::applyButtonHandler);
+        backButton.addEventHandler(ActionEvent.ACTION, this::backButtonHandler);
+
     }
 
-    public void updateFilters(){
+    private void updateFilters(){
         ObservableList<String> players = FXCollections.observableArrayList(RegexDatabase.getUniquePlayers()); 
         whitePlayerComboBox.setItems(players);
         blackPlayerComboBox.setItems(players);
@@ -120,6 +154,39 @@ public class BrowserSceneController implements Closeable{
         eventComboBox.setItems(FXCollections.observableArrayList(RegexDatabase.getUniqueEvents()));
     }
 
+    private void applyButtonHandler(ActionEvent a){
+        StringBuilder sb = new StringBuilder("SELECT * FROM games");
+ 
+        // If there are filters we start with "WHERE", and then "AND" for each subsequent filter
+        boolean filtering = false;
+        String value;
+        for (int i = 0; i < filters.size(); i++){
+            value = filters.get(i).getValue();
+            if ((value != null) && (value != "")){
+                ComboBox<String> valueBox = filters.get(i);
+                if (filtering){
+                    sb.append(" AND ").append(valueBox.getId()).append(" = \"").append(value).append("\"");
+                }
+                else {
+                    sb.append(" WHERE ").append(valueBox.getId()).append(" = \"").append(value).append("\"");
+                    filtering = true;
+                }
+            }
+        }
+
+        // If there are no filters the statement stays as-is
+
+        System.out.println(sb.toString());
+        this.client = new DatabaseClient(this.entriesPerPage, this.resultsTableView, sb.toString());
+        this.resultsPagination.setPageFactory(client::getPage);
+        this.resultsPagination.setCurrentPageIndex(0);
+        this.resultsPagination.setPageCount(client.getNumPages());
+        
+    }
+
+    private void backButtonHandler(ActionEvent e){
+        dummy.fireEvent(new SceneTransitionEvent(SceneTransitionEvent.TO_MENU));
+    }
 
     //debug
     public void setTableData(ObservableList<BrowserEntry> list){
@@ -129,6 +196,10 @@ public class BrowserSceneController implements Closeable{
         System.out.println(resultsTableView.getColumns());
         System.out.println(resultsTableView.getItems());
     }
+
+    
+
+    
     
     // Scene doesn't require cleanup
     public void cleanup(){};

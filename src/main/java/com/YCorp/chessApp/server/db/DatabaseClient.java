@@ -7,24 +7,61 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.TableView;
 
 public class DatabaseClient {
 
     private int entriesPerPage;
-    private String statement;
+    private String statement = "SELECT * FROM games";
     private TableView<BrowserEntry> tableView;
     private int numPages;
+    private boolean empty;
 
     public DatabaseClient(int entriesPerPage, TableView<BrowserEntry> tableView){
         this.entriesPerPage = entriesPerPage;
-        statement = "SELECT * FROM games ORDER BY game_date DESC";
-        numPages = (RegexDatabase.countAll() + entriesPerPage - 1)/entriesPerPage; // Take ceiling quotient for num pages
+        numPages = (getQueryCount(statement) + entriesPerPage - 1)/entriesPerPage; // Take ceiling quotient for num pages
+        System.out.println(numPages);
         this.tableView = tableView;
+
+        if (numPages == 0){
+            numPages = 1;
+            empty = true;
+            ObservableList<BrowserEntry> list = FXCollections.observableArrayList();
+            list.add(new BrowserEntry(null, "NO", "GAMES", "<3", ":(", "FOUND", ":P", ":L"));
+            tableView.setItems(list);
+        }
+        else {
+            empty = false;
+        }
     };
 
+    public DatabaseClient(int entriesPerPage, TableView<BrowserEntry> tableView, String statement){
+        this.statement = statement;
+        this.entriesPerPage = entriesPerPage;
+        numPages = (getQueryCount(statement) + entriesPerPage - 1)/entriesPerPage; // Take ceiling quotient for num pages
+        System.out.println(numPages);
+        this.tableView = tableView;
+
+        if (numPages == 0){
+            numPages = 1;
+            empty = true;
+            ObservableList<BrowserEntry> list = FXCollections.observableArrayList();
+            list.add(new BrowserEntry(null, "NO", "GAMES", ":((((", "<3", "FOUND", ":P", ":L"));
+            tableView.setItems(list);
+        }
+        else {
+            empty = false;
+        }
+    }
+
     public Node getPage(int page){
+        // If the original statement is empty, just return the same empty tableView
+        if (empty){
+            return tableView;
+        }
+
         String pageStatement = statement;
         ArrayList<BrowserEntry> entries = new ArrayList<>();
 
@@ -54,6 +91,26 @@ public class DatabaseClient {
     private String epochMillisToString(long epoch){
         return DateTimeFormatter.ofPattern("yyyy.MM.dd").withZone(ZoneId.of("UTC")).format(Instant.ofEpochSecond(epoch/1000));
     }
+
+    // return negated entriesPerPage value to ensure negative number is propagated to GUI indicating failure
+    private int getQueryCount(String statement){
+        ResultSet rs;
+        StringBuilder sb = new StringBuilder(statement);
+        sb.insert(0, "SELECT COUNT(*) FROM (").append(")");
+        try{
+            if ((rs = RegexDatabase.executeQuery(sb.toString())).next()){
+                return rs.getInt(1);
+            }
+
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return -entriesPerPage;
+        }
+        return -entriesPerPage;
+    }
+
+
 
 
 }

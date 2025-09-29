@@ -811,3 +811,6 @@ Working on pagination, removed TableView from scenegraph, create it as separate 
 - Finish DatabaseClient and create method to act as page factory
 
 getPage() is done, currently only rudimentary 'newest' filter for DatabaseClient - Going to get it working with Pagination first, then add options to add filters for results
+
+SELECT * FROM games WHERE white_player == HIKARU AND black_player == NAKAMURA
+SELECT * FROM games WHERE black_player == HIKARUNAKAMURA

@@ -172,6 +172,7 @@ public class ScratchFX extends Application{
         }
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/browserScene.fxml"));
         
+        
         try {
             Parent root = loader.load();
             this.stage.setScene(new Scene(root));
@@ -181,6 +182,8 @@ public class ScratchFX extends Application{
         }
         
         BrowserSceneController controller = loader.getController();
+
+        System.out.println("Controller: " + controller);
 
         sceneManager.setActiveController(controller);
         controller.init();
