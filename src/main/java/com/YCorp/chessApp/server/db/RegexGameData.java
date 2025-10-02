@@ -23,7 +23,7 @@ public class RegexGameData {
     public String event;
     public String site;
     public Date date;
-    public Float round;
+    public String round;
     public String whitePlayer;
     public String blackPlayer;
     public String result;
@@ -39,7 +39,7 @@ public class RegexGameData {
         event = tempMap.get("Event");
         site = tempMap.get("Site");
         date = tempMap.get("Date").contains("?") ? null : metaFormatDate(tempMap.get("Date"));
-        round = tempMap.get("Round").contains("?") ? null : metaFormatFloat(tempMap.get("Round"));
+        round = tempMap.get("Round").contains("?") ? null : tempMap.get("Round");
         whitePlayer = tempMap.get("White");
         blackPlayer = tempMap.get("Black");
         result = tempMap.get("Result");
@@ -192,15 +192,16 @@ public class RegexGameData {
         StringBuilder sb = new StringBuilder();
         // Convert byte[16] into readable format, for debugging game data equality
         String strID = new String(this.ID, StandardCharsets.ISO_8859_1);
-        sb.append("GameID: " + strID + "\n");
-        sb.append("\tEvent: " + this.event + "\n");
-        sb.append("\tSite: " + this.site + "\n");
-        sb.append("\tDate: " + this.date + "\n");
-        sb.append("\tRound: " + this.round + "\n");
-        sb.append("\tWhite: " + this.whitePlayer + "\n");
-        sb.append("\tBlack: " + this.blackPlayer + "\n");
-        sb.append("\tResult: " + this.result + "\n");
-        sb.append("\t" + this.optionalMeta.size() + " additional meta fields in optional:\n");
+
+        sb.append("GameID: ").append(strID);
+        sb.append("\tEvent: ").append(this.event);
+        sb.append("\tSite: ").append(this.site);
+        sb.append("\tDate: ").append(this.date);
+        sb.append("\tRound: ").append(this.round).append("\n");
+        sb.append("\tWhite: ").append(this.whitePlayer);
+        sb.append("\tBlack: ").append(this.blackPlayer);
+        sb.append("\tResult: ").append(this.result).append("\n");
+        sb.append("\t").append(this.optionalMeta.size()).append(" additional meta fields in optional:\n");
 
         for (Map.Entry<String,String> entry : this.optionalMeta.entrySet()){
             sb.append("\t" + entry.getKey() + ": " + entry.getValue() + "\n");
@@ -211,7 +212,7 @@ public class RegexGameData {
             for (int i = 0; i < 4; i++){
                 sb.append(this.moves.get(i) + " ");
             }
-            sb.append("......");
+            sb.append("...... ");
             for (int i = this.moves.size() - 4; i < this.moves.size(); i++){
                 sb.append(this.moves.get(i) + " ");
             }

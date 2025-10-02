@@ -24,6 +24,8 @@ public class testMain {
     public static void main(String[] args){
         //FXTestApp.launch(FXTestApp.class, args);
         //DatabaseTest.test_0();
+        //DatabaseTest.test_1();
+        DatabaseTest.test_2();
     }
 }
     

@@ -812,5 +812,53 @@ Working on pagination, removed TableView from scenegraph, create it as separate 
 
 getPage() is done, currently only rudimentary 'newest' filter for DatabaseClient - Going to get it working with Pagination first, then add options to add filters for results
 
-SELECT * FROM games WHERE white_player == HIKARU AND black_player == NAKAMURA
-SELECT * FROM games WHERE black_player == HIKARUNAKAMURA
+When to validate moves?
+Validation requires the entire game to be played to ensure validity of each move with respect to previous board state
+I'd like all games in DB to be valid, but its a waste of computation:
+    - Playing game once on writeDB(), then once again to convert Algebraic moves -> Context-sensitive move object
+    - Vs single validation at replay time
+
+Depends on how much I value giving immediate feedback at import time for erroneous PGNs
+ - Users are likey to import 100's at a time from online PGNs, may not realise some or a large portion are invalid until replay attempts
+I think the overhead is worth it
+
+Modified extractPGN() to validate each game before adding to the return list, if invalid we don't include in return list
+Changed RegexGameData.round from float to String, as round format is incompatible (3.11.2) with numerics
+
+Figure out database existence detection/creation behaviour
+
+Dialogs:
+- Wrapper class for its own stage, cannot reassign stage
+- Buttons are tied to button TYPE
+    - resultConverter is aware of these default types
+    - We just add new ButtonType("Action 1", ButtonBar.ButtonData.OK), button is created by Dialog
+    - Custom behaviour would require a button added under ButtonType.OTHER (Also auto added by Dialog)
+    - Then attach custom handler to OTHER for behaviour (Other is not tied to resultConverter)
+
+
+Bug: Import PGN function throws null pointer exception, but paste button function works fine
+    - They both invoke the SAME parsing method under the hood
+    - So the error MUST be due to something to do with reading the file in all at once - must check raw string output after read fully without terminal trunctation - Must pipe to separate file.
+FIXED: Issue was ENCODING and probably NEWLINES when READING FROM FILE
+    - Pasting into Java creates java-native Strings and '\n'
+    - Any file saved on windows likely uses \r\n and MAY have other encoding data
+    - Encoding is ONLY required when reading TEXT as BYTES (StandardCharset.UTF_8)
+note:
+    - Writing to file and then copying that content worked to get around the error, since to be able to copy the content I had to OPEN the file in 
+    an EDITOR, which applied proper encoding and doesn't explicitly show \r\n
+    - Copying \r\n text into any control places the responsiblity of normalization on that control
+    - Java control likely just normalized to \n, passed the \n string to the method in-memory, and wrote that string to debug file (which then was re-formatted to \r\n)
+
+Finishing up Browser:
+    - Implement delete button
+        - Grab selected element game ID, send delete statement
+    - Date filter
+        - Either remove entirely, or figure out a way to do date range or year or smth
+    - Play button --> Ties into next functionality, replaying games from RegexGameData
+    
+Thoughts about DAO - 
+    - DAO would be the 'best' way to go about database operations on BrowserScene
+    - However for my program I don't forsee any other scenes interfacing with the database
+        - So its the same amount of work either way, just the DAO won't be utilized to its full extent
+        - Plus adds maintainability issues (If I don't use it a lot I'll forget how it works)
+    - Sticking with Browser-specific methods within RegexDatabase for now

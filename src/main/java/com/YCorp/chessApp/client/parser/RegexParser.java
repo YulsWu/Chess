@@ -22,11 +22,11 @@ public class RegexParser {
     public static Map<String, Integer> FILE_INDEX;
     public static Map<Integer, String> FILE_LABEL;
 
-    public static String ALGEBRAIC_REGEX = "([KQRBN])?([a-h])?([1-8])?(x)?([a-h])([1-8])(=[QRBN])?([+#])?|(O-O-O)|(O-O)";
-    public static String META_BLOCK_REGEX = "((?:\\n?\\[.*\\]\\n)+)";
-    public static String MOVE_BLOCK_REGEX = "(?s)\\n1\\..*?[ ]+[01][.\\/]?\\d?-[01][.\\/]?\\d?";
-    public static String META_FIELD_REGEX = "\n?\\[(.*) \"(.*)\"\\]";
-    public static String GAME_BLOCK_REGEX = "(?s)(.*? +[01][.\\/]?\\d?-[01][.\\/]?\\d?)";
+    public static final String ALGEBRAIC_REGEX = "([KQRBN])?([a-h])?([1-8])?(x)?([a-h])([1-8])(=[QRBN])?([+#])?|(O-O-O)|(O-O)";
+    public static final String META_BLOCK_REGEX = "((?:\\n?\\[.*\\]\\n)+)";
+    public static final String MOVE_BLOCK_REGEX = "(?s)\\n1\\..*?[ ]+[01][.\\/]?\\d?-[01][.\\/]?\\d?";
+    public static final String META_FIELD_REGEX = "\n?\\[(.*) \"(.*)\"\\]";
+    public static final String GAME_BLOCK_REGEX = "(?s)(.*? +[01][.\\/]?\\d?-[01][.\\/]?\\d?)";
 
     static {
         PIECE_ID = new HashMap<>();
@@ -282,8 +282,6 @@ public class RegexParser {
             count++;
         }
         //#endregion
-
-        System.out.println("moveValidator(): All moves validated!");
         return retArray;
     }
 
@@ -398,17 +396,10 @@ public class RegexParser {
         return emptyMove;
     }
 
-    // Separates games first, then separates meta block from moves block, then separates each meta field and each move
-    // May be easier to skip the meta/move block regex, and directly get the meta fields and moves from the game block
-    public static ArrayList<RegexGameData> extractPGN(String filepath){
-        ArrayList<RegexGameData> retArray = new ArrayList<>();
-        ArrayList<String> metaArray = new ArrayList<>();
-        ArrayList<String> movesArray = new ArrayList<>();
-
-        String pgnString;
+    public static String loadPGN(String filepath){
         StringBuilder sb = new StringBuilder();
 
-        System.out.println("extractPGN(): Beginning PGN extraction from " + filepath);
+        System.out.println("loadPGN(): Beginning PGN extraction from " + filepath);
         long startTime = System.currentTimeMillis();
 
         try(BufferedReader bf = new BufferedReader(new FileReader(filepath))){
@@ -419,11 +410,21 @@ public class RegexParser {
 
         }
         catch (Exception e){
-            System.out.println("extractMetaPGN(): Error reading file");
+            System.out.println("loadPGN(): Error reading file");
         }
 
-        pgnString = sb.toString();
+        System.out.println("loadPGN() finshed in " + (System.currentTimeMillis() - startTime) + " ms");
 
+        return sb.toString();
+    }
+
+    // Separates games first, then separates meta block from moves block, then separates each meta field and each move
+    // May be easier to skip the meta/move block regex, and directly get the meta fields and moves from the game block
+    public static ArrayList<RegexGameData> extractPGN(String pgnString){
+        int count = 0;
+
+        ArrayList<RegexGameData> retArray = new ArrayList<>();
+    
         // Separate games
         Pattern gameBlockPattern = Pattern.compile(RegexParser.GAME_BLOCK_REGEX);
 
@@ -469,11 +470,21 @@ public class RegexParser {
                 }
             }
 
-            // Add game
-            retArray.add(new RegexGameData(tempMetaMap, tempMoveArray));
+            // Validate and add games
+            if (PGNMoveValidator(tempMoveArray).size() == tempMoveArray.size()){
+                retArray.add(new RegexGameData(tempMetaMap, tempMoveArray));
+            }
+            else{
+                System.out.println("extractPGN(): Invalid game detected, metadata=" + tempMetaMap);
+                continue;
+            }
+            count ++;
+
+            if (count % 50 == 0){
+
+                System.out.print("extractPGN(): " + count + " games extracted...\r");
+            }
         }
-        String timeString = String.format("%1.3f", (float)(System.currentTimeMillis() - startTime)/1000);
-        System.out.println("extractPGN(): Finished extracting " + retArray.size() + " games from " + filepath + " in " + timeString + " seconds.");
 
         return retArray;
     }

@@ -1,14 +1,21 @@
 package com.YCorp.chessApp.client.javafx.control;
 
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 import com.YCorp.chessApp.client.javafx.classes.interfaces.Closeable;
 import com.YCorp.chessApp.client.javafx.events.SceneTransitionEvent;
+import com.YCorp.chessApp.client.parser.RegexParser;
 import com.YCorp.chessApp.server.db.BrowserEntry;
 import com.YCorp.chessApp.server.db.DatabaseClient;
 import com.YCorp.chessApp.server.db.RegexDatabase;
+import com.YCorp.chessApp.server.db.RegexGameData;
+import com.YCorp.chessApp.client.javafx.classes.BrowserPasteDialog;
+import com.YCorp.chessApp.client.javafx.classes.BrowserImportDialog;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
@@ -16,12 +23,22 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventType;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
+import javafx.scene.control.Label;
 import javafx.scene.control.Pagination;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.TextAlignment;
 
 public class BrowserSceneController implements Closeable{
     //FXML Injection
@@ -45,13 +62,17 @@ public class BrowserSceneController implements Closeable{
     @FXML
     private ComboBox<String> siteComboBox;
     @FXML
-    private ComboBox<String> dateComboBox;
+    private DatePicker fromDatePicker;
+    @FXML
+    private DatePicker toDatePicker;
     @FXML
     private ComboBox<String> eventComboBox;
     @FXML
     private Pagination resultsPagination;
     @FXML
     private Button applyButton;
+    @FXML 
+    private Button clearButton;
 
     private Pane dummy;
     private TableView<BrowserEntry> resultsTableView;
@@ -88,7 +109,7 @@ public class BrowserSceneController implements Closeable{
         // Ordered list of column width units
         int divisor = 14;
         double cellUnit = (int) (resultsTableView.getPrefWidth())/divisor;// Each column has 1px right border
-        int[] columnWidthUnits = new int[]{3, 3, 2, 2, 2, 1, 1}; // sums to divisor
+        int[] columnWidthUnits = new int[]{2, 2, 2, 3, 3, 1, 1}; // sums to divisor
 
 
         // Create TableColumns for each metaData label, attach a read-only property wrapper as we do not require
@@ -127,22 +148,28 @@ public class BrowserSceneController implements Closeable{
         resultsPagination.setPageFactory(client::getPage);
         resultsPagination.setMaxPageIndicatorCount(8);
 
+        // TableView Setup
+        resultsTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
         // Node setup
         whitePlayerComboBox.setId("white_player");
         blackPlayerComboBox.setId("black_player");
         siteComboBox.setId("site");
         eventComboBox.setId("chess_event");
-        dateComboBox.setId("game_date");
+
         filters.add(whitePlayerComboBox);
         filters.add(blackPlayerComboBox);
         filters.add(siteComboBox);
-        filters.add(dateComboBox);
         filters.add(eventComboBox);
         filters.trimToSize();
 
         //Handlers
         applyButton.addEventHandler(ActionEvent.ACTION, this::applyButtonHandler);
         backButton.addEventHandler(ActionEvent.ACTION, this::backButtonHandler);
+        pasteButton.addEventHandler(ActionEvent.ACTION, this::pasteButtonHandler);
+        importButton.addEventHandler(ActionEvent.ACTION, this::importButtonHandler);
+        deleteButton.addEventHandler(ActionEvent.ACTION, this::deleteButtonHandler);
+        clearButton.addEventHandler(ActionEvent.ACTION, this::clearButtonHandler);
 
     }
 
@@ -160,10 +187,13 @@ public class BrowserSceneController implements Closeable{
         // If there are filters we start with "WHERE", and then "AND" for each subsequent filter
         boolean filtering = false;
         String value;
+        // For each of the Filter comboboxes,
         for (int i = 0; i < filters.size(); i++){
             value = filters.get(i).getValue();
+            // If there's a value input in those boxes
             if ((value != null) && (value != "")){
                 ComboBox<String> valueBox = filters.get(i);
+                // If we've started filtering, put AND, otherwise put WHERE
                 if (filtering){
                     sb.append(" AND ").append(valueBox.getId()).append(" = \"").append(value).append("\"");
                 }
@@ -171,8 +201,42 @@ public class BrowserSceneController implements Closeable{
                     sb.append(" WHERE ").append(valueBox.getId()).append(" = \"").append(value).append("\"");
                     filtering = true;
                 }
+
             }
         }
+        // Date filtering requires the specific identity of the DatePicker to determine whether we > or < the value against the records
+        LocalDate fromDate = this.fromDatePicker.getValue();
+        LocalDate toDate = this.toDatePicker.getValue();
+        
+      
+        // Messy logic, basically only include if the date field is not null, then check if we're already filtering to determine
+        // the appropriate statement string to add (AND vs WHERE)
+        if (!(fromDate == null && toDate == null)){
+            if (fromDate != null){
+                long epoch = fromDate.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli();
+                if (filtering){
+                    sb.append(" AND game_date >= ").append(epoch);
+                }
+                else {
+                    filtering = true;
+                    sb.append(" WHERE game_date >= ").append(epoch);
+                }
+            
+            }
+            
+            if (toDate != null){
+                long epoch = toDate.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli();
+
+                if (filtering){
+                    sb.append(" AND game_date <= ").append(epoch);
+                }
+                else {
+                    filtering = true;
+                    sb.append(" WHERE game_date <= ").append(epoch);
+                }
+            }
+        }
+
 
         // If there are no filters the statement stays as-is
 
@@ -186,6 +250,86 @@ public class BrowserSceneController implements Closeable{
 
     private void backButtonHandler(ActionEvent e){
         dummy.fireEvent(new SceneTransitionEvent(SceneTransitionEvent.TO_MENU));
+    }
+
+    private void pasteButtonHandler(ActionEvent e){
+        Dialog<Boolean> d = new BrowserPasteDialog();
+        d.showAndWait();
+
+        // Refresh if DB changed
+        if (d.getResult() == true){
+            dummy.fireEvent(new SceneTransitionEvent(SceneTransitionEvent.TO_BROWSER));
+        }
+    }
+
+    private void importButtonHandler(ActionEvent e){
+        Dialog<Boolean> d = new BrowserImportDialog();
+        d.showAndWait();
+
+        // Refresh if DB changed
+        if (d.getResult() == true){
+            dummy.fireEvent(new SceneTransitionEvent(SceneTransitionEvent.TO_BROWSER));
+        }
+
+    }
+
+    private void deleteButtonHandler(ActionEvent e){
+        ArrayList<byte[]> ids = new ArrayList<>();
+        for (BrowserEntry entry : this.resultsTableView.getSelectionModel().getSelectedItems()){
+            ids.add(entry.getId());
+        } 
+
+        if (ids.size() == 0){
+            return;
+        }
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        DialogPane alertPane = alert.getDialogPane();
+        alertPane.setPrefSize(350, 110);
+
+        alert.setTitle("Confirm deletion");
+
+        Label content = new Label("Are you sure you want to delete " + ids.size() + (ids.size() == 1 ? " game?" : " games?\nThis action cannot be undone"));
+        VBox contentBox = new VBox(content);
+        contentBox.setAlignment(Pos.CENTER);
+
+        // header.setTextAlignment(TextAlignment.CENTER);
+        content.setTextAlignment(TextAlignment.CENTER);
+
+        alertPane.setHeader(new VBox());
+        alertPane.setContent(contentBox);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        
+        if (result.isPresent() && result.get() == ButtonType.OK){
+            RegexDatabase.deleteByID(ids);
+            dummy.fireEvent(new SceneTransitionEvent(SceneTransitionEvent.TO_BROWSER)); // Refresh
+        }
+    }
+
+    private void clearButtonHandler(ActionEvent e){
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        DialogPane alertPane = alert.getDialogPane();
+        alertPane.setPrefSize(350, 110);
+
+        alert.setTitle("Wipe Database?");
+
+        Label content = new Label("WARNING: ALL GAMES WILL BE DELETED\nThis action cannot be undone");
+        VBox contentBox = new VBox(content);
+        contentBox.setAlignment(Pos.CENTER);
+
+        // header.setTextAlignment(TextAlignment.CENTER);
+        content.setTextAlignment(TextAlignment.CENTER);
+
+        alertPane.setHeader(new VBox());
+        alertPane.setContent(contentBox);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        
+        if (result.isPresent() && result.get() == ButtonType.OK){
+            RegexDatabase.deleteAll();
+            dummy.fireEvent(new SceneTransitionEvent(SceneTransitionEvent.TO_BROWSER)); // Refresh
+        }
     }
 
     //debug

@@ -1,7 +1,7 @@
 package com.YCorp.chessApp.client.javafx.control;
 import java.util.Arrays;
 
-import com.YCorp.chessApp.client.javafx.classes.SceneBuilder;
+import com.YCorp.chessApp.client.javafx.classes.SceneFactory;
 import com.YCorp.chessApp.client.javafx.classes.interfaces.Closeable;
 import com.YCorp.chessApp.client.javafx.events.SceneTransitionEvent;
 
@@ -34,7 +34,7 @@ public class SettingsSceneController implements Closeable {
     Pane dummy;
 
     public SettingsSceneController(){
-        settingsScene = SceneBuilder.buildSettingsScene();
+        settingsScene = SceneFactory.buildSettingsScene();
         Parent root = settingsScene.getRoot();
 
         whitePlayerRadio = (RadioButton) root.lookup("#whitePlayerRadio");

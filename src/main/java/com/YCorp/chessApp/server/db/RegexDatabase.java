@@ -24,8 +24,12 @@ import java.util.Collections;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.PreparedStatement;
 import java.sql.Types;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.Blob;
@@ -58,7 +62,7 @@ public class RegexDatabase {
     "chess_event VARCHAR(50)," +
     "site VARCHAR(50)," +
     "game_date DATE," +
-    "round FLOAT," +
+    "round VARCHAR(10)," +
     "white_player VARCHAR(35)," +
     "black_player VARCHAR(35)," +
     "result VARCHAR(7)," +
@@ -212,7 +216,7 @@ public class RegexDatabase {
         stmt.setString(2, game.event);
         stmt.setString(3, game.site);
         stmt.setObject(4, game.date, Types.DATE);
-        stmt.setObject(5, game.round, Types.FLOAT);
+        stmt.setString(5, game.round);
         stmt.setString(6, game.whitePlayer);
         stmt.setString(7, game.blackPlayer);
         stmt.setString(8, game.result);
@@ -422,9 +426,133 @@ public class RegexDatabase {
         return -1;
     }
 
-    public static ResultSet executeQuery(String query) throws SQLException {
-        Connection conn = DriverManager.getConnection(DB_PATH);
-        PreparedStatement statement = conn.prepareStatement(query);
-        return statement.executeQuery();
+    public static ArrayList<BrowserEntry> readBrowserEntries(String query){
+        ArrayList<BrowserEntry> retArray = new ArrayList<>();
+        try (
+            Connection conn = DriverManager.getConnection(DB_PATH);
+            PreparedStatement statement = conn.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
+        )
+        {
+            while (rs.next()){
+                retArray.add(new BrowserEntry(rs.getBytes("id"), rs.getString("white_player"), rs.getString("black_player"), rs.getString("site"), rs.getString("chess_event"), epochMillisToString(rs.getLong("game_date")), rs.getString("round"), rs.getString("result")));
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return retArray;
     }
+
+    public static boolean doesTableExist(String table){
+        String query = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + table + "'";
+        try (
+            Connection conn = DriverManager.getConnection(DB_PATH);
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+        ){
+            return rs.next();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static void createGamesTable(){
+        try (
+            Connection conn = DriverManager.getConnection(DB_PATH);
+            Statement stmt = conn.createStatement();
+        )
+        {
+            stmt.executeUpdate(SQL_GAMES_TABLE_DDL);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    // Ensures existence of db and tables
+    public static void assertDB(){
+        if (!doesTableExist("games")){
+            createGamesTable();
+            System.out.println("assertDB(): No table found, creating");
+        }
+        else {
+            System.out.println("assertDB(): DB and table already exist");
+        }
+    }
+
+    private static String epochMillisToString(long epoch){
+            return DateTimeFormatter.ofPattern("yyyy.MM.dd").withZone(ZoneId.of("UTC")).format(Instant.ofEpochSecond(epoch/1000));
+    }
+
+    public static int countQuery(String query){
+        StringBuilder sb = new StringBuilder(query);
+        sb.insert(0, "SELECT COUNT(*) FROM (").append(")");
+
+        try (
+            Connection conn = DriverManager.getConnection(DB_PATH);
+            PreparedStatement statement = conn.prepareStatement(sb.toString());
+            ResultSet rs = statement.executeQuery();
+        )
+        {
+            while (rs.next()){
+                return rs.getInt(1);
+            }
+            return -1;
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    public static int deleteByID(ArrayList<byte[]> ids){
+        StringBuilder sb = new StringBuilder("DELETE FROM ").append(DB_TABLE_NAME).append(" WHERE id IN (");
+
+        for (int i = 0; i < ids.size(); i++){
+            if (i != 0){
+                sb.append(", ");
+            }
+
+            sb.append("?");
+        }
+        sb.append(")");
+
+        try (
+            Connection conn = DriverManager.getConnection(DB_PATH);
+            PreparedStatement statement = conn.prepareStatement(sb.toString());
+        )
+        {
+            for (int i = 0; i < ids.size(); i++){
+                statement.setBytes((i + 1), ids.get(i));
+            }
+
+            return statement.executeUpdate();
+        }
+        catch(Exception e){
+            System.out.println("deleteByID(): Exception " + e + " occurred when attempting to delete from database");
+            return -1;
+        }
+
+    }
+
+    public static int deleteAll(){
+        String stmt = "DELETE FROM games";
+
+        try(
+            Connection conn = DriverManager.getConnection(DB_PATH);
+            PreparedStatement statement = conn.prepareStatement(stmt);
+        )
+        {
+            return statement.executeUpdate();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
 }

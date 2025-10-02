@@ -21,7 +21,7 @@ public class DatabaseClient {
 
     public DatabaseClient(int entriesPerPage, TableView<BrowserEntry> tableView){
         this.entriesPerPage = entriesPerPage;
-        numPages = (getQueryCount(statement) + entriesPerPage - 1)/entriesPerPage; // Take ceiling quotient for num pages
+        numPages = (RegexDatabase.countQuery(statement) + entriesPerPage - 1)/entriesPerPage; // Take ceiling quotient for num pages
         System.out.println(numPages);
         this.tableView = tableView;
 
@@ -40,7 +40,7 @@ public class DatabaseClient {
     public DatabaseClient(int entriesPerPage, TableView<BrowserEntry> tableView, String statement){
         this.statement = statement;
         this.entriesPerPage = entriesPerPage;
-        numPages = (getQueryCount(statement) + entriesPerPage - 1)/entriesPerPage; // Take ceiling quotient for num pages
+        numPages = (RegexDatabase.countQuery(statement) + entriesPerPage - 1)/entriesPerPage; // Take ceiling quotient for num pages
         System.out.println(numPages);
         this.tableView = tableView;
 
@@ -71,43 +71,12 @@ public class DatabaseClient {
             pageStatement += " OFFSET " + (entriesPerPage * page);
         }
 
-        try{
-            ResultSet rs = RegexDatabase.executeQuery(pageStatement);
-            while (rs.next()){
-                entries.add(new BrowserEntry(rs.getBytes("id"), rs.getString("white_player"), rs.getString("black_player"), rs.getString("site"), rs.getString("chess_event"), epochMillisToString(rs.getLong("game_date")), rs.getString("round"), rs.getString("result")));
-            }
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-        this.tableView.setItems(FXCollections.observableArrayList(entries));
+        this.tableView.setItems(FXCollections.observableArrayList(RegexDatabase.readBrowserEntries(pageStatement)));
         return tableView;
     }
 
     public int getNumPages(){
         return numPages; // Primitive int
-    }
-
-    private String epochMillisToString(long epoch){
-        return DateTimeFormatter.ofPattern("yyyy.MM.dd").withZone(ZoneId.of("UTC")).format(Instant.ofEpochSecond(epoch/1000));
-    }
-
-    // return negated entriesPerPage value to ensure negative number is propagated to GUI indicating failure
-    private int getQueryCount(String statement){
-        ResultSet rs;
-        StringBuilder sb = new StringBuilder(statement);
-        sb.insert(0, "SELECT COUNT(*) FROM (").append(")");
-        try{
-            if ((rs = RegexDatabase.executeQuery(sb.toString())).next()){
-                return rs.getInt(1);
-            }
-
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            return -entriesPerPage;
-        }
-        return -entriesPerPage;
     }
 
 

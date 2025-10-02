@@ -17,6 +17,7 @@ import com.YCorp.chessApp.client.javafx.control.GameSceneController;
 import com.YCorp.chessApp.client.javafx.control.MenuSceneController;
 import com.YCorp.chessApp.client.javafx.control.SettingsSceneController;
 import com.YCorp.chessApp.client.javafx.events.SceneTransitionEvent;
+import com.YCorp.chessApp.server.db.RegexDatabase;
 
 public class ScratchFX extends Application{
     private SceneManager sceneManager;
@@ -167,6 +168,8 @@ public class ScratchFX extends Application{
     }
 
     private void loadBrowserScene(){
+        RegexDatabase.assertDB();
+
         if (this.sceneManager.isActive()){
             this.sceneManager.cleanup();
         }
