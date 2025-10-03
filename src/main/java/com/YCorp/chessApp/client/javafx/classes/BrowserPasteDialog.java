@@ -23,11 +23,13 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
+import javafx.stage.Stage;
 
 public class BrowserPasteDialog extends Dialog<Boolean>{
     private DialogPane dialogPane;
     private TextArea inputArea;
     private int rowsAffected = 0;
+    private DatabaseWriteService dbService = new DatabaseWriteService();
 
 
     private static String sampleText;
@@ -57,6 +59,17 @@ public class BrowserPasteDialog extends Dialog<Boolean>{
             super();
             dialogPane = this.getDialogPane();
             dialogPane.setPrefSize(450, 550);
+
+            Stage stage = (Stage) dialogPane.getScene().getWindow();
+
+            stage.setOnCloseRequest(event -> {
+                if (dbService.isRunning()){
+                    event.consume();
+                    dbService.interruptTask();
+                }
+            });
+
+
             this.setTitle("Import PGN from text");
     
             ButtonType apply = new ButtonType("Apply", ButtonBar.ButtonData.LEFT);
@@ -64,7 +77,11 @@ public class BrowserPasteDialog extends Dialog<Boolean>{
             
             dialogPane.getButtonTypes().addAll(apply, exit);
             dialogPane.lookupButton(apply).addEventFilter(ActionEvent.ACTION, this::applyButtonHandler); // FILTER action and consume to prevent window closing
-    
+            dialogPane.lookupButton(apply).disableProperty().bind(dbService.runningProperty());
+            dialogPane.lookupButton(exit).disableProperty().bind(dbService.runningProperty());
+
+
+
             inputArea = new TextArea();
             inputArea.setText(sampleText);
             inputArea.setWrapText(false);
@@ -99,27 +116,17 @@ public class BrowserPasteDialog extends Dialog<Boolean>{
         private void applyButtonHandler(ActionEvent e){
             PrintStream origOut = System.out;
             BrowserPrintStream browserStream = new BrowserPrintStream(System.out, this.status);
-            try
-            {
-                int unwritten;
-                ArrayList<RegexGameData> games;
-                System.setOut(browserStream);
-                games = RegexParser.extractPGN(inputArea.getText());
-                System.out.println("STATUS: " + games.size() + " games extacted...");
-                unwritten = RegexDatabase.writeDB(games,50).size();
-                System.out.println("STATUS: Finished with " + unwritten + " errors");
-                System.out.println("DONE: Exit or go again");
 
-                // track rows affected to determine if DB was affected during Dialog
-                rowsAffected += (games.size() - unwritten);
-            }
-            catch (Exception ex){
-                System.out.println("Exception " + ex + " while trying to parse PGN");
-            }
-            finally{
+            System.setOut(browserStream);
+            dbService.setPgn(inputArea.getText());
+            dbService.start();
+
+            dbService.setOnSucceeded(event -> {
                 System.setOut(origOut);
-                e.consume();
-            }
+                rowsAffected += dbService.getValue();
+                dbService.reset();
+            });
+            e.consume();
         }
     
 }

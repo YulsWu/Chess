@@ -446,6 +446,12 @@ public class RegexParser {
         ArrayList<String> tempMoveArray;
         // Separate each "game" in the PGN
         while (gameBlockMatcher.find()){
+            // Don't reset interrupt
+            if (Thread.currentThread().isInterrupted()){
+                System.out.println("extractPGN(): Interrupted");
+                return new ArrayList<RegexGameData>();
+            }
+            
             tempMetaMap = new HashMap<String, String>();
             tempMoveArray = new ArrayList<String>();
             

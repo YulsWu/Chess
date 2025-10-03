@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
 
 import com.YCorp.chessApp.client.parser.RegexParser;
 import com.YCorp.chessApp.server.db.RegexDatabase;
@@ -16,6 +17,7 @@ import com.YCorp.chessApp.server.db.RegexGameData;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Service;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -35,8 +37,10 @@ public class BrowserImportDialog extends Dialog<Boolean> {
     private DialogPane dialogPane;
     private TextField inputField;
     private Button browseButton;
+    private Button cancelButton; 
     private int rowsAffected = 0;
     private Stage stage;
+    private DatabaseWriteService dbService = new DatabaseWriteService();
 
     private ObservableList<String> status = FXCollections.observableArrayList();
 
@@ -47,16 +51,27 @@ public class BrowserImportDialog extends Dialog<Boolean> {
         dialogPane.setPrefSize(600, 350);
 
         stage = (Stage) dialogPane.getScene().getWindow();
+        stage.setOnCloseRequest(event -> {
+            if (dbService.isRunning()){
+                event.consume();
+                dbService.interruptTask();
+            }
+        });
+  
 
         // Set CONTENT
         String prompt = "Type filepath here...";
         HBox hbox = new HBox();
         browseButton = new Button("Browse");
+        browseButton.disableProperty().bind(dbService.runningProperty());
+        cancelButton = new Button ("Cancel");
+        cancelButton.disableProperty().bind(dbService.runningProperty().not());
         inputField = new TextField();
         inputField.setPromptText(prompt);
         inputField.setPrefWidth(dialogPane.getPrefWidth() * (3.0 / 4.0)); // If calculating this way, must specify 3/4 is DOUBLE
+        inputField.disableProperty().bind(dbService.runningProperty());
         
-        hbox.getChildren().addAll(inputField, browseButton);
+        hbox.getChildren().addAll(inputField, browseButton, cancelButton);
         hbox.setAlignment(Pos.CENTER);
 
         // VBox wrapper = new VBox(hbox);
@@ -82,6 +97,9 @@ public class BrowserImportDialog extends Dialog<Boolean> {
 
         dialogPane.getButtonTypes().addAll(importButton, exit);
         dialogPane.lookupButton(importButton).addEventFilter(ActionEvent.ACTION, this::importButtonHandler);
+        dialogPane.lookupButton(importButton).disableProperty().bind(dbService.runningProperty());
+        dialogPane.lookupButton(exit).disableProperty().bind(dbService.runningProperty());
+        
 
         this.setResultConverter(buttonType -> {
             if (this.rowsAffected > 0){
@@ -94,6 +112,7 @@ public class BrowserImportDialog extends Dialog<Boolean> {
 
         // Set non-dialog button
         browseButton.addEventHandler(ActionEvent.ACTION, this::browseButtonHandler);
+        cancelButton.addEventHandler(ActionEvent.ACTION, this::cancelButtonHandler);
 
 
     };
@@ -133,35 +152,16 @@ public class BrowserImportDialog extends Dialog<Boolean> {
 
         // "//R" matches any unicode linebreak sequence
         pgn = pgn.replaceAll("\\R", "\n");
-        // DEBUG
-        
-        try (FileWriter writer = new FileWriter("C:\\Users\\yulun\\AppData\\Local\\Programs\\Java\\Chess\\build\\log\\importOutput.txt")) {
-            writer.write(pgn);
-        } catch (IOException exception) {
-            exception.printStackTrace();
-        }
 
-        try{
-            int unwritten;
-            ArrayList<RegexGameData> games = RegexParser.extractPGN(pgn);
-            
-            System.out.println("STATUS: " + games.size() + " games extracted...");
-            unwritten = RegexDatabase.writeDB(games, 50).size();
+        dbService.setPgn(pgn);
+        dbService.start();
 
-            System.out.println("STATUS: " + "Finished with " + unwritten + " errors");
-            System.out.println("DONE: Exit or go again");
-
-            rowsAffected += games.size() - unwritten;
-        }
-        catch(Exception ex){
-            System.out.println("Exception " + ex + " while importing PGN");
-            ex.printStackTrace();
-        }
-        finally{
+        // Should always exit as succeeded, use interrupts rather than cancelled flag
+        dbService.setOnSucceeded(ev -> {
+            rowsAffected += dbService.getValue();
+            dbService.reset();
             System.setOut(origOut);
-        }
-
-
+        });
     }
 
     private void browseButtonHandler(ActionEvent e){
@@ -183,4 +183,10 @@ public class BrowserImportDialog extends Dialog<Boolean> {
 
     }
 
+    private void cancelButtonHandler(ActionEvent e){
+        if (dbService.isRunning()){
+            dbService.interruptTask();
+        }
+    }
+    
 }

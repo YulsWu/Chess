@@ -257,7 +257,7 @@ public class BrowserSceneController implements Closeable{
         d.showAndWait();
 
         // Refresh if DB changed
-        if (d.getResult() == true){
+        if (d.getResult() != null && d.getResult() == true){
             dummy.fireEvent(new SceneTransitionEvent(SceneTransitionEvent.TO_BROWSER));
         }
     }
@@ -267,7 +267,7 @@ public class BrowserSceneController implements Closeable{
         d.showAndWait();
 
         // Refresh if DB changed
-        if (d.getResult() == true){
+        if (d.getResult() != null && d.getResult() == true){
             dummy.fireEvent(new SceneTransitionEvent(SceneTransitionEvent.TO_BROWSER));
         }
 

@@ -94,6 +94,9 @@ public class RegexDatabase {
 
     public static ArrayList<RegexGameData> writeDB(ArrayList<RegexGameData> games, int batchSize){
         ArrayList<RegexGameData> unwrittenGames = new ArrayList<>();
+        if (games.size() == 0){
+            return new ArrayList<RegexGameData>();
+        }
 
         PreparedStatement stmt;
 
@@ -109,7 +112,7 @@ public class RegexDatabase {
 
             // Determine if table exists, create if not
             if (conn.createStatement().executeQuery(RegexDatabase.DB_QUERY_TABLE).next()){
-                System.out.println("writeDB(): Existing games table found");
+                
             }
             else {
                 System.out.println("writeDB(): Creating new table \'games\'");
@@ -134,6 +137,12 @@ public class RegexDatabase {
 
             int i = 0;
             for (RegexGameData gd : games){
+                // Don't clear?
+                if (Thread.currentThread().isInterrupted()){
+                    conn.rollback();
+                    System.out.println("writeDB(): Interrupted, wrote " + ((i + 1)/batchSize) * batchSize + " games out of " + games.size());
+                    return new ArrayList<RegexGameData>();
+                }
                 try{
                     // Inner try block to differentiate between exceptions arising from setValues() and ones from writing to the db
                     try{
@@ -153,8 +162,9 @@ public class RegexDatabase {
                     if (((i + 1) % batchSize == 0) || (i == games.size() - 1)){
                         stmt.executeBatch();
                         conn.commit();
-                        System.out.print("\rAdded " + (i + 1) + " games...");
+                        System.out.print("Wrote " + (i + 1) + " games...\r");
                     }
+                    System.out.println();
     
                     i++;
                 }

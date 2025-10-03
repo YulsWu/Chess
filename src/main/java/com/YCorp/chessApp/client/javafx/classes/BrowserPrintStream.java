@@ -3,6 +3,7 @@ package com.YCorp.chessApp.client.javafx.classes;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 
 public class BrowserPrintStream extends PrintStream {
@@ -16,7 +17,22 @@ public class BrowserPrintStream extends PrintStream {
 
     @Override
     public void println(String x){
-        this.browserConsole.add(x);
+        Platform.runLater(() -> {
+            this.browserConsole.add(x);
+        });
         super.println(x);
+    }
+
+    @Override 
+    public void print(String x){
+        Platform.runLater(() -> {
+            if (this.browserConsole.size() != 0){
+                this.browserConsole.set(this.browserConsole.size() - 1, x);
+            }
+            else {
+                this.browserConsole.set(this.browserConsole.size(), x);
+            }
+        });
+        super.print(x);
     }
 }

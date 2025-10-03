@@ -63,7 +63,6 @@ public class DatabaseClient {
         }
 
         String pageStatement = statement;
-        ArrayList<BrowserEntry> entries = new ArrayList<>();
 
         // Add LIMIT and OFFSET depending on the page provided
         pageStatement += " LIMIT " + entriesPerPage + " ";
