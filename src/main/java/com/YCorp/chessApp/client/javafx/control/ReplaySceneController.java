@@ -9,14 +9,21 @@ import com.YCorp.chessApp.client.javafx.classes.ReplayEngine;
 import com.YCorp.chessApp.client.javafx.classes.interfaces.Closeable;
 
 import javafx.fxml.FXML;
+import javafx.geometry.Bounds;
+import javafx.geometry.HPos;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -208,11 +215,14 @@ public class ReplaySceneController implements Closeable{
     @FXML
     TextFlow fileLabel7;
     //#endregion
+
+    @FXML 
+    private ScrollPane movesPane;
     //#endregion
 
     // Class members
     
-    private final Background SELECTION_BACKGROUND = new Background(new BackgroundFill[]{new BackgroundFill(Color.web("#FF7676"), null, null)});
+    private final Background MOVE_BACKGROUND = new Background(new BackgroundFill[]{new BackgroundFill(Color.GREY, null, null)});
     private final Background LIGHT_BACKGROUND = new Background(new BackgroundFill[]{new BackgroundFill(Color.web("#F0D9B5"), null, null)});
     private final Background DARK_BACKGROUND = new Background(new BackgroundFill[]{new BackgroundFill(Color.web("#B58863"), null, null)});
     private final Background HIGH_LIGHT_BACKGROUND = new Background(new BackgroundFill[]{new BackgroundFill(Color.web("#F4E288"), null, null)});
@@ -238,6 +248,10 @@ public class ReplaySceneController implements Closeable{
     private Pane dummy = new Pane();
 
     private ArrayList<StackPane> highlightedSquares = new ArrayList<>();
+
+    private GridPane movesGrid;
+
+    private ArrayList<Label> moveLabels = new ArrayList<>();
 
     public void init(boolean whitePerspective){
 
@@ -324,12 +338,67 @@ public class ReplaySceneController implements Closeable{
         gamePane.setFocusTraversable(true);
         gamePane.requestFocus();
 
-        
+        // Algebraic Moves Display
+        drawMovePane();        
 
         // Force a layout pass before stage.show() to prevent pop-in UI elements
         gamePane.layout();
     }
 
+    private void drawMovePane(){
+        movesGrid = new GridPane();
+        movesGrid.setPrefWidth(movesPane.getPrefWidth());
+
+        ArrayList<String> algebraicMoves = replayEngine.getAlgebraicMoves();
+        int numRows = (algebraicMoves.size() + 2 - 1) / 2; //Ceiling division
+
+        // Create rows
+        for (int i = 0; i < numRows; i++){
+            RowConstraints rc = new RowConstraints();
+            rc.setPrefHeight(25);
+
+            movesGrid.getRowConstraints().add(rc);
+        }
+        // Create columns
+        ColumnConstraints moveCount = new ColumnConstraints();
+        moveCount.setPercentWidth(20);
+        movesGrid.getColumnConstraints().add(moveCount);
+        for (int j = 0; j < 2; j++){
+            ColumnConstraints cc = new ColumnConstraints();
+            cc.setPercentWidth(40);
+
+            movesGrid.getColumnConstraints().add(cc);
+        }
+
+        // Populate rows with moves
+        for (int k = 0; k < algebraicMoves.size(); k++){
+            int row = k/2;
+            int col = k % 2 + 1; // + 1 to skip the first move count column
+
+            Label temp = new Label(algebraicMoves.get(k));
+            moveLabels.add(temp); 
+            movesGrid.add(temp, col, row);
+        }
+
+        // Align the move count labels to the center
+        for (int l = 0; l < numRows; l++){
+            Label temp = new Label(l + 1 + ". ");
+            GridPane.setHalignment(temp, HPos.CENTER);
+
+            movesGrid.add(temp, 0, l);
+        }
+
+        // Ensure no growing for labels
+        for (Node n : movesGrid.getChildren()){
+            GridPane.setHgrow(n, Priority.NEVER);
+            GridPane.setVgrow(n, Priority.NEVER);
+        }
+
+        movesPane.setFitToWidth(true);
+        movesPane.setFitToHeight(false);
+        this.movesPane.setContent(movesGrid);
+        
+    }
 
     private void drawBoard(){
         Background bkgrnd1;
@@ -423,25 +492,35 @@ public class ReplaySceneController implements Closeable{
     }
 
     private void keyPressHandler(KeyEvent event){
-        System.out.println("Keypress Handler entered");
         KeyCode keyCode = event.getCode();
+
+        // Unhighlight the previous algebraic move, before iterating
+        int ind;
+        if ((ind = replayEngine.getPointerIndex()) >= 0){
+            moveLabels.get(ind).setBackground(Background.EMPTY);
+        }
 
         // Progress game by one move
         if (keyCode.equals(KeyCode.RIGHT)){
             this.replayEngine.forward();
-            System.out.println("Forward move detected");
         }
         // Reverse by one move
         else if (keyCode.equals(KeyCode.LEFT)){
             this.replayEngine.back();
-            System.out.println("Back move detected");
         }
         
+        // Highlight new algebraic move according to pointer
+        if ((ind = replayEngine.getPointerIndex()) >= 0){
+            moveLabels.get(ind).setBackground(MOVE_BACKGROUND);
+        }
+
         restoreSquareColor();
         highlightLastMove();
         updateBoardPieces();
+        event.consume();
 
     }
+   
 
     private void highlightLastMove(){
         Move lastMove = this.replayEngine.getLastMove();

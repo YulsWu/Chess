@@ -10,31 +10,35 @@ import com.YCorp.chessApp.server.db.RegexGameData;
 
 public class ReplayEngine {
     private ArrayList<Move> moves;
+    private ArrayList<String> algebraicMoves;
     private ListIterator<Move> moveIterator;
     private Board board;
     private ArrayList<int[]> validMoves;
+    private int currentIndex = -1;
+
 
     public ReplayEngine(RegexGameData rgd){
         board = new Board();
         validMoves = board.generateValidMoves();
         moves = RegexParser.PGNMoveValidator(rgd.getMoves());
         moveIterator = moves.listIterator();
-        System.out.println("Moves is " + moves.size() + " elements long");   
+        algebraicMoves = rgd.getMoves();
     }
     
 
-    public void forward(){
-        System.out.println("Moves is " + moves.size() + " elements long");   
+    public void forward(){    
         if (moveIterator.hasNext()){
             Move mv = moveIterator.next();
             board.playMove(mv);
             validMoves = board.updateState(validMoves);
+            currentIndex++;
         }
     };
     public void back(){
         if (moveIterator.hasPrevious()){
             moveIterator.previous();
             board.undoLastMove();
+            currentIndex--;
         }
     };
 
@@ -45,4 +49,15 @@ public class ReplayEngine {
     public int[][] getBoard(){
         return board.getBoard();
     }
+    
+    public ArrayList<String> getAlgebraicMoves(){
+        return (ArrayList<String>) algebraicMoves.clone();
+    }
+
+    public int getPointerIndex(){
+        return currentIndex;
+    }
+
+
+
 }
