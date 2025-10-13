@@ -862,3 +862,6 @@ Thoughts about DAO -
         - So its the same amount of work either way, just the DAO won't be utilized to its full extent
         - Plus adds maintainability issues (If I don't use it a lot I'll forget how it works)
     - Sticking with Browser-specific methods within RegexDatabase for now
+
+Fixing Browser Import and Paste 'console' emulators - Use TextView or TextFlow instead, then use overridden write() in BrowserPrintStream() to write 
+to it like a console.

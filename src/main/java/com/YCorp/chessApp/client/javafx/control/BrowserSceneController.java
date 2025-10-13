@@ -170,6 +170,7 @@ public class BrowserSceneController implements Closeable{
         importButton.addEventHandler(ActionEvent.ACTION, this::importButtonHandler);
         deleteButton.addEventHandler(ActionEvent.ACTION, this::deleteButtonHandler);
         clearButton.addEventHandler(ActionEvent.ACTION, this::clearButtonHandler);
+        playButton.addEventHandler(ActionEvent.ACTION, this::playButtonHandler);
 
     }
 
@@ -332,6 +333,17 @@ public class BrowserSceneController implements Closeable{
         }
     }
 
+    private void playButtonHandler(ActionEvent e){
+        // Isolate game ID\
+        ObservableList<BrowserEntry> selections = this.resultsTableView.getSelectionModel().getSelectedItems();
+
+        if (selections.size() > 0){
+            byte[] gameId = selections.get(0).getId();
+            RegexGameData game = RegexDatabase.readGameById(gameId);
+            dummy.fireEvent(new SceneTransitionEvent(SceneTransitionEvent.TO_REPLAY, game));
+        }
+        else return;
+    }
     //debug
     public void setTableData(ObservableList<BrowserEntry> list){
         resultsTableView.setItems(list);

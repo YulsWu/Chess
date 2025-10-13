@@ -19,7 +19,6 @@ public class DatabaseWriteService extends Service<Integer> {
     
     @Override
     protected Task<Integer> createTask(){
-        String pgnStr = pgn;
         return new Task<>() {
             @Override
             protected Integer call() throws Exception {

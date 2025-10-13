@@ -1,5 +1,7 @@
 package com.YCorp.chessApp.client.javafx.events;
 
+import com.YCorp.chessApp.server.db.RegexGameData;
+
 import javafx.event.Event;
 import javafx.event.EventTarget;
 import javafx.event.EventType;
@@ -11,12 +13,14 @@ public class SceneTransitionEvent extends Event {
     // whitePlayer == 1 --> true
 
     private int[] gameSettings = null;
+    private RegexGameData replayGame = null;
 
     public static final EventType<SceneTransitionEvent> ANY = new EventType<>(Event.ANY, "ANY");
     public static final EventType<SceneTransitionEvent> TO_GAME = new EventType<>(SceneTransitionEvent.ANY, "TO_GAME");
     public static final EventType<SceneTransitionEvent> TO_SETTINGS = new EventType<>(SceneTransitionEvent.ANY, "TO_SETTINGS");
     public static final EventType<SceneTransitionEvent> TO_MENU = new EventType<>(SceneTransitionEvent.ANY, "TO_MENU");
     public static final EventType<SceneTransitionEvent> TO_BROWSER = new EventType<>(SceneTransitionEvent.ANY, "TO_BROWSER");
+    public static final EventType<SceneTransitionEvent> TO_REPLAY = new EventType<>(SceneTransitionEvent.ANY, "TO_REPLAY");
 
     public SceneTransitionEvent(EventType<? extends SceneTransitionEvent> eventType){
         super(eventType);
@@ -27,6 +31,11 @@ public class SceneTransitionEvent extends Event {
         this.gameSettings = settings;
     }
 
+    public SceneTransitionEvent(EventType<? extends SceneTransitionEvent> eventType, RegexGameData game){
+        super(eventType);
+        this.replayGame = game;
+    }
+
     public int[] getGameSettings(){
         if (gameSettings == null){
             return null;
@@ -34,6 +43,10 @@ public class SceneTransitionEvent extends Event {
         else {
             return gameSettings.clone();
         }
+    }
+
+    public RegexGameData getReplay(){
+        return this.replayGame;
     }
 
     // Omit overriding of copyFor and getEventType(), event type works properly for custom events, and this

@@ -306,9 +306,9 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
     private String opponentElo;
 
     // Dummy node
-    Pane dummy = new Pane();
+    private Pane dummy = new Pane();
 
-    PauseTransition moveDelay = new PauseTransition(Duration.seconds(1.5));
+    private PauseTransition moveDelay = new PauseTransition(Duration.seconds(.75));
     
     {
         moveDelay.setOnFinished(event -> {
@@ -574,12 +574,10 @@ public class GameSceneController implements TickCall, TimeoutCall, Closeable{
                     int endCode;
                  
                     if (this.guiEngine.isPromotionMove(move)){
-                        System.out.println("MPH: Promotion move detected");
                         endCode = this.guiEngine.attemptMove(move, this.promptPromotionPiece());
                     }
                     else {
                         // if valid move, execute move on to new square
-                        System.out.println("MPH: Non-Promotion move detected");
                         endCode = this.guiEngine.attemptMove(move);
                     }
                     

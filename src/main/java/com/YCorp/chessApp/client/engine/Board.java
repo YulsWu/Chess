@@ -2838,7 +2838,7 @@ public class Board implements TimeoutCall {
     }
 
     public Move peekMove(){
-        return this.playedMoves.peek().clone();
+        return this.playedMoves.peek() == null ? null : this.playedMoves.peek().clone();
     }
 
     public BOARD_STATE getState(){

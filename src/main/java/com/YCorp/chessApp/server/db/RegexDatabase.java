@@ -211,16 +211,19 @@ public class RegexDatabase {
         byte[] movesBytes;
         byte[] optionalMetaBytes;
 
-        ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
-        ObjectOutputStream objectOutput = new ObjectOutputStream(byteOutput);
+        ByteArrayOutputStream movesByteOutput = new ByteArrayOutputStream();
+        ObjectOutputStream movesObjectOutput = new ObjectOutputStream(movesByteOutput);
+
+        ByteArrayOutputStream metaByteOutput = new ByteArrayOutputStream();
+        ObjectOutputStream metaObjectOutput = new ObjectOutputStream(metaByteOutput);
 
         // Serialize moves
         // Must read in the same order as they're written
-        objectOutput.writeObject(game.getMoves());
-        objectOutput.writeObject(game.getOptionalMeta());
+        movesObjectOutput.writeObject(game.getMoves());
+        metaObjectOutput.writeObject(game.getOptionalMeta());
 
-        movesBytes = byteOutput.toByteArray();
-        optionalMetaBytes = byteOutput.toByteArray();
+        movesBytes = movesByteOutput.toByteArray();
+        optionalMetaBytes = metaByteOutput.toByteArray();
 
         stmt.setBytes(1, game.ID);
         stmt.setString(2, game.event);
@@ -565,4 +568,51 @@ public class RegexDatabase {
         }
     }
 
+    public static RegexGameData readGameById(byte[] id){
+        try (
+            Connection conn = DriverManager.getConnection(DB_PATH);
+            PreparedStatement statement = conn.prepareStatement("SELECT * FROM games WHERE id = ?");
+        )
+        {
+            statement.setBytes(1, id);
+            ResultSet results = statement.executeQuery();
+            if (results.next()){
+                System.out.println("FOUND HITS");
+
+                // Deserialize ArrayList<String> for moves, and HashMap<String, String> for optional meta
+                byte[] moveBytes = results.getBytes("moves");
+                byte[] metaBytes = results.getBytes("optional_meta");
+
+                ArrayList<String> moves = null;
+                HashMap<String, String> optionalMeta = null;
+
+                try (
+                    ByteArrayInputStream moveBI = new ByteArrayInputStream(moveBytes);
+                    ObjectInputStream moveOI = new ObjectInputStream(moveBI);
+
+                    ByteArrayInputStream metaBI = new ByteArrayInputStream(metaBytes);
+                    ObjectInputStream metaOI = new ObjectInputStream(metaBI);
+                    )
+                    {
+                        moves = (ArrayList<String>) moveOI.readObject();
+                        optionalMeta = (HashMap<String, String>) metaOI.readObject();
+                    }
+                    catch (Exception e){
+                        e.printStackTrace();
+                        return null;
+                    }
+
+                return new RegexGameData(id, results.getString("chess_event"), results.getString("site"), results.getDate("game_date"), results.getString("round"), results.getString("white_player"), results.getString("black_player"), results.getString("result"), optionalMeta, moves);
+            }
+            else {
+                System.out.println("NO HITS");
+                return null;
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+
+    }
 }
