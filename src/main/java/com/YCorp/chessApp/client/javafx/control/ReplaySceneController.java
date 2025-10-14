@@ -8,9 +8,11 @@ import com.YCorp.chessApp.client.javafx.classes.GUIPiece;
 import com.YCorp.chessApp.client.javafx.classes.ReplayEngine;
 import com.YCorp.chessApp.client.javafx.classes.interfaces.Closeable;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.geometry.HPos;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -500,6 +502,7 @@ public class ReplaySceneController implements Closeable{
             moveLabels.get(ind).setBackground(Background.EMPTY);
         }
 
+        boolean forwardIteration = true;
         // Progress game by one move
         if (keyCode.equals(KeyCode.RIGHT)){
             this.replayEngine.forward();
@@ -507,18 +510,53 @@ public class ReplaySceneController implements Closeable{
         // Reverse by one move
         else if (keyCode.equals(KeyCode.LEFT)){
             this.replayEngine.back();
+            forwardIteration = false;
         }
         
-        // Highlight new algebraic move according to pointer
+        // Now ind is increment/decremented
         if ((ind = replayEngine.getPointerIndex()) >= 0){
-            moveLabels.get(ind).setBackground(MOVE_BACKGROUND);
+
+            Label thisLabel = moveLabels.get(ind);
+            thisLabel.setBackground(MOVE_BACKGROUND);
+
+            if (!nodeInBounds(moveLabels.get(ind), movesPane)){
+                Bounds labelScenePt = thisLabel.localToScene(thisLabel.getLayoutBounds());
+                double labelY = forwardIteration ? labelScenePt.getMaxY() : labelScenePt.getMinY();
+
+                Bounds scrollBounds = movesPane.localToScene(movesPane.getLayoutBounds());
+                double scrollY = forwardIteration ? scrollBounds.getMaxY() : scrollBounds.getMinY();
+
+                // Will be negative if the label is higher than the scroll box, positive if label is below
+                double pixelDiff = labelY - scrollY;
+                double scaleDiff = pixelDiff / scrollBounds.getHeight();
+
+                movesPane.setVvalue(movesPane.getVvalue() + scaleDiff);
+            }
+
+            
+            // movesPane.layout();
+            // final int lambdaInd = ind; // Duplicate for lambda
+            // Platform.runLater(
+            //     () -> {
+            //         System.out.println("Label in viewport: " + nodeInBounds(moveLabels.get(lambdaInd), movesPane));
+            //     }
+            // );
         }
+        // Highlight new algebraic move according to pointer
 
         restoreSquareColor();
         highlightLastMove();
         updateBoardPieces();
         event.consume();
 
+    }
+
+    public boolean nodeInBounds(Node node, ScrollPane pane){
+        Bounds paneBounds = pane.localToScene(pane.getLayoutBounds());
+        Bounds nodeBounds = node.localToScene(node.getBoundsInLocal());
+        Point2D nodePoint = new Point2D(nodeBounds.getMaxX(), nodeBounds.getMaxY()); // Node was already converted to scene
+
+        return paneBounds.contains(nodePoint);
     }
    
 
